@@ -1,12 +1,16 @@
 package com.sunfusheng.droidplayer.sample.DroidPlayer.delegate;
 
 import android.support.annotation.IntDef;
+import android.support.annotation.StringRes;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
+import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidTextureView;
+import com.sunfusheng.droidplayer.sample.R;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -14,7 +18,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Created by sunfusheng on 2017/1/16.
  */
-public class DroidPlayerViewStateDelegate {
+public class DroidPlayerViewStateDelegate implements IBaseDelegate {
 
     @IntDef({STATE.IDLE, STATE.LOADING, STATE.PLAYING, STATE.PAUSE, STATE.COMPLETE, STATE.ERROR})
     @Retention(RetentionPolicy.SOURCE)
@@ -27,16 +31,36 @@ public class DroidPlayerViewStateDelegate {
         int ERROR = 5;
     }
 
-    public int mState; // 当前视频状态
+    private static final String TAG = "----> StateDelegate";
+    
+    public int state; // 当前视频状态
+    
+    private DroidProgressBarDelegate progressBarDelegate;
 
     public DroidPlayerView playView;
     public DroidTextureView textureView;
-    public ImageView centerPlay;
+    public View fullScreenTransparentBg;
     public ProgressBar loadingView;
+    private ProgressBar bottomProgressBar;
+    public ImageView ivCenterPlay;
+    public ImageView ivReplay;
+    public TextView tvTipUp;
+    public TextView tvTipDown;
 
     public DroidPlayerViewStateDelegate(DroidPlayerView playView) {
-        this.mState = STATE.IDLE;
+        this.state = STATE.IDLE;
         this.playView = playView;
+        progressBarDelegate = new DroidProgressBarDelegate();
+    }
+
+    @Override
+    public void init() {
+        progressBarDelegate.init();
+    }
+
+    @Override
+    public void unInit() {
+        progressBarDelegate.unInit();
     }
 
     public void setVisible(boolean isVisible, View... views) {
@@ -55,34 +79,93 @@ public class DroidPlayerViewStateDelegate {
         }
     }
 
+    public void setText(TextView tv, @StringRes int id) {
+        if (tv == null) return;
+        tv.setText(id);
+    }
+
     public void setState(int state) {
-        this.mState = state;
+        this.state = state;
+        DroidMediaPlayer.getInstance().setState(state);
         switch (state) {
             case STATE.IDLE:
-                setVisible(true, centerPlay);
-                setVisible(false, loadingView);
+                setIdleState();
                 break;
             case STATE.LOADING:
-                setVisible(true, loadingView);
-                setVisible(false, centerPlay);
+                setLoadingState();
                 break;
             case STATE.PLAYING:
-                setVisible(true);
-                setVisible(false, centerPlay, loadingView);
+                setPlayingState();
                 break;
             case STATE.PAUSE:
-                setVisible(true, centerPlay);
-                setVisible(false, loadingView);
+                setPauseState();
                 break;
             case STATE.COMPLETE:
-                setVisible(true, centerPlay);
-                setVisible(false, loadingView);
+                setCompleteState();
                 break;
             case STATE.ERROR:
-                setVisible(true);
-                setVisible(false, centerPlay, loadingView);
+                setErrorState();
                 break;
         }
+    }
+
+    // 空闲状态
+    public void setIdleState() {
+        setVisible(true, fullScreenTransparentBg, ivCenterPlay);
+        setVisible(false, loadingView, bottomProgressBar, tvTipUp, tvTipDown, ivReplay);
+    }
+
+    // 加载状态
+    public void setLoadingState() {
+        setVisible(true, fullScreenTransparentBg, loadingView, bottomProgressBar);
+        setVisible(false, ivCenterPlay, tvTipUp, tvTipDown, ivReplay);
+    }
+
+    // 播放状态
+    public void setPlayingState() {
+        setVisible(true, bottomProgressBar);
+        setVisible(false, fullScreenTransparentBg, ivCenterPlay, loadingView, tvTipUp, tvTipDown, ivReplay);
+    }
+
+    // 暂停状态
+    public void setPauseState() {
+        setVisible(true, fullScreenTransparentBg, ivCenterPlay);
+        setVisible(false, loadingView, bottomProgressBar, tvTipUp, tvTipDown, ivReplay);
+    }
+
+    // 完成状态
+    public void setCompleteState() {
+        setVisible(true, fullScreenTransparentBg, tvTipDown, ivReplay);
+        setVisible(false, ivCenterPlay, loadingView, bottomProgressBar, tvTipUp);
+        setText(tvTipDown, R.string.player_replay_tip);
+        progressBarDelegate.init();
+    }
+
+    // 错误状态
+    public void setErrorState() {
+        setVisible(true, fullScreenTransparentBg, tvTipDown, ivReplay);
+        setVisible(false, ivCenterPlay, loadingView, bottomProgressBar, tvTipUp);
+        setText(tvTipDown, R.string.player_error_tip);
+        progressBarDelegate.init();
+    }
+    
+    public void setBottomProgressBar(ProgressBar progressBar) {
+        this.bottomProgressBar = progressBar;
+        progressBarDelegate.setProgressBar(progressBar);
+    }
+    
+    public void setDuration(long duration) {
+        progressBarDelegate.setDuration(duration);
+    }
+
+    // 设置缓冲进度
+    public void setBufferingProgress(int progress) {
+        progressBarDelegate.setBufferingProgress(progress);
+    }
+
+    // 设置播放进度
+    public void setPlayedPosition(int position) {
+        
     }
 
 }

@@ -3,6 +3,7 @@ package com.sunfusheng.droidplayer.sample.DroidPlayer;
 import android.media.AudioManager;
 import android.view.Surface;
 
+import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerViewStateDelegate;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidMediaMediaPlayerListener;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidMediaPlayer;
 
@@ -21,7 +22,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         IMediaPlayer.OnCompletionListener,
         IMediaPlayer.OnErrorListener {
 
-    private static final String TAG = "---> DroidMediaPlayer";
+    private static final String TAG = "----> MediaPlayer";
 
     private IjkMediaPlayer mMediaPlayer;
 
@@ -29,10 +30,11 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     private Surface mSurface;
 
-    private boolean isPlaying;
+    private int mState; // 视频状态
+    private boolean isPlaying; // 是否在播放中
 
-    private int mVideoWidth;
-    private int mVideoHeight;
+    private int mVideoWidth; // 视频宽度
+    private int mVideoHeight; // 视频高度
 
     private static final class Holder {
         static DroidMediaPlayer instance = new DroidMediaPlayer();
@@ -51,6 +53,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     }
 
     private void initData() {
+        this.mState = DroidPlayerViewStateDelegate.STATE.IDLE;
         this.isPlaying = false;
         this.mVideoWidth = 0;
         this.mVideoHeight = 0;
@@ -212,6 +215,23 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         if (mMediaPlayer != null) {
             mMediaPlayer.setSurface(surface);
         }
+    }
+
+    public int getState() {
+        return mState;
+    }
+
+    public void setState(@DroidPlayerViewStateDelegate.STATE int state) {
+        this.mState = state;
+        setPlaying(state == DroidPlayerViewStateDelegate.STATE.PLAYING);
+    }
+
+    public boolean isPlaying() {
+        return isPlaying;
+    }
+
+    public void setPlaying(boolean playing) {
+        isPlaying = playing;
     }
 
     public int getVideoWidth() {

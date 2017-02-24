@@ -15,6 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:layout_margin="15dp"
-        android:text="测试点击"/>
+        android:text="测试点击"
+        android:visibility="invisible"/>
 
 </LinearLayout>

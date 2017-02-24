@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="player_red_color">#DD3A38</color>
+
+    <color name="player_transparent00_color">#00000000</color>
+    <color name="player_transparent30_color">#4D000000</color>
+    <color name="player_transparent40_color">#66000000</color>
+    <color name="player_transparent50_color">#80000000</color>
+    <color name="player_transparent60_color">#9A000000</color>
+    <color name="player_transparent70_color">#B3000000</color>
+    <color name="player_transparent80_color">#CC000000</color>
+
+    <color name="player_secondary_progress_color">#fbfbfb</color>
+
+</resources>

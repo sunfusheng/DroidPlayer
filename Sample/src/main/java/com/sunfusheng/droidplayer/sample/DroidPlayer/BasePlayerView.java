@@ -1,6 +1,7 @@
 package com.sunfusheng.droidplayer.sample.DroidPlayer;
 
 import android.content.Context;
+import android.os.Handler;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -22,6 +23,8 @@ public class BasePlayerView extends RelativeLayout {
 
     protected long mDuration;
     protected long mCurrentPosition;
+
+    protected Handler mHandler = new Handler();
 
     public BasePlayerView(@NonNull Context context) {
         this(context, null);
@@ -49,7 +52,7 @@ public class BasePlayerView extends RelativeLayout {
     protected boolean checkVideoUrl(String url) {
         this.mUrl = url;
         if (TextUtils.isEmpty(url)) {
-            ToastUtil.show(mContext, R.string.invalid_video_url);
+            ToastUtil.show(mContext, R.string.player_invalid_url_tip);
             return false;
         }
         return true;

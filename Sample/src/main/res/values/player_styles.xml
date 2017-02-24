@@ -2,7 +2,7 @@
 <resources>
 
     <style name="LoadingProgressBar">
-        <item name="android:indeterminateDrawable">@drawable/drawable_player_progressbar</item>
+        <item name="android:indeterminateDrawable">@drawable/player_loading_drawable</item>
         <item name="android:indeterminateDuration">800</item>
     </style>
 

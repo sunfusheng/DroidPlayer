@@ -11,19 +11,65 @@
         android:layout_height="match_parent"
         android:gravity="center"/>
 
+    <View
+        android:id="@+id/full_screen_transparent_bg"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/player_transparent40_color"/>
+
     <ImageView
-        android:id="@+id/center_play"
-        android:layout_width="@dimen/player_view_center_icon_big"
+        android:id="@+id/iv_center_play"
+        android:layout_width="@dimen/player_center_icon_size"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@mipmap/droid_player_play_center_big"/>
+        android:src="@mipmap/droid_player_center_play"/>
 
     <ProgressBar
         android:id="@+id/loading_view"
         style="@style/LoadingProgressBar"
-        android:layout_width="@dimen/player_view_center_icon_big"
+        android:layout_width="@dimen/player_center_icon_size"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:visibility="invisible"/>
 
+    <TextView
+        android:id="@+id/tv_tip_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/iv_replay"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="15dp"
+        android:text="@string/player_error_tip"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/player_text_size"
+        android:visibility="invisible"/>
+
+    <ImageView
+        android:id="@+id/iv_replay"
+        android:layout_width="@dimen/player_center_icon_size"
+        android:layout_height="@dimen/player_center_icon_size"
+        android:layout_centerInParent="true"
+        android:src="@mipmap/droid_player_replay"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:id="@+id/tv_tip_down"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_replay"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        android:text="@string/player_replay_tip"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/player_text_size"
+        android:visibility="invisible"/>
+
+    <ProgressBar
+        android:id="@+id/bottom_progress_bar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/player_progress_percent_height"
+        android:layout_alignParentBottom="true"
+        android:max="100"
+        android:progressDrawable="@drawable/player_progress_drawable"/>
 </RelativeLayout>

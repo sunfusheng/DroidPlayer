@@ -1,5 +1,7 @@
 <resources>
 
-    <string name="invalid_video_url">"播放地址无效"</string>
+    <string name="player_invalid_url_tip">"播放地址无效"</string>
+    <string name="player_error_tip">视频出错了，请重试</string>
+    <string name="player_replay_tip">重新播放</string>
 
 </resources>

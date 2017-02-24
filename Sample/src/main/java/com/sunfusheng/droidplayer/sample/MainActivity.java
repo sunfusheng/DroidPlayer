@@ -36,7 +36,9 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        playerView.setDataSource(dibai);
+//        playerView.setDataSource(dibai);
+
+        playerView.play(cat);
 
         btnTest.setOnClickListener(v -> {
             playerView.play();
