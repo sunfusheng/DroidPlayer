@@ -2,7 +2,6 @@
 <resources>
 
     <dimen name="player_center_icon_size">50dp</dimen>
-    <dimen name="player_text_size">10sp</dimen>
-    <dimen name="player_progress_percent_height">2dp</dimen>
+    <dimen name="player_text_size">11sp</dimen>
 
 </resources>

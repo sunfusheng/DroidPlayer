@@ -21,12 +21,12 @@ public interface DroidMediaMediaPlayerListener {
 
     boolean onError(int what, int extra);
 
+    void onVideoStart();
+
     void onVideoResume();
 
     void onVideoPause();
 
-    void onVideoStop();
-
-    void onVideoDestroy();
+    void onVideoRelease();
 
 }

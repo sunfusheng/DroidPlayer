@@ -5,13 +5,13 @@ package com.sunfusheng.droidplayer.sample.DroidPlayer.listener;
  */
 public interface IDroidMediaPlayer {
 
+    void start();
+
     boolean play(String url);
 
     void resume();
 
     void pause();
-
-    void stop();
 
     void release();
 

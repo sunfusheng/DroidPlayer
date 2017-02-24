@@ -1,6 +1,8 @@
 package com.sunfusheng.droidplayer.sample.DroidPlayer;
 
 import android.media.AudioManager;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.Surface;
 
 import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerViewStateDelegate;
@@ -35,6 +37,8 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     private int mVideoWidth; // 视频宽度
     private int mVideoHeight; // 视频高度
+
+    private Handler mHandler = new Handler(Looper.getMainLooper());
 
     private static final class Holder {
         static DroidMediaPlayer instance = new DroidMediaPlayer();
@@ -90,8 +94,23 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     }
 
     @Override
+    public void start() {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.start();
+        }
+        if (mMediaPlayerListener != null) {
+            mMediaPlayerListener.onVideoStart();
+        }
+    }
+
+    @Override
     public void resume() {
-        if (mMediaPlayer != null && mMediaPlayerListener != null) {
+        if (mMediaPlayer != null) {
+            if (mState == DroidPlayerViewStateDelegate.STATE.PAUSE) {
+                mMediaPlayer.start();
+            }
+        }
+        if (mMediaPlayerListener != null) {
             mMediaPlayerListener.onVideoResume();
         }
     }
@@ -107,22 +126,13 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     }
 
     @Override
-    public void stop() {
-        if (mMediaPlayer != null) {
-            mMediaPlayer.stop();
-        }
-        if (mMediaPlayerListener != null) {
-            mMediaPlayerListener.onVideoStop();
-        }
-    }
-
-    @Override
     public void release() {
         if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
             mMediaPlayer.release();
         }
         if (mMediaPlayerListener != null) {
-            mMediaPlayerListener.onVideoDestroy();
+            mMediaPlayerListener.onVideoRelease();
         }
     }
 
@@ -173,7 +183,6 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public void onCompletion(IMediaPlayer iMediaPlayer) {
-        stop();
         release();
         if (mMediaPlayerListener != null) {
             mMediaPlayerListener.onCompletion();
@@ -182,7 +191,6 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public boolean onError(IMediaPlayer iMediaPlayer, int what, int extra) {
-        stop();
         release();
         if (mMediaPlayerListener != null) {
             mMediaPlayerListener.onError(what, extra);
@@ -250,4 +258,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         this.mVideoHeight = videoHeight;
     }
 
+    public Handler getHandler() {
+        return mHandler;
+    }
 }

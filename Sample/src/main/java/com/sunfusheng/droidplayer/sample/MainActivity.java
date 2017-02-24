@@ -2,6 +2,7 @@ package com.sunfusheng.droidplayer.sample;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.widget.Button;
 
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
@@ -16,6 +17,8 @@ public class MainActivity extends AppCompatActivity {
     DroidPlayerView playerView;
     @BindView(R.id.btn_test)
     Button btnTest;
+    @BindView(R.id.toolbar)
+    Toolbar toolbar;
 
     private String dibai = "http://olnvi6ek1.bkt.clouddn.com/%E8%BF%AA%E6%8B%9C.mp4";
     private String magic_leap = "http://olnvi6ek1.bkt.clouddn.com/Maigc%20Leap.mp4";
@@ -36,9 +39,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-//        playerView.setDataSource(dibai);
+        toolbar.setTitle(R.string.app_name);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
 
-        playerView.play(cat);
+        playerView.setDataSource(cat);
+//        playerView.play(girl_dance);
 
         btnTest.setOnClickListener(v -> {
             playerView.play();
@@ -55,12 +63,6 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         DroidMediaPlayer.getInstance().pause();
         super.onPause();
-    }
-
-    @Override
-    protected void onStop() {
-        DroidMediaPlayer.getInstance().stop();
-        super.onStop();
     }
 
     @Override
