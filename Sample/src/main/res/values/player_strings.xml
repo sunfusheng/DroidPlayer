@@ -1,0 +1,5 @@
+<resources>
+
+    <string name="invalid_video_url">"播放地址无效"</string>
+
+</resources>
