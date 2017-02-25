@@ -1,6 +1,7 @@
 package com.sunfusheng.droidplayer.sample.DroidPlayer.delegate;
 
 import android.support.annotation.IntDef;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -32,7 +33,7 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
     }
 
     private static final String TAG = "----> StateDelegate";
-    
+
     public int state; // 当前视频状态
     public boolean isShowBottomLayout;
 
@@ -103,8 +104,8 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
 
     // 加载状态
     public void setLoadingState() {
-        setVisible(true, fullScreenTransparentBg, loadingView, llBottomLayout, bottomProgressBar);
-        setVisible(false, ivCenterPlay, tvTipUp, tvTipDown, ivReplay);
+        setVisible(true, fullScreenTransparentBg, loadingView, bottomProgressBar);
+        setVisible(false, ivCenterPlay, llBottomLayout, tvTipUp, tvTipDown, ivReplay);
     }
 
     // 播放状态
@@ -146,14 +147,24 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
         bottomLayoutDelegate.setLlBottomLayout(llBottomLayout);
     }
 
-    public void setLlBottomLayoutVisible(boolean isVisible) {
-        setVisible(isVisible, llBottomLayout);
-        setVisible(!isVisible, bottomProgressBar);
-    }
-
-    public void showLlBottomLayout() {
-        isShowBottomLayout = !isShowBottomLayout;
-        setLlBottomLayoutVisible(isShowBottomLayout);
+    public void clickToShowBottomLayout() {
+        if (!isShowBottomLayout) {
+            isShowBottomLayout = true;
+            setVisible(true, fullScreenTransparentBg, llBottomLayout);
+            setVisible(false, ivCenterPlay, loadingView, bottomProgressBar, tvTipUp, tvTipDown, ivReplay);
+            Log.d("------", "1 isShowBottomLayout: "+isShowBottomLayout);
+            DroidMediaPlayer.getInstance().getHandler().postDelayed(() -> {
+                isShowBottomLayout = false;
+                setVisible(true, bottomProgressBar);
+                setVisible(false, fullScreenTransparentBg, llBottomLayout, ivCenterPlay, loadingView, tvTipUp, tvTipDown, ivReplay);
+                Log.d("------", "2 isShowBottomLayout: "+isShowBottomLayout);
+            }, 2000);
+        } else {
+            isShowBottomLayout = false;
+            setVisible(true, bottomProgressBar);
+            setVisible(false, fullScreenTransparentBg, llBottomLayout, ivCenterPlay, loadingView, tvTipUp, tvTipDown, ivReplay);
+            Log.d("------", "3 isShowBottomLayout: "+isShowBottomLayout);
+        }
     }
 
     public void setDuration(long duration) {

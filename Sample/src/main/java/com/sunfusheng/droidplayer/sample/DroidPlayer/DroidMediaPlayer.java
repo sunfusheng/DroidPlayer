@@ -105,10 +105,8 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public void resume() {
-        if (mMediaPlayer != null) {
-            if (mState == DroidPlayerViewStateDelegate.STATE.PAUSE) {
-                mMediaPlayer.start();
-            }
+        if (mMediaPlayer != null && isPause()) {
+            mMediaPlayer.start();
         }
         if (mMediaPlayerListener != null) {
             mMediaPlayerListener.onVideoResume();
@@ -117,7 +115,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public void pause() {
-        if (mMediaPlayer != null) {
+        if (mMediaPlayer != null && isPlaying()) {
             mMediaPlayer.pause();
         }
         if (mMediaPlayerListener != null) {
@@ -127,7 +125,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public void release() {
-        if (mMediaPlayer != null) {
+        if (mMediaPlayer != null && mState != DroidPlayerViewStateDelegate.STATE.IDLE) {
             mMediaPlayer.stop();
             mMediaPlayer.release();
         }
@@ -232,6 +230,10 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     public void setState(@DroidPlayerViewStateDelegate.STATE int state) {
         this.mState = state;
         setPlaying(state == DroidPlayerViewStateDelegate.STATE.PLAYING);
+    }
+
+    public boolean isPause() {
+        return mState == DroidPlayerViewStateDelegate.STATE.PAUSE;
     }
 
     public boolean isPlaying() {

@@ -15,7 +15,7 @@
         android:id="@+id/full_screen_transparent_bg"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/player_transparent40_color"/>
+        android:background="@color/player_transparent30_color"/>
 
     <ImageView
         android:id="@+id/iv_center_play"

@@ -192,7 +192,7 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         textureView = new DroidTextureView(mContext);
         textureView.setSurfaceTextureListener(this);
         textureView.setOnClickListener(v -> {
-            mStateDelegate.showLlBottomLayout();
+            mStateDelegate.clickToShowBottomLayout();
         });
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -328,6 +328,7 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         Log.d(TAG, "onVideoRelease()");
         mStateDelegate.setState(DroidPlayerViewStateDelegate.STATE.IDLE);
         mStateDelegate.unInit();
+        DroidMediaPlayer.getInstance().setMediaPlayerListener(null);
     }
 
 }
