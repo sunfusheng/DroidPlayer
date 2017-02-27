@@ -115,6 +115,7 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
     }
 
     private void initListener() {
+        textureViewContainer.setOnClickListener(this);
         ivCenterPlay.setOnClickListener(this);
         ivReplay.setOnClickListener(this);
         ivPlay.setOnClickListener(this);
@@ -125,6 +126,10 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         int id = v.getId();
         if (id == R.id.iv_center_play) {
             play();
+        } else if (id == R.id.texture_view_container) {
+            if (!mStateDelegate.showBottomLayout()) {
+                play();
+            }
         } else if (id == R.id.iv_replay) {
             play();
         } else if (id == R.id.iv_play) {
@@ -192,7 +197,9 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         textureView = new DroidTextureView(mContext);
         textureView.setSurfaceTextureListener(this);
         textureView.setOnClickListener(v -> {
-            mStateDelegate.clickToShowBottomLayout();
+            if (!mStateDelegate.showBottomLayout()) {
+                play();
+            }
         });
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);

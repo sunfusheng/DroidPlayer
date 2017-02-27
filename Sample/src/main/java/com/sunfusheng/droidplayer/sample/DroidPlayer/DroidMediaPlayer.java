@@ -181,7 +181,10 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public void onCompletion(IMediaPlayer iMediaPlayer) {
-        release();
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
+        }
         if (mMediaPlayerListener != null) {
             mMediaPlayerListener.onCompletion();
         }
@@ -189,7 +192,10 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public boolean onError(IMediaPlayer iMediaPlayer, int what, int extra) {
-        release();
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
+        }
         if (mMediaPlayerListener != null) {
             mMediaPlayerListener.onError(what, extra);
         }

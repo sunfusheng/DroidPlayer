@@ -1,7 +1,8 @@
 package com.sunfusheng.droidplayer.sample.DroidPlayer.delegate;
 
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.IntDef;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,12 +35,6 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
 
     private static final String TAG = "----> StateDelegate";
 
-    public int state; // 当前视频状态
-    public boolean isShowBottomLayout;
-
-    public DroidProgressBarDelegate progressBarDelegate;
-    public DroidPlayerBottomLayoutDelegate bottomLayoutDelegate;
-
     public DroidPlayerView playView;
     public DroidTextureView textureView;
     public View fullScreenTransparentBg;
@@ -50,6 +45,29 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
     public TextView tvTipUp;
     public TextView tvTipDown;
     private LinearLayout llBottomLayout;
+
+    public int state; // 当前视频状态
+    public boolean isShowBottomLayout;
+
+    public DroidProgressBarDelegate progressBarDelegate;
+    public DroidPlayerBottomLayoutDelegate bottomLayoutDelegate;
+
+    private static final int TYPE_HIDE_BOTTOM_LAYOUT = 10000;
+    private static final int TIME_HIDE_BOTTOM_LAYOUT = 3000; // 3s
+
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case TYPE_HIDE_BOTTOM_LAYOUT:
+                    isShowBottomLayout = false;
+                    setVisible(true, bottomProgressBar);
+                    setVisible(false, llBottomLayout);
+                    break;
+            }
+        }
+    };
 
     public DroidPlayerViewStateDelegate(DroidPlayerView playView) {
         this.state = STATE.IDLE;
@@ -74,6 +92,8 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
         this.state = state;
         DroidMediaPlayer.getInstance().setState(state);
         bottomLayoutDelegate.setPlayingState(false);
+        hideAllViews();
+        isShowBottomLayout = false;
         switch (state) {
             case STATE.IDLE:
                 setIdleState();
@@ -96,35 +116,40 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
         }
     }
 
+    // 隐藏所有的Views
+    public void hideAllViews() {
+        setVisible(false, fullScreenTransparentBg, ivCenterPlay, llBottomLayout, loadingView, bottomProgressBar, tvTipUp, tvTipDown, ivReplay);
+    }
+
     // 空闲状态
     public void setIdleState() {
-        setVisible(true, fullScreenTransparentBg, ivCenterPlay, llBottomLayout);
-        setVisible(false, loadingView, bottomProgressBar, tvTipUp, tvTipDown, ivReplay);
+        setVisible(true, fullScreenTransparentBg, ivCenterPlay);
     }
 
     // 加载状态
     public void setLoadingState() {
         setVisible(true, fullScreenTransparentBg, loadingView, bottomProgressBar);
-        setVisible(false, ivCenterPlay, llBottomLayout, tvTipUp, tvTipDown, ivReplay);
     }
 
     // 播放状态
     public void setPlayingState() {
-        setVisible(true, bottomProgressBar);
-        setVisible(false, fullScreenTransparentBg, ivCenterPlay, loadingView, tvTipUp, tvTipDown, ivReplay);
+        setVisible(false, ivCenterPlay);
+        showBottomLayout();
         bottomLayoutDelegate.setPlayingState(true);
     }
 
     // 暂停状态
     public void setPauseState() {
+        if (mHandler.hasMessages(TYPE_HIDE_BOTTOM_LAYOUT)) {
+            mHandler.removeMessages(TYPE_HIDE_BOTTOM_LAYOUT);
+        }
+        isShowBottomLayout = true;
         setVisible(true, fullScreenTransparentBg, ivCenterPlay, llBottomLayout);
-        setVisible(false, loadingView, bottomProgressBar, tvTipUp, tvTipDown, ivReplay);
     }
 
     // 完成状态
     public void setCompleteState() {
         setVisible(true, fullScreenTransparentBg, tvTipDown, ivReplay);
-        setVisible(false, ivCenterPlay, loadingView, llBottomLayout, bottomProgressBar, tvTipUp);
         setText(tvTipDown, R.string.player_replay_tip);
         progressBarDelegate.init();
     }
@@ -132,7 +157,6 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
     // 错误状态
     public void setErrorState() {
         setVisible(true, fullScreenTransparentBg, tvTipDown, ivReplay);
-        setVisible(false, ivCenterPlay, loadingView, llBottomLayout, bottomProgressBar, tvTipUp);
         setText(tvTipDown, R.string.player_error_tip);
         progressBarDelegate.init();
     }
@@ -147,26 +171,23 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
         bottomLayoutDelegate.setLlBottomLayout(llBottomLayout);
     }
 
-    public void clickToShowBottomLayout() {
-        if (!isShowBottomLayout) {
-            isShowBottomLayout = true;
-            setVisible(true, fullScreenTransparentBg, llBottomLayout);
-            setVisible(false, ivCenterPlay, loadingView, bottomProgressBar, tvTipUp, tvTipDown, ivReplay);
-            Log.d("------", "1 isShowBottomLayout: "+isShowBottomLayout);
-            DroidMediaPlayer.getInstance().getHandler().postDelayed(() -> {
-                isShowBottomLayout = false;
-                setVisible(true, bottomProgressBar);
-                setVisible(false, fullScreenTransparentBg, llBottomLayout, ivCenterPlay, loadingView, tvTipUp, tvTipDown, ivReplay);
-                Log.d("------", "2 isShowBottomLayout: "+isShowBottomLayout);
-            }, 2000);
-        } else {
-            isShowBottomLayout = false;
-            setVisible(true, bottomProgressBar);
-            setVisible(false, fullScreenTransparentBg, llBottomLayout, ivCenterPlay, loadingView, tvTipUp, tvTipDown, ivReplay);
-            Log.d("------", "3 isShowBottomLayout: "+isShowBottomLayout);
-        }
+    public boolean showBottomLayout() {
+        if (isShowBottomLayout || mHandler.hasMessages(TYPE_HIDE_BOTTOM_LAYOUT)) return false;
+        if (!(state == STATE.LOADING || state == STATE.PLAYING)) return false;
+        isShowBottomLayout = true;
+        setVisible(true, llBottomLayout);
+        setVisible(false, bottomProgressBar);
+        mHandler.sendEmptyMessageDelayed(TYPE_HIDE_BOTTOM_LAYOUT, TIME_HIDE_BOTTOM_LAYOUT);
+        return true;
     }
 
+    public boolean hideBottomLayout() {
+        if (!isShowBottomLayout || mHandler.hasMessages(TYPE_HIDE_BOTTOM_LAYOUT)) return false;
+        mHandler.sendEmptyMessageDelayed(TYPE_HIDE_BOTTOM_LAYOUT, TIME_HIDE_BOTTOM_LAYOUT);
+        return true;
+    }
+
+    // 设置视频时长
     public void setDuration(long duration) {
         progressBarDelegate.setDuration(duration);
         bottomLayoutDelegate.setDuration(duration);
