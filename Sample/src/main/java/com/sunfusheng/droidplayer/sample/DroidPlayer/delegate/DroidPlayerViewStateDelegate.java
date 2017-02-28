@@ -39,17 +39,19 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
     public DroidTextureView textureView;
     public View fullScreenTransparentBg;
     public ProgressBar loadingView;
-    private ProgressBar bottomProgressBar;
     public ImageView ivCenterPlay;
     public ImageView ivReplay;
     public TextView tvTipUp;
     public TextView tvTipDown;
+    private ProgressBar bottomProgressBar;
     private LinearLayout llBottomLayout;
 
     public int state; // 当前视频状态
     public boolean isShowBottomLayout;
 
-    public DroidProgressBarDelegate progressBarDelegate;
+    public static final int TIME_DELAY = 1000; // 进度更新的时间延时
+    public static final int TIME_INTERVAL = 1000; // 进度更新的时间间隔
+
     public DroidPlayerBottomLayoutDelegate bottomLayoutDelegate;
 
     private static final int TYPE_HIDE_BOTTOM_LAYOUT = 10000;
@@ -72,19 +74,17 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
     public DroidPlayerViewStateDelegate(DroidPlayerView playView) {
         this.state = STATE.IDLE;
         this.playView = playView;
-        progressBarDelegate = new DroidProgressBarDelegate();
         bottomLayoutDelegate = new DroidPlayerBottomLayoutDelegate();
     }
 
     @Override
     public void init() {
-        progressBarDelegate.init();
         bottomLayoutDelegate.init();
     }
 
     @Override
     public void unInit() {
-        progressBarDelegate.unInit();
+        removeBottomLayoutMessage();
         bottomLayoutDelegate.unInit();
     }
 
@@ -151,19 +151,17 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
     public void setCompleteState() {
         setVisible(true, fullScreenTransparentBg, tvTipDown, ivReplay);
         setText(tvTipDown, R.string.player_replay_tip);
-        progressBarDelegate.init();
     }
 
     // 错误状态
     public void setErrorState() {
         setVisible(true, fullScreenTransparentBg, tvTipDown, ivReplay);
         setText(tvTipDown, R.string.player_error_tip);
-        progressBarDelegate.init();
     }
 
     public void setBottomProgressBar(ProgressBar progressBar) {
         this.bottomProgressBar = progressBar;
-        progressBarDelegate.setProgressBar(progressBar);
+        bottomLayoutDelegate.setProgressBar(progressBar);
     }
 
     public void setLlBottomLayout(LinearLayout llBottomLayout) {
@@ -172,30 +170,40 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
     }
 
     public boolean showBottomLayout() {
-        if (isShowBottomLayout || mHandler.hasMessages(TYPE_HIDE_BOTTOM_LAYOUT)) return false;
+        if (isShowBottomLayout) return false;
         if (!(state == STATE.LOADING || state == STATE.PLAYING)) return false;
         isShowBottomLayout = true;
+        addBottomLayoutMessage();
         setVisible(true, llBottomLayout);
         setVisible(false, bottomProgressBar);
-        mHandler.sendEmptyMessageDelayed(TYPE_HIDE_BOTTOM_LAYOUT, TIME_HIDE_BOTTOM_LAYOUT);
         return true;
     }
 
-    public boolean hideBottomLayout() {
-        if (!isShowBottomLayout || mHandler.hasMessages(TYPE_HIDE_BOTTOM_LAYOUT)) return false;
+    public void addBottomLayoutMessage() {
+        removeBottomLayoutMessage();
         mHandler.sendEmptyMessageDelayed(TYPE_HIDE_BOTTOM_LAYOUT, TIME_HIDE_BOTTOM_LAYOUT);
-        return true;
+    }
+
+    public void removeBottomLayoutMessage() {
+        if (mHandler.hasMessages(TYPE_HIDE_BOTTOM_LAYOUT)) {
+            mHandler.removeMessages(TYPE_HIDE_BOTTOM_LAYOUT);
+        }
     }
 
     // 设置视频时长
     public void setDuration(long duration) {
-        progressBarDelegate.setDuration(duration);
+        DroidMediaPlayer.getInstance().setDuration(duration);
         bottomLayoutDelegate.setDuration(duration);
+    }
+
+    // 设置当前播放位置
+    public void setCurrentPosition(long currentPosition) {
+        DroidMediaPlayer.getInstance().setCurrentPosition(currentPosition);
+        bottomLayoutDelegate.setCurrentPosition(currentPosition);
     }
 
     // 设置缓冲进度
     public void setBufferingProgress(int progress) {
-        progressBarDelegate.setBufferingProgress(progress);
         bottomLayoutDelegate.setBufferingProgress(progress);
     }
 

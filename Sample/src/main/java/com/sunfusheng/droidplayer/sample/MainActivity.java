@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         }
 
-        playerView.setDataSource(cat);
+        playerView.setDataSource(dibai);
 //        playerView.play(girl_dance);
 
         btnTest.setOnClickListener(v -> {

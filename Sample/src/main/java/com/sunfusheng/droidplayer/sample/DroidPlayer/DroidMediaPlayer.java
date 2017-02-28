@@ -27,16 +27,19 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     private static final String TAG = "----> MediaPlayer";
 
     private IjkMediaPlayer mMediaPlayer;
-
     private DroidMediaMediaPlayerListener mMediaPlayerListener;
-
     private Surface mSurface;
 
-    private int mState; // 视频状态
-    private boolean isPlaying; // 是否在播放中
+    protected String mUrl; // 地址
+    private String mTitle; // 名称
+    private int mVideoWidth; // 宽度
+    private int mVideoHeight; // 高度
+    protected long mDuration; // 时长，毫秒
+    protected long mCurrentPosition; // 当前播放位置，毫秒
 
-    private int mVideoWidth; // 视频宽度
-    private int mVideoHeight; // 视频高度
+    private int mState; // 播放器状态
+    private boolean isPlaying; // 是否在播放中
+    private boolean isPlayingWhenPause; // 暂停的时候是否在播放中
 
     private Handler mHandler = new Handler(Looper.getMainLooper());
 
@@ -53,14 +56,19 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     }
 
     private void init() {
-        initData();
+        this.mUrl = null;
+        this.mTitle = null;
+        this.mState = DroidPlayerViewStateDelegate.STATE.IDLE;
+        resetData();
     }
 
-    private void initData() {
-        this.mState = DroidPlayerViewStateDelegate.STATE.IDLE;
-        this.isPlaying = false;
+    private void resetData() {
         this.mVideoWidth = 0;
         this.mVideoHeight = 0;
+        this.mDuration = 0;
+        this.mCurrentPosition = 0;
+        this.isPlaying = false;
+        this.isPlayingWhenPause = false;
     }
 
     private void initPlayer(String url) throws Exception {
@@ -105,30 +113,29 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public void resume() {
-        if (mMediaPlayer != null && isPause()) {
+        if (mMediaPlayer != null && isPlayingWhenPause) {
+            isPlayingWhenPause = false;
             mMediaPlayer.start();
-        }
-        if (mMediaPlayerListener != null) {
-            mMediaPlayerListener.onVideoResume();
+            if (mMediaPlayerListener != null) {
+                mMediaPlayerListener.onVideoResume();
+            }
         }
     }
 
     @Override
     public void pause() {
+        isPlayingWhenPause = isPlaying();
         if (mMediaPlayer != null && isPlaying()) {
             mMediaPlayer.pause();
-        }
-        if (mMediaPlayerListener != null) {
-            mMediaPlayerListener.onVideoPause();
+            if (mMediaPlayerListener != null) {
+                mMediaPlayerListener.onVideoPause();
+            }
         }
     }
 
     @Override
     public void release() {
-        if (mMediaPlayer != null && mState != DroidPlayerViewStateDelegate.STATE.IDLE) {
-            mMediaPlayer.stop();
-            mMediaPlayer.release();
-        }
+        releaseMediaPlayer();
         if (mMediaPlayerListener != null) {
             mMediaPlayerListener.onVideoRelease();
         }
@@ -138,6 +145,13 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     public void reset() {
         if (mMediaPlayer != null) {
             mMediaPlayer.reset();
+        }
+    }
+
+    @Override
+    public void seekTo(long time) {
+        if (mMediaPlayer != null) {
+            mMediaPlayer.seekTo(time);
         }
     }
 
@@ -181,10 +195,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public void onCompletion(IMediaPlayer iMediaPlayer) {
-        if (mMediaPlayer != null) {
-            mMediaPlayer.stop();
-            mMediaPlayer.release();
-        }
+        releaseMediaPlayer();
         if (mMediaPlayerListener != null) {
             mMediaPlayerListener.onCompletion();
         }
@@ -192,14 +203,20 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public boolean onError(IMediaPlayer iMediaPlayer, int what, int extra) {
-        if (mMediaPlayer != null) {
-            mMediaPlayer.stop();
-            mMediaPlayer.release();
-        }
+        releaseMediaPlayer();
         if (mMediaPlayerListener != null) {
             mMediaPlayerListener.onError(what, extra);
         }
-        return false;
+        return true;
+    }
+
+    public void releaseMediaPlayer() {
+        resetData();
+        if (mMediaPlayer != null) {
+            mMediaPlayer.stop();
+            mMediaPlayer.release();
+            mMediaPlayer = null;
+        }
     }
 
     public IjkMediaPlayer getMediaPlayer() {
@@ -243,6 +260,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     }
 
     public boolean isPlaying() {
+        isPlaying = mState == DroidPlayerViewStateDelegate.STATE.PLAYING;
         return isPlaying;
     }
 
@@ -268,5 +286,37 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     public Handler getHandler() {
         return mHandler;
+    }
+
+    public String getUrl() {
+        return mUrl;
+    }
+
+    public void setUrl(String url) {
+        this.mUrl = url;
+    }
+
+    public String getTitle() {
+        return mTitle;
+    }
+
+    public void setTitle(String title) {
+        this.mTitle = title;
+    }
+
+    public long getDuration() {
+        return mDuration;
+    }
+
+    public void setDuration(long duration) {
+        this.mDuration = duration;
+    }
+
+    public long getCurrentPosition() {
+        return mCurrentPosition;
+    }
+
+    public void setCurrentPosition(long currentPosition) {
+        this.mCurrentPosition = currentPosition;
     }
 }

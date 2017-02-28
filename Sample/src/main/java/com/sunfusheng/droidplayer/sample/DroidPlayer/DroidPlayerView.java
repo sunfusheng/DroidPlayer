@@ -33,7 +33,8 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
 public class DroidPlayerView extends BasePlayerView implements View.OnClickListener,
         TextureView.SurfaceTextureListener,
         IDroidMediaPlayer,
-        DroidMediaMediaPlayerListener {
+        DroidMediaMediaPlayerListener,
+        SeekBar.OnSeekBarChangeListener {
 
     private static final String TAG = "----> PlayerView";
 
@@ -54,6 +55,8 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
 
     private DroidPlayerViewMeasureDelegate mMeasureDelegate;
     private DroidPlayerViewStateDelegate mStateDelegate;
+
+    private int preState; // 滑动SeekBar前，播放器状态
 
     public DroidPlayerView(@NonNull Context context) {
         this(context, null);
@@ -119,6 +122,7 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         ivCenterPlay.setOnClickListener(this);
         ivReplay.setOnClickListener(this);
         ivPlay.setOnClickListener(this);
+        sbCurrentProgress.setOnSeekBarChangeListener(this);
     }
 
     @Override
@@ -139,16 +143,21 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
 
     // 设置播放资源
     public boolean setDataSource(String url) {
-        return checkVideoUrl(url);
+        if (checkVideoUrl(url)) {
+            DroidMediaPlayer.getInstance().setUrl(url);
+            return true;
+        }
+        return false;
     }
 
     public boolean play() {
-        return play(mUrl);
+        return play(DroidMediaPlayer.getInstance().getUrl());
     }
 
     @Override
     public boolean play(String url) {
         if (!checkVideoUrl(url)) return false;
+        DroidMediaPlayer.getInstance().setUrl(url);
         if (isPlaying()) {
             pause();
             return true;
@@ -187,6 +196,11 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
     @Override
     public void reset() {
         DroidMediaPlayer.getInstance().reset();
+    }
+
+    @Override
+    public void seekTo(long time) {
+        DroidMediaPlayer.getInstance().seekTo(time);
     }
 
     // 添加视频显示层
@@ -265,15 +279,15 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
 
     @Override
     public boolean onInfo(IMediaPlayer mediaPlayer, int what, int extra) {
-        mDuration = mediaPlayer.getDuration();
-        mCurrentPosition = mediaPlayer.getCurrentPosition();
-        mStateDelegate.setDuration(mDuration);
+        mStateDelegate.setDuration(mediaPlayer.getDuration());
+        mStateDelegate.setCurrentPosition(mediaPlayer.getCurrentPosition());
+
         if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_START) {
             mStateDelegate.setState(DroidPlayerViewStateDelegate.STATE.LOADING);
         } else if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_END) {
-            mStateDelegate.setState(DroidPlayerViewStateDelegate.STATE.PLAYING);
+            mStateDelegate.setState(preState);
         }
-        Log.d(TAG, "onInfo() duration: " + mDuration + " what: " + what + " extra: " + extra);
+        Log.d(TAG, "onInfo() duration: " + mediaPlayer.getDuration() + " CurrentPosition: " + mediaPlayer.getCurrentPosition() + " what: " + what + " extra: " + extra);
         return true;
     }
 
@@ -338,4 +352,25 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         DroidMediaPlayer.getInstance().setMediaPlayerListener(null);
     }
 
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        Log.d("----->", "onStartTrackingTouch");
+        mStateDelegate.removeBottomLayoutMessage();
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        Log.d("----->", "onStopTrackingTouch");
+        if (mStateDelegate.state != DroidPlayerViewStateDelegate.STATE.IDLE) {
+            preState = mStateDelegate.state;
+            int time = (int) (seekBar.getProgress() * DroidMediaPlayer.getInstance().getDuration() / 100);
+            mStateDelegate.setCurrentPosition(time);
+            mStateDelegate.showBottomLayout();
+            seekTo(time);
+        }
+    }
 }

@@ -18,11 +18,6 @@ public class BasePlayerView extends RelativeLayout {
 
     protected Context mContext;
 
-    protected String mUrl;
-
-    protected long mDuration;
-    protected long mCurrentPosition;
-
     public BasePlayerView(@NonNull Context context) {
         this(context, null);
     }
@@ -42,12 +37,10 @@ public class BasePlayerView extends RelativeLayout {
     }
 
     private void initData() {
-        this.mDuration = 0;
-        this.mCurrentPosition = 0;
+
     }
 
     protected boolean checkVideoUrl(String url) {
-        this.mUrl = url;
         if (TextUtils.isEmpty(url)) {
             ToastUtil.show(mContext, R.string.player_invalid_url_tip);
             return false;

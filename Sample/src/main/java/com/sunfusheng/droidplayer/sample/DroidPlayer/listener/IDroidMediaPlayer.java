@@ -17,4 +17,6 @@ public interface IDroidMediaPlayer {
 
     void reset();
 
+    void seekTo(long time);
+
 }
