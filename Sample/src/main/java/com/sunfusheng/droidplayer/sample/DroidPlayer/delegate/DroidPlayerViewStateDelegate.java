@@ -3,7 +3,7 @@ package com.sunfusheng.droidplayer.sample.DroidPlayer.delegate;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.IntDef;
-import android.view.View;
+import android.text.TextUtils;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -37,16 +37,15 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
 
     public DroidPlayerView playView;
     public DroidTextureView textureView;
-    public View fullScreenTransparentBg;
     public ProgressBar loadingView;
     public ImageView ivCenterPlay;
     public ImageView ivReplay;
-    public TextView tvTipUp;
-    public TextView tvTipDown;
+    public TextView tvTitle;
+    public TextView tvTip;
     private ProgressBar bottomProgressBar;
     private LinearLayout llBottomLayout;
 
-    public int state; // 当前视频状态
+    public int state; // 播放器状态
     public boolean isShowBottomLayout;
 
     public static final int TIME_DELAY = 1000; // 进度更新的时间延时
@@ -66,6 +65,7 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
                     isShowBottomLayout = false;
                     setVisible(true, bottomProgressBar);
                     setVisible(false, llBottomLayout);
+                    setVisible(false, tvTitle);
                     break;
             }
         }
@@ -118,17 +118,19 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
 
     // 隐藏所有的Views
     public void hideAllViews() {
-        setVisible(false, fullScreenTransparentBg, ivCenterPlay, llBottomLayout, loadingView, bottomProgressBar, tvTipUp, tvTipDown, ivReplay);
+        setVisible(false, ivCenterPlay, llBottomLayout, loadingView, bottomProgressBar, tvTitle, tvTip, ivReplay);
     }
 
     // 空闲状态
     public void setIdleState() {
-        setVisible(true, fullScreenTransparentBg, ivCenterPlay);
+        setVisible(true, ivCenterPlay);
+        showTitle();
     }
 
     // 加载状态
     public void setLoadingState() {
-        setVisible(true, fullScreenTransparentBg, loadingView, bottomProgressBar);
+        setVisible(true, loadingView, bottomProgressBar);
+        showTitle();
     }
 
     // 播放状态
@@ -144,19 +146,22 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
             mHandler.removeMessages(TYPE_HIDE_BOTTOM_LAYOUT);
         }
         isShowBottomLayout = true;
-        setVisible(true, fullScreenTransparentBg, ivCenterPlay, llBottomLayout);
+        setVisible(true, ivCenterPlay, llBottomLayout);
+        showTitle();
     }
 
     // 完成状态
     public void setCompleteState() {
-        setVisible(true, fullScreenTransparentBg, tvTipDown, ivReplay);
-        setText(tvTipDown, R.string.player_replay_tip);
+        setVisible(true, tvTip, ivReplay);
+        setText(tvTip, R.string.player_replay_tip);
+        showTitle();
     }
 
     // 错误状态
     public void setErrorState() {
-        setVisible(true, fullScreenTransparentBg, tvTipDown, ivReplay);
-        setText(tvTipDown, R.string.player_error_tip);
+        setVisible(true, tvTip, ivReplay);
+        setText(tvTip, R.string.player_error_tip);
+        showTitle();
     }
 
     public void setBottomProgressBar(ProgressBar progressBar) {
@@ -169,6 +174,16 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
         bottomLayoutDelegate.setLlBottomLayout(llBottomLayout);
     }
 
+    public void setTitle(String title) {
+        setText(tvTitle, title);
+        DroidMediaPlayer.getInstance().setTitle(title);
+        setVisible(!TextUtils.isEmpty(title), tvTitle);
+    }
+
+    public void showTitle() {
+        setTitle(DroidMediaPlayer.getInstance().getTitle());
+    }
+
     public boolean showBottomLayout() {
         if (isShowBottomLayout) return false;
         if (!(state == STATE.LOADING || state == STATE.PLAYING)) return false;
@@ -176,6 +191,7 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
         addBottomLayoutMessage();
         setVisible(true, llBottomLayout);
         setVisible(false, bottomProgressBar);
+        showTitle();
         return true;
     }
 

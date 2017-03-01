@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <color name="player_text_color">#ccfbfbfb</color>
+    <color name="player_text_color">#fbfbfb</color>
     <color name="player_red_color">#DD3A38</color>
 
     <color name="player_progress_bg_color">#4dfbfbfb</color>

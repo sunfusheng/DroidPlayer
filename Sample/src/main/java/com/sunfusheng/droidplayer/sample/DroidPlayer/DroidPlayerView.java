@@ -1,5 +1,6 @@
 package com.sunfusheng.droidplayer.sample.DroidPlayer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.support.annotation.AttrRes;
@@ -12,6 +13,7 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -40,13 +42,12 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
 
     private RelativeLayout textureViewContainer;
     private DroidTextureView textureView;
-    private View fullScreenTransparentBg;
     private ProgressBar loadingView;
     private ProgressBar bottomProgressBar;
     private ImageView ivCenterPlay;
     public ImageView ivReplay;
-    public TextView tvTipUp;
-    public TextView tvTipDown;
+    public TextView tvTitle;
+    public TextView tvTip;
     public LinearLayout llBottomLayout;
     public ImageView ivPlay;
     public TextView tvCurrentPosition;
@@ -81,13 +82,12 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.layout_video_base, this);
         textureViewContainer = (RelativeLayout) view.findViewById(R.id.texture_view_container);
-        fullScreenTransparentBg = view.findViewById(R.id.full_screen_transparent_bg);
         ivCenterPlay = (ImageView) view.findViewById(R.id.iv_center_play);
         loadingView = (ProgressBar) view.findViewById(R.id.loading_view);
         bottomProgressBar = (ProgressBar) view.findViewById(R.id.bottom_progress_bar);
         ivReplay = (ImageView) view.findViewById(R.id.iv_replay);
-        tvTipUp = (TextView) view.findViewById(R.id.tv_tip_up);
-        tvTipDown = (TextView) view.findViewById(R.id.tv_tip_down);
+        tvTitle = (TextView) view.findViewById(R.id.tv_title);
+        tvTip = (TextView) view.findViewById(R.id.tv_tip);
         llBottomLayout = (LinearLayout) view.findViewById(R.id.ll_bottom_layout);
         ivPlay = (ImageView) view.findViewById(R.id.iv_play);
         tvCurrentPosition = (TextView) view.findViewById(R.id.tv_current_position);
@@ -99,13 +99,12 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
 
     private void initStateDelegate() {
         mStateDelegate = new DroidPlayerViewStateDelegate(this);
-        mStateDelegate.fullScreenTransparentBg = fullScreenTransparentBg;
         mStateDelegate.ivCenterPlay = ivCenterPlay;
         mStateDelegate.loadingView = loadingView;
         mStateDelegate.setBottomProgressBar(bottomProgressBar);
         mStateDelegate.ivReplay = ivReplay;
-        mStateDelegate.tvTipUp = tvTipUp;
-        mStateDelegate.tvTipDown = tvTipDown;
+        mStateDelegate.tvTitle = tvTitle;
+        mStateDelegate.tvTip = tvTip;
         mStateDelegate.setLlBottomLayout(llBottomLayout);
 
         mStateDelegate.setState(DroidPlayerViewStateDelegate.STATE.IDLE);
@@ -118,7 +117,6 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
     }
 
     private void initListener() {
-        textureViewContainer.setOnClickListener(this);
         ivCenterPlay.setOnClickListener(this);
         ivReplay.setOnClickListener(this);
         ivPlay.setOnClickListener(this);
@@ -130,10 +128,6 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         int id = v.getId();
         if (id == R.id.iv_center_play) {
             play();
-        } else if (id == R.id.texture_view_container) {
-            if (!mStateDelegate.showBottomLayout()) {
-                play();
-            }
         } else if (id == R.id.iv_replay) {
             play();
         } else if (id == R.id.iv_play) {
@@ -141,13 +135,16 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         }
     }
 
-    // 设置播放资源
-    public boolean setDataSource(String url) {
+    // 设置视频标题
+    public void setVideoTitle(String title) {
+        mStateDelegate.setTitle(title);
+    }
+
+    // 设置视频地址
+    public void setVideoUrl(String url) {
         if (checkVideoUrl(url)) {
             DroidMediaPlayer.getInstance().setUrl(url);
-            return true;
         }
-        return false;
     }
 
     public boolean play() {
@@ -211,9 +208,7 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         textureView = new DroidTextureView(mContext);
         textureView.setSurfaceTextureListener(this);
         textureView.setOnClickListener(v -> {
-            if (!mStateDelegate.showBottomLayout()) {
-                play();
-            }
+            mStateDelegate.showBottomLayout();
         });
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -242,6 +237,14 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
 
     public boolean isPause() {
         return DroidMediaPlayer.getInstance().getState() == DroidPlayerViewStateDelegate.STATE.PAUSE;
+    }
+
+    public void addScreenOnFlag() {
+        ((Activity) getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    public void clearScreenOnFlag() {
+        ((Activity) getContext()).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     //*******************************************************
@@ -274,6 +277,7 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
     @Override
     public void onPrepared() {
         Log.d(TAG, "onPrepared()");
+        addScreenOnFlag();
         mStateDelegate.setState(DroidPlayerViewStateDelegate.STATE.PLAYING);
     }
 
@@ -312,12 +316,14 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
     @Override
     public void onCompletion() {
         Log.d(TAG, "onCompletion()");
+        clearScreenOnFlag();
         mStateDelegate.setState(DroidPlayerViewStateDelegate.STATE.COMPLETE);
     }
 
     @Override
     public boolean onError(int what, int extra) {
         Log.e(TAG, "onError() what: " + what + " extra: " + extra);
+        clearScreenOnFlag();
         mStateDelegate.setState(DroidPlayerViewStateDelegate.STATE.ERROR);
         return false;
     }
@@ -347,6 +353,7 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
     @Override
     public void onVideoRelease() {
         Log.d(TAG, "onVideoRelease()");
+        clearScreenOnFlag();
         mStateDelegate.setState(DroidPlayerViewStateDelegate.STATE.IDLE);
         mStateDelegate.unInit();
         DroidMediaPlayer.getInstance().setMediaPlayerListener(null);
