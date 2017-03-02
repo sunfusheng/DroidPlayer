@@ -10,7 +10,7 @@ import android.widget.TextView;
 /**
  * Created by sunfusheng on 2017/2/25.
  */
-public class DroidBaseViewDelegate {
+public class BaseViewDelegate {
 
     public void setVisible(boolean isVisible, View... views) {
         if (views == null || views.length == 0) return;

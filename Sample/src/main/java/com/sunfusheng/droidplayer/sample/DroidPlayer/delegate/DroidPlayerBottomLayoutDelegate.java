@@ -19,7 +19,7 @@ import static com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayer
 /**
  * Created by sunfusheng on 2017/2/24.
  */
-public class DroidPlayerBottomLayoutDelegate extends DroidBaseViewDelegate implements IBaseDelegate {
+public class DroidPlayerBottomLayoutDelegate extends BaseViewDelegate implements IViewDelegate {
 
     private WeakReference<ProgressBar> progressBar;
     private WeakReference<LinearLayout> llBottomLayout;

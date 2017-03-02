@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 /**
  * Created by sunfusheng on 2017/1/16.
  */
-public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implements IBaseDelegate {
+public class DroidPlayerViewStateDelegate extends BaseViewDelegate implements IViewDelegate {
 
     @IntDef({STATE.IDLE, STATE.LOADING, STATE.PLAYING, STATE.PAUSE, STATE.COMPLETE, STATE.ERROR})
     @Retention(RetentionPolicy.SOURCE)
