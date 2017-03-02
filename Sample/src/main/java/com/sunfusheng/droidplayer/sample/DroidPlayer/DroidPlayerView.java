@@ -1,6 +1,5 @@
 package com.sunfusheng.droidplayer.sample.DroidPlayer;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.SurfaceTexture;
 import android.support.annotation.AttrRes;
@@ -13,7 +12,6 @@ import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -42,6 +40,7 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
 
     private RelativeLayout textureViewContainer;
     private DroidTextureView textureView;
+    private ImageView ivCoverImage;
     private ProgressBar loadingView;
     private ProgressBar bottomProgressBar;
     private ImageView ivCenterPlay;
@@ -81,7 +80,9 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
     private void initView() {
         LayoutInflater inflater = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.layout_video_base, this);
+
         textureViewContainer = (RelativeLayout) view.findViewById(R.id.texture_view_container);
+        ivCoverImage = (ImageView) view.findViewById(R.id.iv_cover_image);
         ivCenterPlay = (ImageView) view.findViewById(R.id.iv_center_play);
         loadingView = (ProgressBar) view.findViewById(R.id.loading_view);
         bottomProgressBar = (ProgressBar) view.findViewById(R.id.bottom_progress_bar);
@@ -99,6 +100,7 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
 
     private void initStateDelegate() {
         mStateDelegate = new DroidPlayerViewStateDelegate(this);
+        mStateDelegate.ivCoverImage = ivCoverImage;
         mStateDelegate.ivCenterPlay = ivCenterPlay;
         mStateDelegate.loadingView = loadingView;
         mStateDelegate.setBottomProgressBar(bottomProgressBar);
@@ -145,6 +147,16 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         if (checkVideoUrl(url)) {
             DroidMediaPlayer.getInstance().setUrl(url);
         }
+    }
+
+    // 设置封面图片
+    public void setImageUrl(String url) {
+        loadNetImage(ivCoverImage, url);
+    }
+
+    // 设置宽高比
+    public void setRatio(int widthRatio, int heightRatio) {
+        mMeasureDelegate.setRatio(widthRatio, heightRatio);
     }
 
     public boolean play() {
@@ -217,11 +229,6 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         mStateDelegate.textureView = textureView;
     }
 
-    // 设置宽高比
-    public void setRatio(int widthRatio, int heightRatio) {
-        mMeasureDelegate.setRatio(widthRatio, heightRatio);
-    }
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -229,22 +236,6 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
             setMeasuredDimension(mMeasureDelegate.getPlayerWidth(), mMeasureDelegate.getPlayerHeight());
             mMeasureDelegate.measureChild();
         }
-    }
-
-    public boolean isPlaying() {
-        return DroidMediaPlayer.getInstance().isPlaying();
-    }
-
-    public boolean isPause() {
-        return DroidMediaPlayer.getInstance().getState() == DroidPlayerViewStateDelegate.STATE.PAUSE;
-    }
-
-    public void addScreenOnFlag() {
-        ((Activity) getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-    }
-
-    public void clearScreenOnFlag() {
-        ((Activity) getContext()).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     //*******************************************************
@@ -365,13 +356,11 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
 
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
-        Log.d("----->", "onStartTrackingTouch");
         mStateDelegate.removeBottomLayoutMessage();
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
-        Log.d("----->", "onStopTrackingTouch");
         if (mStateDelegate.state != DroidPlayerViewStateDelegate.STATE.IDLE) {
             preState = mStateDelegate.state;
             int time = (int) (seekBar.getProgress() * DroidMediaPlayer.getInstance().getDuration() / 100);

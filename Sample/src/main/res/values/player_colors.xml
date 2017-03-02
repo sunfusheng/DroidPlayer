@@ -8,7 +8,7 @@
     <color name="player_progress_color">#ccfbfbfb</color>
     <color name="player_progress_red_color">#ccDD3A38</color>
 
-    <color name="player_transparent00_color">#00000000</color>
+    <color name="player_transparent">#00000000</color>
     <color name="player_transparent30_color">#4D000000</color>
     <color name="player_transparent40_color">#66000000</color>
     <color name="player_transparent50_color">#80000000</color>

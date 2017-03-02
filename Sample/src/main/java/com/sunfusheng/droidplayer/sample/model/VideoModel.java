@@ -8,18 +8,17 @@ public class VideoModel {
     public String title;
     public String image_url;
     public String video_url;
+    public String size;
+    public String duration;
 
     public VideoModel() {
     }
 
-    public VideoModel(String title, String video_url) {
+    public VideoModel(String title, String video_url, String image_url, String size, String duration) {
         this.title = title;
         this.video_url = video_url;
-    }
-
-    public VideoModel(String title, String image_url, String video_url) {
-        this.title = title;
         this.image_url = image_url;
-        this.video_url = video_url;
+        this.size = size;
+        this.duration = duration;
     }
 }

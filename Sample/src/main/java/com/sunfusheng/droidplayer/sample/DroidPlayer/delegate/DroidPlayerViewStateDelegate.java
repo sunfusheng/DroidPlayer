@@ -37,6 +37,7 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
 
     public DroidPlayerView playView;
     public DroidTextureView textureView;
+    public ImageView ivCoverImage;
     public ProgressBar loadingView;
     public ImageView ivCenterPlay;
     public ImageView ivReplay;
@@ -118,17 +119,20 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
 
     // 隐藏所有的Views
     public void hideAllViews() {
-        setVisible(false, ivCenterPlay, llBottomLayout, loadingView, bottomProgressBar, tvTitle, tvTip, ivReplay);
+        setVisible(false, ivCoverImage, ivCenterPlay, llBottomLayout, loadingView, bottomProgressBar, tvTitle, tvTip, ivReplay);
     }
 
     // 空闲状态
     public void setIdleState() {
-        setVisible(true, ivCenterPlay);
+        setVisible(true, ivCoverImage, ivCenterPlay);
         showTitle();
     }
 
     // 加载状态
     public void setLoadingState() {
+        if (DroidMediaPlayer.getInstance().getCurrentPosition() <= 0) {
+            setVisible(true, ivCoverImage);
+        }
         setVisible(true, loadingView, bottomProgressBar);
         showTitle();
     }
@@ -152,14 +156,14 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
 
     // 完成状态
     public void setCompleteState() {
-        setVisible(true, tvTip, ivReplay);
+        setVisible(true, ivCoverImage, tvTip, ivReplay);
         setText(tvTip, R.string.player_replay_tip);
         showTitle();
     }
 
     // 错误状态
     public void setErrorState() {
-        setVisible(true, tvTip, ivReplay);
+        setVisible(true, ivCoverImage, tvTip, ivReplay);
         setText(tvTip, R.string.player_error_tip);
         showTitle();
     }

@@ -1,13 +1,19 @@
 package com.sunfusheng.droidplayer.sample.DroidPlayer;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.view.WindowManager;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerViewStateDelegate;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.util.ToastUtil;
 import com.sunfusheng.droidplayer.sample.R;
 
@@ -46,6 +52,33 @@ public class BasePlayerView extends RelativeLayout {
             return false;
         }
         return true;
+    }
+
+    public void loadNetImage(ImageView imageView, String url) {
+        if (imageView == null || TextUtils.isEmpty(url)) return;
+        Glide.with(getContext())
+                .load(url)
+                .crossFade()
+                .fallback(R.color.player_transparent)
+                .error(R.color.player_transparent)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(imageView);
+    }
+
+    public boolean isPlaying() {
+        return DroidMediaPlayer.getInstance().isPlaying();
+    }
+
+    public boolean isPause() {
+        return DroidMediaPlayer.getInstance().getState() == DroidPlayerViewStateDelegate.STATE.PAUSE;
+    }
+
+    public void addScreenOnFlag() {
+        ((Activity) getContext()).getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    public void clearScreenOnFlag() {
+        ((Activity) getContext()).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
 }

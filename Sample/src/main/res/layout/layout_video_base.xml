@@ -11,6 +11,13 @@
         android:layout_height="match_parent"
         android:gravity="center"/>
 
+    <ImageView
+        android:id="@+id/iv_cover_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@null"
+        android:scaleType="centerCrop"/>
+
     <TextView
         android:id="@+id/tv_title"
         android:layout_width="match_parent"

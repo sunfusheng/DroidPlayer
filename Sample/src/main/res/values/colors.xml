@@ -17,7 +17,7 @@
     <color name="black">#000000</color>  <!-- 黑色 -->
 
     <!-- common -->
-    <color name="transparent00_color">#00000000</color>
+    <color name="transparent">#00000000</color>
     <color name="transparent30_color">#4D000000</color>
     <color name="transparent40_color">#66000000</color>
     <color name="transparent50_color">#80000000</color>

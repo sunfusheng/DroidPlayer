@@ -17,12 +17,11 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
-    <Button
-        android:id="@+id/btn_test"
+    <ListView
+        android:id="@+id/listView"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_margin="15dp"
-        android:text="测试点击"
-        android:visibility="invisible"/>
+        android:layout_height="match_parent"
+        android:dividerHeight="1px"
+        android:divider="@color/color5"/>
 
 </LinearLayout>
