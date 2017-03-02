@@ -6,7 +6,7 @@ import android.os.Looper;
 import android.view.Surface;
 
 import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerViewStateDelegate;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidMediaMediaPlayerListener;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidMediaPlayerListener;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidMediaPlayer;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
@@ -27,19 +27,20 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     private static final String TAG = "----> MediaPlayer";
 
     private IjkMediaPlayer mMediaPlayer;
-    private DroidMediaMediaPlayerListener mMediaPlayerListener;
+    private DroidMediaPlayerListener mMediaPlayerListener;
     private Surface mSurface;
 
-    protected String mUrl; // 地址
     private String mTitle; // 名称
+    private String mVideoUrl; // 视频地址
+    private String mImageUrl; // 图片地址
     private int mVideoWidth; // 宽度
     private int mVideoHeight; // 高度
-    protected long mDuration; // 时长，毫秒
-    protected long mCurrentPosition; // 当前播放位置，毫秒
+    private long mDuration; // 时长，毫秒
+    private long mCurrentPosition; // 当前播放位置，毫秒
 
     private int mState; // 播放器状态
     private boolean isPlaying; // 是否在播放中
-    private boolean isPlayingWhenPause; // 暂停的时候是否在播放中
+    private boolean isPausedWhenPlaying; // 当播放中是否被暂停
 
     private Handler mHandler = new Handler(Looper.getMainLooper());
 
@@ -56,8 +57,9 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     }
 
     private void init() {
-        this.mUrl = null;
         this.mTitle = null;
+        this.mVideoUrl = null;
+        this.mImageUrl = null;
         this.mState = DroidPlayerViewStateDelegate.STATE.IDLE;
         resetData();
     }
@@ -68,7 +70,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         this.mDuration = 0;
         this.mCurrentPosition = 0;
         this.isPlaying = false;
-        this.isPlayingWhenPause = false;
+        this.isPausedWhenPlaying = false;
     }
 
     private void initPlayer(String url) throws Exception {
@@ -113,23 +115,27 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public void resume() {
-        if (mMediaPlayer != null && isPlayingWhenPause) {
-            isPlayingWhenPause = false;
-            mMediaPlayer.start();
-            if (mMediaPlayerListener != null) {
-                mMediaPlayerListener.onVideoResume();
+        if (mMediaPlayer != null) {
+            if (isPausedWhenPlaying) {
+                mMediaPlayer.start();
             }
         }
+        if (mMediaPlayerListener != null) {
+            mMediaPlayerListener.onVideoResume();
+        }
+        isPausedWhenPlaying = false;
     }
 
     @Override
     public void pause() {
-        isPlayingWhenPause = isPlaying();
-        if (mMediaPlayer != null && isPlaying()) {
-            mMediaPlayer.pause();
-            if (mMediaPlayerListener != null) {
-                mMediaPlayerListener.onVideoPause();
+        isPausedWhenPlaying = isPlaying();
+        if (mMediaPlayer != null) {
+            if (isPlaying()) {
+                mMediaPlayer.pause();
             }
+        }
+        if (mMediaPlayerListener != null) {
+            mMediaPlayerListener.onVideoPause();
         }
     }
 
@@ -227,11 +233,11 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         this.mMediaPlayer = mediaPlayer;
     }
 
-    public DroidMediaMediaPlayerListener getMediaPlayerListener() {
+    public DroidMediaPlayerListener getMediaPlayerListener() {
         return mMediaPlayerListener;
     }
 
-    public void setMediaPlayerListener(DroidMediaMediaPlayerListener mediaPlayerListener) {
+    public void setMediaPlayerListener(DroidMediaPlayerListener mediaPlayerListener) {
         this.mMediaPlayerListener = mediaPlayerListener;
     }
 
@@ -268,6 +274,10 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         isPlaying = playing;
     }
 
+    public boolean isPausedWhenPlaying() {
+        return isPausedWhenPlaying;
+    }
+
     public int getVideoWidth() {
         return mVideoWidth;
     }
@@ -288,20 +298,28 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         return mHandler;
     }
 
-    public String getUrl() {
-        return mUrl;
-    }
-
-    public void setUrl(String url) {
-        this.mUrl = url;
-    }
-
     public String getTitle() {
         return mTitle;
     }
 
     public void setTitle(String title) {
         this.mTitle = title;
+    }
+
+    public String getVideoUrl() {
+        return mVideoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.mVideoUrl = videoUrl;
+    }
+
+    public String getImageUrl() {
+        return mImageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.mImageUrl = imageUrl;
     }
 
     public long getDuration() {

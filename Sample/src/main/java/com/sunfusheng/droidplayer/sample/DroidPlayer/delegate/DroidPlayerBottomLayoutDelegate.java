@@ -7,7 +7,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.util.TimeUtil;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.util.PlayerUtil;
 import com.sunfusheng.droidplayer.sample.R;
 
 import java.lang.ref.WeakReference;
@@ -53,9 +53,8 @@ public class DroidPlayerBottomLayoutDelegate extends DroidBaseViewDelegate imple
 
     @Override
     public void init() {
-        mLastBufferingProgress = 0;
         if (sbCurrentProgress != null) {
-            setText(tvCurrentPosition, TimeUtil.getTimeString(0));
+            setText(tvCurrentPosition, PlayerUtil.getTimeString(0));
             sbCurrentProgress.setSecondaryProgress(0);
             sbCurrentProgress.setProgress(0);
         }
@@ -68,6 +67,7 @@ public class DroidPlayerBottomLayoutDelegate extends DroidBaseViewDelegate imple
     }
 
     public void startTimer() {
+        mLastBufferingProgress = 0;
         cancelTimer();
         mTimer = new Timer();
         mTimerTask = new ProgressTimerTask();
@@ -75,6 +75,7 @@ public class DroidPlayerBottomLayoutDelegate extends DroidBaseViewDelegate imple
     }
 
     public void cancelTimer() {
+        mLastBufferingProgress = 0;
         if (mTimer != null) {
             mTimer.cancel();
             mTimer = null;
@@ -100,7 +101,7 @@ public class DroidPlayerBottomLayoutDelegate extends DroidBaseViewDelegate imple
     }
 
     public void setDuration(long duration) {
-        setText(tvDuration, TimeUtil.getTimeString(duration));
+        setText(tvDuration, PlayerUtil.getTimeString(duration));
     }
 
     public void setPlayingState(boolean isPlaying) {
@@ -129,7 +130,7 @@ public class DroidPlayerBottomLayoutDelegate extends DroidBaseViewDelegate imple
         if (currentPosition > duration) currentPosition = duration;
         DroidMediaPlayer.getInstance().setCurrentPosition(currentPosition);
 
-        setText(tvCurrentPosition, TimeUtil.getTimeString(currentPosition));
+        setText(tvCurrentPosition, PlayerUtil.getTimeString(currentPosition));
 
         int progress = (int) (currentPosition * 100f / duration);
         if (progress > 100) progress = 100;

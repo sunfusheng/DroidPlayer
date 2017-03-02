@@ -40,4 +40,12 @@ public class DroidTextureView extends TextureView {
         setMeasuredDimension(mMeasureDelegate.getMeasureWidth(), mMeasureDelegate.getMeasureHeight());
     }
 
+    public int getMeasureWidth() {
+        return mMeasureDelegate.getMeasureWidth();
+    }
+
+    public int getMeasureHeight() {
+        return mMeasureDelegate.getMeasureHeight();
+    }
+
 }

@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.widget.ListView;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
 import com.sunfusheng.droidplayer.sample.adapter.VideoAdapter;
 import com.sunfusheng.droidplayer.sample.model.VideoModel;
@@ -58,19 +57,19 @@ public class MainActivity extends BaseActivity {
 
     @Override
     protected void onResume() {
-        DroidMediaPlayer.getInstance().resume();
+        playerView.resume();
         super.onResume();
     }
 
     @Override
     protected void onPause() {
-        DroidMediaPlayer.getInstance().pause();
+        playerView.pause();
         super.onPause();
     }
 
     @Override
     protected void onDestroy() {
-        DroidMediaPlayer.getInstance().release();
+        playerView.release();
         super.onDestroy();
     }
 }

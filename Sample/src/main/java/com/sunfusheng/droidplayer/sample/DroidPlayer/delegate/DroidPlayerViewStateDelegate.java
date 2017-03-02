@@ -4,11 +4,15 @@ import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.IntDef;
 import android.text.TextUtils;
+import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidTextureView;
@@ -95,23 +99,29 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
         bottomLayoutDelegate.setPlayingState(false);
         hideAllViews();
         isShowBottomLayout = false;
-        switch (state) {
+       switch (state) {
             case STATE.IDLE:
+                Log.d(TAG, "STATE IDLE");
                 setIdleState();
                 break;
             case STATE.LOADING:
+                Log.d(TAG, "STATE LOADING");
                 setLoadingState();
                 break;
             case STATE.PLAYING:
+                Log.d(TAG, "STATE PLAYING");
                 setPlayingState();
                 break;
             case STATE.PAUSE:
+                Log.d(TAG, "STATE PAUSE");
                 setPauseState();
                 break;
             case STATE.COMPLETE:
+                Log.d(TAG, "STATE COMPLETE");
                 setCompleteState();
                 break;
             case STATE.ERROR:
+                Log.d(TAG, "STATE ERROR");
                 setErrorState();
                 break;
         }
@@ -225,6 +235,23 @@ public class DroidPlayerViewStateDelegate extends DroidBaseViewDelegate implemen
     // 设置缓冲进度
     public void setBufferingProgress(int progress) {
         bottomLayoutDelegate.setBufferingProgress(progress);
+    }
+
+    // 显示封面图片
+    public void showCoverImage(String url) {
+        if (ivCoverImage == null) return;
+        if (TextUtils.isEmpty(url)) {
+            ivCoverImage.setVisibility(View.INVISIBLE);
+            return;
+        }
+        ivCoverImage.setVisibility(View.VISIBLE);
+        Glide.with(ivCoverImage.getContext())
+                .load(url)
+                .crossFade()
+                .fallback(R.color.player_transparent)
+                .error(R.color.player_transparent)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(ivCoverImage);
     }
 
 }

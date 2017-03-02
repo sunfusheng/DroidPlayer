@@ -5,7 +5,7 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
 /**
  * Created by sunfusheng on 2017/2/21.
  */
-public interface DroidMediaMediaPlayerListener {
+public interface DroidMediaPlayerListener {
 
     void onPrepared();
 

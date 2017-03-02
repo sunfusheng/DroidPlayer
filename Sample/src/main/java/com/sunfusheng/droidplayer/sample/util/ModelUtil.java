@@ -72,7 +72,7 @@ public class ModelUtil {
         list.add(new VideoModel("从蛋壳里出来的喵星人", video_url_3, image_url_3, "2.79MB", "00:46"));
         list.add(new VideoModel("众神之国尼泊尔", video_url_4, image_url_4, "38.37MB", "02:26"));
         list.add(new VideoModel("喷气翼人与飞机的空中芭蕾", video_url_5, image_url_5, "42.63MB", "03:27"));
-        list.add(new VideoModel("墨西哥，不可思议", video_url_6, image_url_6, "61.37", "03:38"));
+        list.add(new VideoModel("墨西哥，不可思议", video_url_6, image_url_6, "61.37MB", "03:38"));
         list.add(new VideoModel("工业废墟上的竞速飘移", video_url_7, image_url_7, "106.33MB", "08:11"));
         list.add(new VideoModel("性感美女热舞", video_url_8, image_url_8, "28.23MB", "03:08"));
         list.add(new VideoModel("挪威的四季", video_url_9, image_url_9, "57.37MB", "06:52"));
