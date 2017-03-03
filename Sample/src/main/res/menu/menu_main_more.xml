@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:id="@+id/group_more">
+        <item
+            android:id="@+id/item_main"
+            android:checkable="true"
+            android:checked="true"
+            android:title="Main"/>
+
+        <item
+            android:id="@+id/item_sample"
+            android:checked="false"
+            android:title="Sample"/>
+
+        <item
+            android:id="@+id/item_list"
+            android:checked="false"
+            android:title="List"/>
+
+        <item
+            android:id="@+id/item_recycler_view"
+            android:checked="false"
+            android:title="RecyclerView"/>
+
+        <item
+            android:id="@+id/item_about"
+            android:checked="false"
+            android:title="About"/>
+    </group>
+
+</menu>
