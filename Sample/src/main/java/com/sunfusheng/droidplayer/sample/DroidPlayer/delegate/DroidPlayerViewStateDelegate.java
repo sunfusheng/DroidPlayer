@@ -70,7 +70,7 @@ public class DroidPlayerViewStateDelegate extends BaseViewDelegate implements IV
                     isShowBottomLayout = false;
                     setVisible(true, bottomProgressBar);
                     setVisible(false, llBottomLayout);
-                    setVisible(false, tvTitle);
+                    setVisible(state == STATE.LOADING, tvTitle);
                     break;
             }
         }
@@ -200,7 +200,7 @@ public class DroidPlayerViewStateDelegate extends BaseViewDelegate implements IV
 
     public boolean showBottomLayout() {
         if (isShowBottomLayout) return false;
-        if (!(state == STATE.LOADING || state == STATE.PLAYING)) return false;
+        if (state != STATE.PLAYING) return false;
         isShowBottomLayout = true;
         addBottomLayoutMessage();
         setVisible(true, llBottomLayout);

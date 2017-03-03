@@ -40,11 +40,13 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
     private static final String TAG = "----> PlayerView";
 
     private RelativeLayout textureViewContainer;
-    private DroidTextureView textureView;
-    private ImageView ivCoverImage;
-    private ProgressBar loadingView;
-    private ProgressBar bottomProgressBar;
-    private ImageView ivCenterPlay;
+    protected DroidTextureView droidTextureView;
+    protected DroidImageView droidImageView;
+
+    public ProgressBar loadingView;
+    public ProgressBar bottomProgressBar;
+    public ImageView ivCoverImage;
+    public ImageView ivCenterPlay;
     public ImageView ivReplay;
     public TextView tvTitle;
     public TextView tvTip;
@@ -60,7 +62,7 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
     private boolean fromUser; // 是否是用户滑动SeekBar
     private int preState; // 滑动SeekBar前，播放器状态
     private Bitmap mCaptureBitmap; // 暂停时抓拍的Bitmap
-    private long mCapturePosition; // 暂停时抓拍的位置
+    private long mCapturePosition; // 暂停抓拍时的播放位置
 
     public DroidPlayerView(@NonNull Context context) {
         this(context, null);
@@ -104,7 +106,9 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
 
     private void initStateDelegate() {
         mStateDelegate = new DroidPlayerViewStateDelegate(this);
+        mStateDelegate.textureView = droidTextureView;
         mStateDelegate.ivCoverImage = ivCoverImage;
+
         mStateDelegate.ivCenterPlay = ivCenterPlay;
         mStateDelegate.loadingView = loadingView;
         mStateDelegate.setBottomProgressBar(bottomProgressBar);
@@ -170,6 +174,9 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
     public boolean play(String url) {
         if (!checkVideoUrl(url)) return false;
         DroidMediaPlayer.getInstance().setVideoUrl(url);
+        if (droidImageView != null) {
+            droidImageView.setVisibility(GONE);
+        }
         if (isPlaying()) {
             pause();
             return true;
@@ -219,16 +226,19 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         if (textureViewContainer.getChildCount() > 0) {
             textureViewContainer.removeAllViews();
         }
-        textureView = new DroidTextureView(mContext);
-        textureView.setSurfaceTextureListener(this);
-        textureView.setOnClickListener(v -> {
-            mStateDelegate.showBottomLayout();
-        });
 
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
-        textureViewContainer.addView(textureView, layoutParams);
-        mStateDelegate.textureView = textureView;
+
+        droidTextureView = new DroidTextureView(mContext);
+        droidTextureView.setSurfaceTextureListener(this);
+        droidTextureView.setOnClickListener(v -> {
+            mStateDelegate.showBottomLayout();
+        });
+        textureViewContainer.addView(droidTextureView, layoutParams);
+        droidImageView = new DroidImageView(mContext);
+        textureViewContainer.addView(droidImageView, layoutParams);
+        mStateDelegate.textureView = droidTextureView;
     }
 
     @Override
@@ -246,8 +256,8 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        DroidMediaPlayer.getInstance().setSurface(new Surface(surface));
         Log.d(TAG, "onSurfaceTextureAvailable() width: " + width + " height: " + height);
+        DroidMediaPlayer.getInstance().setSurface(new Surface(surface));
     }
 
     @Override
@@ -292,8 +302,11 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
     @Override
     public void onVideoSizeChanged(int width, int height, int sar_num, int sar_den) {
         Log.d(TAG, "onVideoSizeChanged() width: " + width + " height: " + height);
-        if (textureView != null) {
-            textureView.setVideoSize(width, height);
+        if (droidTextureView != null) {
+            droidTextureView.setVideoSize(width, height);
+        }
+        if (droidImageView != null) {
+            droidImageView.setVideoSize(width, height);
         }
     }
 
@@ -336,9 +349,10 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         if (DroidMediaPlayer.getInstance().isPausedWhenPlaying()) {
             mStateDelegate.setState(DroidPlayerViewStateDelegate.STATE.PLAYING);
         } else if (isPause()) {
-            if (mCaptureBitmap != null) {
-                ivCoverImage.setVisibility(VISIBLE);
-                ivCoverImage.setImageBitmap(mCaptureBitmap);
+            if (droidImageView != null && mCaptureBitmap != null) {
+                droidImageView.setVisibility(VISIBLE);
+                droidImageView.setVideoSize(DroidMediaPlayer.getInstance().getVideoWidth(), DroidMediaPlayer.getInstance().getVideoHeight());
+                droidImageView.setImageBitmap(mCaptureBitmap);
             } else {
                 mStateDelegate.showCoverImage(DroidMediaPlayer.getInstance().getImageUrl());
             }
@@ -349,8 +363,8 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
     public void onVideoPause() {
         Log.d(TAG, "onVideoPause()");
         mStateDelegate.setState(DroidPlayerViewStateDelegate.STATE.PAUSE);
-        if (textureView != null && DroidMediaPlayer.getInstance().isPausedWhenPlaying()) {
-            Bitmap bitmap = textureView.getBitmap();
+        if (droidTextureView != null && DroidMediaPlayer.getInstance().isPausedWhenPlaying()) {
+            Bitmap bitmap = droidTextureView.getBitmap();
             if (bitmap != null && DroidMediaPlayer.getInstance().getCurrentPosition() != mCapturePosition) {
                 mCapturePosition = DroidMediaPlayer.getInstance().getCurrentPosition();
                 this.mCaptureBitmap = bitmap;
@@ -362,6 +376,9 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
     public void onVideoRelease() {
         Log.d(TAG, "onVideoRelease()");
         clearScreenOnFlag();
+        if (droidImageView != null) {
+            droidImageView.setVisibility(GONE);
+        }
         mStateDelegate.setState(DroidPlayerViewStateDelegate.STATE.IDLE);
         mStateDelegate.unInit();
         mCaptureBitmap = null;

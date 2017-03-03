@@ -37,9 +37,14 @@ public class BasePlayerView extends RelativeLayout {
     private void init(Context context) {
         this.mContext = context;
         initData();
+        initView();
     }
 
     private void initData() {
+
+    }
+
+    private void initView() {
 
     }
 
