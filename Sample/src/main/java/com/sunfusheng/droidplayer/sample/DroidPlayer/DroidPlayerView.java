@@ -332,7 +332,7 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         Log.e(TAG, "onError() what: " + what + " extra: " + extra);
         clearScreenOnFlag();
         mStateDelegate.setState(DroidPlayerViewStateDelegate.STATE.ERROR);
-        return false;
+        return true;
     }
 
     @Override
@@ -375,6 +375,7 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
     @Override
     public void onVideoRelease() {
         Log.d(TAG, "onVideoRelease()");
+        DroidMediaPlayer.getInstance().setMediaPlayerListener(null);
         clearScreenOnFlag();
         if (droidImageView != null) {
             droidImageView.setVisibility(GONE);
@@ -383,7 +384,6 @@ public class DroidPlayerView extends BasePlayerView implements View.OnClickListe
         mStateDelegate.unInit();
         mCaptureBitmap = null;
         mCapturePosition = 0L;
-        DroidMediaPlayer.getInstance().setMediaPlayerListener(null);
     }
 
     @Override

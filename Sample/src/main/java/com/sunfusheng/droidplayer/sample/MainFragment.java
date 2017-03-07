@@ -9,9 +9,7 @@ import android.widget.ListView;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
 import com.sunfusheng.droidplayer.sample.adapter.VideoAdapter;
 import com.sunfusheng.droidplayer.sample.model.VideoModel;
-import com.sunfusheng.droidplayer.sample.util.ModelUtil;
 
-import java.util.List;
 import java.util.Random;
 
 import butterknife.BindView;
@@ -28,7 +26,6 @@ public class MainFragment extends BaseFragment {
     ListView listView;
 
     private View rootView;
-    private List<VideoModel> mData = ModelUtil.getVideoList();
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -50,19 +47,19 @@ public class MainFragment extends BaseFragment {
     }
 
     private void initData() {
-        int randomNum = new Random().nextInt(mData.size());
-        initPlayerView(mData.get(randomNum));
+        int randomNum = new Random().nextInt(mList.size());
+        initPlayerView(mList.get(randomNum));
     }
 
     private void initView() {
-        VideoAdapter adapter = new VideoAdapter(mContext, mData);
+        VideoAdapter adapter = new VideoAdapter(mContext, mList);
         listView.setAdapter(adapter);
     }
 
     private void initListener() {
         listView.setOnItemClickListener((parent, view, position, id) -> {
             playerView.release();
-            initPlayerView(mData.get(position));
+            initPlayerView(mList.get(position));
             playerView.play();
         });
 
