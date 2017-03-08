@@ -25,25 +25,15 @@ public class MainFragment extends BaseFragment {
     @BindView(R.id.listView)
     ListView listView;
 
-    private View rootView;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        if (rootView == null) {
-            rootView = inflater.inflate(R.layout.fragment_main, null);
-            ButterKnife.bind(this, rootView);
+        View view = inflater.inflate(R.layout.fragment_main, null);
+        ButterKnife.bind(this, view);
 
-            initData();
-            initView();
-            initListener();
-        } else {
-            ViewGroup parent = (ViewGroup) rootView.getParent();
-            if (parent != null) {
-                parent.removeView(rootView);
-            }
-        }
-        ButterKnife.bind(this, rootView);
-        return rootView;
+        initData();
+        initView();
+        initListener();
+        return view;
     }
 
     private void initData() {

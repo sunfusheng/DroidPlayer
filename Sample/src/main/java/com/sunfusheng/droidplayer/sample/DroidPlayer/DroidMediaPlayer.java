@@ -5,7 +5,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.view.Surface;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerViewStateDelegate;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidMediaPlayerListener;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidMediaPlayer;
 
@@ -30,14 +29,6 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     private DroidMediaPlayerListener mMediaPlayerListener;
     private Surface mSurface;
 
-    private String mTitle; // 名称
-    private String mVideoUrl; // 视频地址
-    private String mImageUrl; // 图片地址
-    private int mVideoWidth; // 宽度
-    private int mVideoHeight; // 高度
-    private long mDuration; // 时长，毫秒
-    private long mCurrentPosition; // 当前播放位置，毫秒
-
     private int mState; // 播放器状态
     private boolean isPlaying; // 是否在播放中
     private boolean isPausedWhenPlaying; // 当播放中是否被暂停
@@ -57,18 +48,11 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     }
 
     private void init() {
-        this.mTitle = null;
-        this.mVideoUrl = null;
-        this.mImageUrl = null;
-        this.mState = DroidPlayerViewStateDelegate.STATE.IDLE;
+        this.mState = DroidPlayerState.IDLE;
         resetData();
     }
 
     private void resetData() {
-        this.mVideoWidth = 0;
-        this.mVideoHeight = 0;
-        this.mDuration = 0;
-        this.mCurrentPosition = 0;
         this.isPlaying = false;
         this.isPausedWhenPlaying = false;
     }
@@ -93,9 +77,9 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     }
 
     @Override
-    public boolean play(String url) {
+    public boolean play(String video_url) {
         try {
-            initPlayer(url);
+            initPlayer(video_url);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -141,6 +125,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public void release() {
+        this.mState = DroidPlayerState.IDLE;
         releaseMediaPlayer();
         if (mMediaPlayerListener != null) {
             mMediaPlayerListener.onVideoRelease();
@@ -178,8 +163,6 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public void onVideoSizeChanged(IMediaPlayer iMediaPlayer, int width, int height, int sar_num, int sar_den) {
-        this.mVideoWidth = width;
-        this.mVideoHeight = height;
         if (mMediaPlayerListener != null) {
             mMediaPlayerListener.onVideoSizeChanged(width, height, sar_num, sar_den);
         }
@@ -216,7 +199,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         return true;
     }
 
-    public void releaseMediaPlayer() {
+    private void releaseMediaPlayer() {
         resetData();
         if (mMediaPlayer != null) {
             mMediaPlayer.stop();
@@ -256,17 +239,17 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         return mState;
     }
 
-    public void setState(@DroidPlayerViewStateDelegate.STATE int state) {
+    public void setState(@DroidPlayerState int state) {
         this.mState = state;
-        setPlaying(state == DroidPlayerViewStateDelegate.STATE.PLAYING);
+        setPlaying(state == DroidPlayerState.PLAYING);
     }
 
     public boolean isPause() {
-        return mState == DroidPlayerViewStateDelegate.STATE.PAUSE;
+        return mState == DroidPlayerState.PAUSE;
     }
 
     public boolean isPlaying() {
-        isPlaying = mState == DroidPlayerViewStateDelegate.STATE.PLAYING;
+        isPlaying = (mState == DroidPlayerState.PLAYING);
         return isPlaying;
     }
 
@@ -278,63 +261,8 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         return isPausedWhenPlaying;
     }
 
-    public int getVideoWidth() {
-        return mVideoWidth;
-    }
-
-    public void setVideoWidth(int videoWidth) {
-        this.mVideoWidth = videoWidth;
-    }
-
-    public int getVideoHeight() {
-        return mVideoHeight;
-    }
-
-    public void setVideoHeight(int videoHeight) {
-        this.mVideoHeight = videoHeight;
-    }
-
     public Handler getHandler() {
         return mHandler;
     }
 
-    public String getTitle() {
-        return mTitle;
-    }
-
-    public void setTitle(String title) {
-        this.mTitle = title;
-    }
-
-    public String getVideoUrl() {
-        return mVideoUrl;
-    }
-
-    public void setVideoUrl(String videoUrl) {
-        this.mVideoUrl = videoUrl;
-    }
-
-    public String getImageUrl() {
-        return mImageUrl;
-    }
-
-    public void setImageUrl(String imageUrl) {
-        this.mImageUrl = imageUrl;
-    }
-
-    public long getDuration() {
-        return mDuration;
-    }
-
-    public void setDuration(long duration) {
-        this.mDuration = duration;
-    }
-
-    public long getCurrentPosition() {
-        return mCurrentPosition;
-    }
-
-    public void setCurrentPosition(long currentPosition) {
-        this.mCurrentPosition = currentPosition;
-    }
 }

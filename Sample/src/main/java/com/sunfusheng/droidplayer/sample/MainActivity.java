@@ -18,12 +18,6 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    public static final String TAG_MAIN = "main";
-    public static final String TAG_SAMPLE = "sample";
-    public static final String TAG_LIST = "list";
-    public static final String TAG_RECYCLER_VIEW = "recycler_view";
-    public static final String TAG_ABOUT = "about";
-    private String curTag;
     private MenuItem lastItem;
 
     @Override
@@ -33,7 +27,7 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         initToolbar(toolbar, R.string.app_name, false);
-        showFragment(TAG_MAIN, new MainFragment());
+        showFragment(new SampleFragment());
     }
 
     @Override
@@ -50,7 +44,7 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        DroidMediaPlayer.getInstance().pause();
+        DroidMediaPlayer.getInstance().release();
         item.setCheckable(true);
         item.setChecked(true);
         if (lastItem != null && lastItem != item) {
@@ -60,39 +54,29 @@ public class MainActivity extends BaseActivity {
         lastItem = item;
         switch (item.getItemId()) {
             case R.id.item_main:
-                showFragment(TAG_MAIN, new MainFragment());
+                showFragment(new MainFragment());
                 break;
             case R.id.item_sample:
-                showFragment(TAG_SAMPLE, new SampleFragment());
+                showFragment(new SampleFragment());
                 break;
             case R.id.item_list:
-                showFragment(TAG_LIST, new ListFragment());
+                showFragment(new ListFragment());
                 break;
             case R.id.item_recycler_view:
-                showFragment(TAG_RECYCLER_VIEW, new RecyclerViewFragment());
+                showFragment(new RecyclerViewFragment());
                 break;
             case R.id.item_about:
-                showFragment(TAG_ABOUT, new AboutFragment());
+                showFragment(new AboutFragment());
                 break;
         }
         return true;
     }
 
-    private void showFragment(String tag, Fragment fragment) {
-        FragmentManager fragmentManager = getSupportFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        Fragment oldFragment = fragmentManager.findFragmentByTag(curTag);
-        if (oldFragment != null) {
-            fragmentTransaction.hide(oldFragment);
-        }
-        curTag = tag;
-        Fragment curFragment = fragmentManager.findFragmentByTag(tag);
-        if (curFragment != null) {
-            fragmentTransaction.show(curFragment);
-        } else {
-            fragmentTransaction.add(R.id.fl_container, fragment, tag);
-        }
-        fragmentTransaction.commit();
+    private void showFragment(Fragment fragment) {
+        FragmentManager manager = getSupportFragmentManager();
+        FragmentTransaction transaction = manager.beginTransaction();
+        transaction.replace(R.id.fl_container, fragment);
+        transaction.commitAllowingStateLoss();
     }
 
 }

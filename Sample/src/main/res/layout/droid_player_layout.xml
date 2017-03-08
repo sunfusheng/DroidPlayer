@@ -2,23 +2,7 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@android:color/black">
-
-    <RelativeLayout
-        android:id="@+id/texture_view_container"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"/>
-
-    <ImageView
-        android:id="@+id/iv_cover_image"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_centerInParent="true"
-        android:background="@null"
-        android:scaleType="centerCrop"
-        android:visibility="gone"/>
+    android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/tv_title"

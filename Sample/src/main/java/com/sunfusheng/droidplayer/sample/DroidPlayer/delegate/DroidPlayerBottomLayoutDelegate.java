@@ -29,6 +29,8 @@ public class DroidPlayerBottomLayoutDelegate extends BaseViewDelegate implements
     private SeekBar sbCurrentProgress;
     private TextView tvDuration;
 
+    protected long mDuration; // 时长，毫秒
+    protected long mCurrentPosition; // 当前播放位置，毫秒
     private int mLastBufferingProgress; // 上一次缓冲进度
 
     private Timer mTimer;
@@ -125,10 +127,10 @@ public class DroidPlayerBottomLayoutDelegate extends BaseViewDelegate implements
 
     // 设置播放进度
     public void setCurrentPosition(long currentPosition) {
-        long duration = DroidMediaPlayer.getInstance().getDuration();
+        long duration = mDuration;
         if (duration == 0) return;
         if (currentPosition > duration) currentPosition = duration;
-        DroidMediaPlayer.getInstance().setCurrentPosition(currentPosition);
+        mCurrentPosition = currentPosition;
 
         setText(tvCurrentPosition, PlayerUtil.getTimeString(currentPosition));
 
@@ -148,7 +150,7 @@ public class DroidPlayerBottomLayoutDelegate extends BaseViewDelegate implements
         public void run() {
             if (DroidMediaPlayer.getInstance().isPlaying()) {
                 DroidMediaPlayer.getInstance().getHandler().post(() -> {
-                    long currentPosition = DroidMediaPlayer.getInstance().getCurrentPosition();
+                    long currentPosition = mCurrentPosition;
                     currentPosition += TIME_INTERVAL;
                     setCurrentPosition(currentPosition);
                 });

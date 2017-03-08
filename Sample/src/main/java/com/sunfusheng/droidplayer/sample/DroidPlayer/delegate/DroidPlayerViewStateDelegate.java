@@ -2,7 +2,6 @@ package com.sunfusheng.droidplayer.sample.DroidPlayer.delegate;
 
 import android.os.Handler;
 import android.os.Message;
-import android.support.annotation.IntDef;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -14,28 +13,15 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerState;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidTextureView;
 import com.sunfusheng.droidplayer.sample.R;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Created by sunfusheng on 2017/1/16.
  */
 public class DroidPlayerViewStateDelegate extends BaseViewDelegate implements IViewDelegate {
-
-    @IntDef({STATE.IDLE, STATE.LOADING, STATE.PLAYING, STATE.PAUSE, STATE.COMPLETE, STATE.ERROR})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface STATE {
-        int IDLE = 0;
-        int LOADING = 1;
-        int PLAYING = 2;
-        int PAUSE = 3;
-        int COMPLETE = 4;
-        int ERROR = 5;
-    }
 
     private static final String TAG = "----> StateDelegate";
 
@@ -70,14 +56,14 @@ public class DroidPlayerViewStateDelegate extends BaseViewDelegate implements IV
                     isShowBottomLayout = false;
                     setVisible(true, bottomProgressBar);
                     setVisible(false, llBottomLayout);
-                    setVisible(state == STATE.LOADING, tvTitle);
+                    setVisible(state == DroidPlayerState.LOADING, tvTitle);
                     break;
             }
         }
     };
 
     public DroidPlayerViewStateDelegate(DroidPlayerView playView) {
-        this.state = STATE.IDLE;
+        this.state = DroidPlayerState.IDLE;
         this.playView = playView;
         bottomLayoutDelegate = new DroidPlayerBottomLayoutDelegate();
     }
@@ -99,28 +85,28 @@ public class DroidPlayerViewStateDelegate extends BaseViewDelegate implements IV
         bottomLayoutDelegate.setPlayingState(false);
         hideAllViews();
         isShowBottomLayout = false;
-       switch (state) {
-            case STATE.IDLE:
+        switch (state) {
+            case DroidPlayerState.IDLE:
                 Log.d(TAG, "STATE IDLE");
                 setIdleState();
                 break;
-            case STATE.LOADING:
+            case DroidPlayerState.LOADING:
                 Log.d(TAG, "STATE LOADING");
                 setLoadingState();
                 break;
-            case STATE.PLAYING:
+            case DroidPlayerState.PLAYING:
                 Log.d(TAG, "STATE PLAYING");
                 setPlayingState();
                 break;
-            case STATE.PAUSE:
+            case DroidPlayerState.PAUSE:
                 Log.d(TAG, "STATE PAUSE");
                 setPauseState();
                 break;
-            case STATE.COMPLETE:
+            case DroidPlayerState.COMPLETE:
                 Log.d(TAG, "STATE COMPLETE");
                 setCompleteState();
                 break;
-            case STATE.ERROR:
+            case DroidPlayerState.ERROR:
                 Log.d(TAG, "STATE ERROR");
                 setErrorState();
                 break;
@@ -140,9 +126,6 @@ public class DroidPlayerViewStateDelegate extends BaseViewDelegate implements IV
 
     // 加载状态
     public void setLoadingState() {
-        if (DroidMediaPlayer.getInstance().getCurrentPosition() <= 0) {
-            setVisible(true, ivCoverImage);
-        }
         setVisible(true, loadingView, bottomProgressBar);
         showTitle();
     }
@@ -190,17 +173,15 @@ public class DroidPlayerViewStateDelegate extends BaseViewDelegate implements IV
 
     public void setTitle(String title) {
         setText(tvTitle, title);
-        DroidMediaPlayer.getInstance().setTitle(title);
         setVisible(!TextUtils.isEmpty(title), tvTitle);
     }
 
     public void showTitle() {
-        setTitle(DroidMediaPlayer.getInstance().getTitle());
     }
 
     public boolean showBottomLayout() {
         if (isShowBottomLayout) return false;
-        if (state != STATE.PLAYING) return false;
+        if (state != DroidPlayerState.PLAYING) return false;
         isShowBottomLayout = true;
         addBottomLayoutMessage();
         setVisible(true, llBottomLayout);
@@ -222,13 +203,11 @@ public class DroidPlayerViewStateDelegate extends BaseViewDelegate implements IV
 
     // 设置视频时长
     public void setDuration(long duration) {
-        DroidMediaPlayer.getInstance().setDuration(duration);
         bottomLayoutDelegate.setDuration(duration);
     }
 
     // 设置当前播放位置
     public void setCurrentPosition(long currentPosition) {
-        DroidMediaPlayer.getInstance().setCurrentPosition(currentPosition);
         bottomLayoutDelegate.setCurrentPosition(currentPosition);
     }
 

@@ -10,7 +10,6 @@ import android.util.AttributeSet;
 import android.view.WindowManager;
 import android.widget.RelativeLayout;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerViewStateDelegate;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.util.PlayerUtil;
 import com.sunfusheng.droidplayer.sample.R;
 
@@ -20,6 +19,13 @@ import com.sunfusheng.droidplayer.sample.R;
 public class BasePlayerView extends RelativeLayout {
 
     protected Context mContext;
+    protected String mTitle; // 名称
+    protected String mVideoUrl; // 视频地址
+    protected String mImageUrl; // 图片地址
+    protected int mVideoWidth; // 宽度
+    protected int mVideoHeight; // 高度
+    protected long mDuration; // 时长，毫秒
+    protected long mCurrentPosition; // 当前播放位置，毫秒
 
     public BasePlayerView(@NonNull Context context) {
         this(context, null);
@@ -61,7 +67,7 @@ public class BasePlayerView extends RelativeLayout {
     }
 
     public boolean isPause() {
-        return DroidMediaPlayer.getInstance().getState() == DroidPlayerViewStateDelegate.STATE.PAUSE;
+        return DroidMediaPlayer.getInstance().getState() == DroidPlayerState.PAUSE;
     }
 
     public void addScreenOnFlag() {

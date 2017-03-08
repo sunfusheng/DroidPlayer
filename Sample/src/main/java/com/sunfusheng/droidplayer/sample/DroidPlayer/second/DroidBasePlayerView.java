@@ -5,8 +5,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.support.annotation.AttrRes;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -14,38 +16,68 @@ import android.view.LayoutInflater;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidImageView;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerState;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidTextureView;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerViewMeasureDelegate;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerViewStateDelegate;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidMediaPlayerListener;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidOnPlayerViewListener;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.util.PlayerUtil;
 import com.sunfusheng.droidplayer.sample.R;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import tv.danmaku.ijk.media.player.IMediaPlayer;
+
+import static com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerViewStateDelegate.TIME_INTERVAL;
 
 
 /**
  * Created by sunfusheng on 2017/3/7.
  */
-public class DroidBasePlayerView extends RelativeLayout implements IDroidMediaPlayer, TextureView.SurfaceTextureListener, DroidMediaPlayerListener {
+public class DroidBasePlayerView extends RelativeLayout implements
+        IDroidMediaPlayer,
+        TextureView.SurfaceTextureListener,
+        DroidMediaPlayerListener {
 
     private static final String TAG = "----> BasePlayerView";
 
     private RelativeLayout playerContainer;
-    private RelativeLayout decorationContainer;
+    protected RelativeLayout decorationContainer;
     private DroidTextureView droidTextureView;
     private DroidImageView droidImageView;
+    private ImageView coverImage;
 
     private DroidPlayerViewMeasureDelegate mMeasureDelegate;
+    protected int state; // 播放器状态
+    private DroidOnPlayerViewListener mOnPlayerViewListener;
+
+    protected String mTitle; // 名称
+    protected String mVideoUrl; // 视频地址
+    protected String mImageUrl; // 图片地址
+    protected int mVideoWidth; // 宽度
+    protected int mVideoHeight; // 高度
+    protected long mDuration; // 时长，毫秒
+    protected long mCurrentPosition; // 当前播放位置，毫秒
 
     private Bitmap mCaptureBitmap; // 暂停时抓拍的Bitmap
     private long mCapturePosition; // 暂停抓拍时的播放位置
+
+    private Timer mTimer;
+    private ProgressTimerTask mTimerTask;
 
     public DroidBasePlayerView(@NonNull Context context) {
         this(context, null);
@@ -61,18 +93,32 @@ public class DroidBasePlayerView extends RelativeLayout implements IDroidMediaPl
     }
 
     private void init() {
+        setBackgroundColor(getResources().getColor(R.color.black));
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.droid_base_player_layout, this);
+
         playerContainer = (RelativeLayout) view.findViewById(R.id.player_container);
+        coverImage = (ImageView) view.findViewById(R.id.cover_image);
         decorationContainer = (RelativeLayout) view.findViewById(R.id.decoration_container);
         mMeasureDelegate = new DroidPlayerViewMeasureDelegate(this, 16, 9);
     }
 
+    // 设置视频标题
+    public void setVideoTitle(String title) {
+        mTitle = title;
+    }
+
     // 设置视频地址
-    public void setVideoUrl(String url) {
-        if (checkVideoUrl(url)) {
-            DroidMediaPlayer.getInstance().setVideoUrl(url);
+    public void setVideoUrl(String video_url) {
+        if (checkVideoUrl(video_url)) {
+            mVideoUrl = video_url;
         }
+    }
+
+    // 设置封面图片
+    public void setImageUrl(String image_url) {
+        mImageUrl = image_url;
+        showCoverImage(image_url);
     }
 
     // 设置宽高比
@@ -81,13 +127,13 @@ public class DroidBasePlayerView extends RelativeLayout implements IDroidMediaPl
     }
 
     public boolean play() {
-        return play(DroidMediaPlayer.getInstance().getVideoUrl());
+        return play(mVideoUrl);
     }
 
     @Override
-    public boolean play(String url) {
-        if (!checkVideoUrl(url)) return false;
-        DroidMediaPlayer.getInstance().setVideoUrl(url);
+    public boolean play(String video_url) {
+        if (!checkVideoUrl(video_url)) return false;
+        mVideoUrl = video_url;
         if (droidImageView != null) {
             droidImageView.setVisibility(GONE);
         }
@@ -98,8 +144,10 @@ public class DroidBasePlayerView extends RelativeLayout implements IDroidMediaPl
             start();
             return true;
         }
+        setState(DroidPlayerState.LOADING);
         addTextureView();
-        boolean isPlay = DroidMediaPlayer.getInstance().play(url);
+
+        boolean isPlay = DroidMediaPlayer.getInstance().play(video_url);
         DroidMediaPlayer.getInstance().setMediaPlayerListener(this);
         return isPlay;
     }
@@ -136,15 +184,18 @@ public class DroidBasePlayerView extends RelativeLayout implements IDroidMediaPl
 
     // 添加视频显示层
     public void addTextureView() {
+        FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         droidTextureView = new DroidTextureView(getContext());
         droidTextureView.setSurfaceTextureListener(this);
         droidTextureView.setOnClickListener(v -> {
-
+            if (mOnPlayerViewListener != null) {
+                mOnPlayerViewListener.onTextureViewClick();
+            }
         });
-        playerContainer.addView(droidTextureView);
+        playerContainer.addView(droidTextureView, layoutParams);
 
         droidImageView = new DroidImageView(getContext());
-        playerContainer.addView(droidImageView);
+        playerContainer.addView(droidImageView, layoutParams);
     }
 
     @Override
@@ -169,7 +220,7 @@ public class DroidBasePlayerView extends RelativeLayout implements IDroidMediaPl
     }
 
     public boolean isPause() {
-        return DroidMediaPlayer.getInstance().getState() == DroidPlayerViewStateDelegate.STATE.PAUSE;
+        return DroidMediaPlayer.getInstance().getState() == DroidPlayerState.PAUSE;
     }
 
     public void addScreenOnFlag() {
@@ -183,6 +234,56 @@ public class DroidBasePlayerView extends RelativeLayout implements IDroidMediaPl
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
         DroidMediaPlayer.getInstance().setSurface(new Surface(surface));
+    }
+
+    public void setState(@DroidPlayerState int state) {
+        this.state = state;
+        DroidMediaPlayer.getInstance().setState(state);
+        switch (state) {
+            case DroidPlayerState.IDLE:
+                Log.d(TAG, "STATE IDLE");
+                coverImage.setVisibility(VISIBLE);
+                break;
+            case DroidPlayerState.LOADING:
+                Log.d(TAG, "STATE LOADING");
+                if (mCurrentPosition <= 0) {
+                    coverImage.setVisibility(VISIBLE);
+                } else {
+                    coverImage.setVisibility(GONE);
+                }
+                break;
+            case DroidPlayerState.PLAYING:
+                Log.d(TAG, "STATE PLAYING");
+                coverImage.setVisibility(GONE);
+                break;
+            case DroidPlayerState.PAUSE:
+                Log.d(TAG, "STATE PAUSE");
+                coverImage.setVisibility(GONE);
+                break;
+            case DroidPlayerState.COMPLETE:
+                Log.d(TAG, "STATE COMPLETE");
+                coverImage.setVisibility(GONE);
+                break;
+            case DroidPlayerState.ERROR:
+                Log.d(TAG, "STATE ERROR");
+                coverImage.setVisibility(VISIBLE);
+                break;
+        }
+        if (mOnPlayerViewListener != null) {
+            mOnPlayerViewListener.onStateChange(state);
+        }
+    }
+
+    // 添加自己装饰的视图
+    public void addDecorationView(View view) {
+        if (decorationContainer.getChildCount() > 0) {
+            decorationContainer.removeAllViews();
+        }
+        decorationContainer.addView(view);
+    }
+
+    public void setOnPlayerViewListener(DroidOnPlayerViewListener onPlayerViewListener) {
+        this.mOnPlayerViewListener = onPlayerViewListener;
     }
 
     @Override
@@ -206,19 +307,31 @@ public class DroidBasePlayerView extends RelativeLayout implements IDroidMediaPl
     public void onPrepared() {
         Log.d(TAG, "onPrepared()");
         addScreenOnFlag();
+        setState(DroidPlayerState.PLAYING);
+        startTimer();
     }
 
     @Override
     public boolean onInfo(IMediaPlayer mp, int what, int extra) {
-        DroidMediaPlayer.getInstance().setDuration(mp.getDuration());
-        DroidMediaPlayer.getInstance().setCurrentPosition(mp.getCurrentPosition());
-        Log.d(TAG, "onInfo() duration: " + mp.getDuration() + " CurrentPosition: " + mp.getCurrentPosition() + " what: " + what + " extra: " + extra);
+        mDuration = mp.getDuration();
+        mCurrentPosition = mp.getCurrentPosition();
+        Log.d(TAG, "onInfo() duration: " + mDuration + " CurrentPosition: " + mCurrentPosition + " what: " + what + " extra: " + extra);
+        if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_START) {
+            setState(DroidPlayerState.LOADING);
+        } else if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_END) {
+            setState(DroidPlayerState.PLAYING);
+        }
+        if (mOnPlayerViewListener != null) {
+            mOnPlayerViewListener.onInfoCallback(mp, what, extra);
+        }
         return true;
     }
 
     @Override
     public void onVideoSizeChanged(int width, int height, int sar_num, int sar_den) {
         Log.d(TAG, "onVideoSizeChanged() width: " + width + " height: " + height);
+        mVideoWidth = width;
+        mVideoHeight = height;
         if (droidTextureView != null) {
             droidTextureView.setVideoSize(width, height);
         }
@@ -229,7 +342,9 @@ public class DroidBasePlayerView extends RelativeLayout implements IDroidMediaPl
 
     @Override
     public void onBufferingUpdate(int percent) {
-
+        if (mOnPlayerViewListener != null) {
+            mOnPlayerViewListener.onCacheChange(percent);
+        }
     }
 
     @Override
@@ -240,12 +355,14 @@ public class DroidBasePlayerView extends RelativeLayout implements IDroidMediaPl
     @Override
     public void onCompletion() {
         Log.d(TAG, "onCompletion()");
+        setState(DroidPlayerState.COMPLETE);
         clearScreenOnFlag();
     }
 
     @Override
     public boolean onError(int what, int extra) {
         Log.e(TAG, "onError() what: " + what + " extra: " + extra);
+        setState(DroidPlayerState.ERROR);
         clearScreenOnFlag();
         return true;
     }
@@ -253,15 +370,20 @@ public class DroidBasePlayerView extends RelativeLayout implements IDroidMediaPl
     @Override
     public void onVideoStart() {
         Log.d(TAG, "onVideoStart()");
+        if (isPause()) {
+            setState(DroidPlayerState.PLAYING);
+        }
     }
 
     @Override
     public void onVideoResume() {
         Log.d(TAG, "onVideoResume()");
-        if (isPause()) {
+        if (DroidMediaPlayer.getInstance().isPausedWhenPlaying()) {
+            setState(DroidPlayerState.PLAYING);
+        } else if (isPause()) {
             if (droidImageView != null && mCaptureBitmap != null) {
                 droidImageView.setVisibility(VISIBLE);
-                droidImageView.setVideoSize(DroidMediaPlayer.getInstance().getVideoWidth(), DroidMediaPlayer.getInstance().getVideoHeight());
+                droidImageView.setVideoSize(mVideoWidth, mVideoHeight);
                 droidImageView.setImageBitmap(mCaptureBitmap);
             }
         }
@@ -270,10 +392,11 @@ public class DroidBasePlayerView extends RelativeLayout implements IDroidMediaPl
     @Override
     public void onVideoPause() {
         Log.d(TAG, "onVideoPause()");
+        setState(DroidPlayerState.PAUSE);
         if (droidTextureView != null && DroidMediaPlayer.getInstance().isPausedWhenPlaying()) {
             Bitmap bitmap = droidTextureView.getBitmap();
-            if (bitmap != null && DroidMediaPlayer.getInstance().getCurrentPosition() != mCapturePosition) {
-                mCapturePosition = DroidMediaPlayer.getInstance().getCurrentPosition();
+            if (bitmap != null && mCurrentPosition != mCapturePosition) {
+                mCapturePosition = mCurrentPosition;
                 this.mCaptureBitmap = bitmap;
             }
         }
@@ -282,6 +405,8 @@ public class DroidBasePlayerView extends RelativeLayout implements IDroidMediaPl
     @Override
     public void onVideoRelease() {
         Log.d(TAG, "onVideoRelease()");
+        stopTimer();
+        setState(DroidPlayerState.IDLE);
         DroidMediaPlayer.getInstance().setMediaPlayerListener(null);
         clearScreenOnFlag();
         if (droidImageView != null) {
@@ -289,5 +414,87 @@ public class DroidBasePlayerView extends RelativeLayout implements IDroidMediaPl
         }
         mCaptureBitmap = null;
         mCapturePosition = 0L;
+    }
+
+    // 显示封面图片
+    public void showCoverImage(String image_url) {
+        if (TextUtils.isEmpty(image_url)) {
+            coverImage.setVisibility(View.INVISIBLE);
+            return;
+        }
+        coverImage.setVisibility(View.VISIBLE);
+        Glide.with(getContext())
+                .load(image_url)
+                .crossFade()
+                .fallback(R.color.player_transparent)
+                .error(R.color.player_transparent)
+                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+                .into(coverImage);
+    }
+
+    // 启动定时器
+    public void startTimer() {
+        stopTimer();
+        mTimer = new Timer();
+        mTimerTask = new ProgressTimerTask();
+        mTimer.schedule(mTimerTask, DroidPlayerViewStateDelegate.TIME_DELAY, DroidPlayerViewStateDelegate.TIME_INTERVAL);
+    }
+
+    // 停止定时器
+    public void stopTimer() {
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+        }
+        if (mTimerTask != null) {
+            mTimerTask.cancel();
+            mTimerTask = null;
+        }
+    }
+
+    // 定时器任务
+    public class ProgressTimerTask extends TimerTask {
+        @Override
+        public void run() {
+            if (state == DroidPlayerState.PLAYING) {
+                DroidMediaPlayer.getInstance().getHandler().post(() -> {
+                    mCurrentPosition += TIME_INTERVAL;
+                    if (mOnPlayerViewListener != null) {
+                        mOnPlayerViewListener.onPositionChange(mCurrentPosition);
+                    }
+                });
+            }
+        }
+    }
+
+    public void setVisible(boolean isVisible, View... views) {
+        if (views == null || views.length == 0) return;
+        for (View view : views) {
+            if (view == null) continue;
+            view.setVisibility(isVisible ? View.VISIBLE : View.INVISIBLE);
+        }
+    }
+
+    public void setGone(boolean isGone, View... views) {
+        if (views == null || views.length == 0) return;
+        for (View view : views) {
+            if (view == null) continue;
+            view.setVisibility(isGone ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    public void setText(TextView tv, @StringRes int id) {
+        if (tv == null) return;
+        tv.setText(id);
+    }
+
+    public void setText(TextView tv, String str) {
+        if (tv == null || TextUtils.isEmpty(str)) return;
+        tv.setText(str);
+    }
+
+    public void setImageResource(ImageView iv, @DrawableRes int id) {
+        if (iv == null) return;
+        iv.setImageResource(id);
     }
 }
