@@ -3,14 +3,14 @@ package com.sunfusheng.droidplayer.sample.DroidPlayer;
 import android.content.Context;
 import android.util.AttributeSet;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidMeasureDelegate;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidViewMeasureDelegate;
 
 /**
  * Created by sunfusheng on 2017/3/3.
  */
 public class DroidImageView extends android.support.v7.widget.AppCompatImageView {
 
-    private DroidMeasureDelegate mMeasureDelegate;
+    private DroidViewMeasureDelegate mMeasureDelegate;
 
     public DroidImageView(Context context) {
         this(context, null);
@@ -26,7 +26,7 @@ public class DroidImageView extends android.support.v7.widget.AppCompatImageView
     }
 
     private void init(Context context) {
-        mMeasureDelegate = new DroidMeasureDelegate(this);
+        mMeasureDelegate = new DroidViewMeasureDelegate(this);
     }
 
     public void setVideoSize(int videoWidth, int videoHeight) {

@@ -4,14 +4,14 @@ import android.content.Context;
 import android.util.AttributeSet;
 import android.view.TextureView;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidMeasureDelegate;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidViewMeasureDelegate;
 
 /**
  * Created by sunfusheng on 2017/2/20.
  */
 public class DroidTextureView extends TextureView {
 
-    private DroidMeasureDelegate mMeasureDelegate;
+    private DroidViewMeasureDelegate mMeasureDelegate;
 
     public DroidTextureView(Context context) {
         this(context, null);
@@ -27,7 +27,7 @@ public class DroidTextureView extends TextureView {
     }
 
     private void init(Context context) {
-        mMeasureDelegate = new DroidMeasureDelegate(this);
+        mMeasureDelegate = new DroidViewMeasureDelegate(this);
     }
 
     public void setVideoSize(int videoWidth, int videoHeight) {

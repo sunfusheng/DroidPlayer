@@ -7,7 +7,7 @@ import java.lang.ref.WeakReference;
 /**
  * Created by sunfusheng on 2017/2/20.
  */
-public class DroidMeasureDelegate {
+public class DroidViewMeasureDelegate {
 
     private WeakReference<View> mView;
     private boolean isAssigned; // 是否赋过值
@@ -18,7 +18,7 @@ public class DroidMeasureDelegate {
     private int mMeasureWidth;
     private int mMeasureHeight;
 
-    public DroidMeasureDelegate(View view) {
+    public DroidViewMeasureDelegate(View view) {
         this.isAssigned = false;
         this.mView = new WeakReference<View>(view);
     }

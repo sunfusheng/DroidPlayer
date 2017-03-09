@@ -26,6 +26,8 @@ public class SampleFragment extends BaseFragment {
     TextView tvBasePlay;
     @BindView(R.id.playerView)
     DroidPlayerView playerView;
+    @BindView(R.id.tv_base_full_screen)
+    TextView tvBaseFullScreen;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -54,6 +56,7 @@ public class SampleFragment extends BaseFragment {
 
     private void initListener() {
         tvBasePlay.setOnClickListener(v -> basePlayerView.play());
+        tvBaseFullScreen.setOnClickListener(v -> playerView.enterFullScreen());
     }
 
     @Override
@@ -73,4 +76,5 @@ public class SampleFragment extends BaseFragment {
         DroidMediaPlayer.getInstance().release();
         super.onDestroy();
     }
+
 }

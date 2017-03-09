@@ -25,7 +25,8 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerViewMeasureDelegate;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerMeasureDelegate;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerOrientationDelegate;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidMediaPlayerListener;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidOnPlayerViewListener;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidMediaPlayer;
@@ -58,9 +59,11 @@ public class DroidBasePlayerView extends FrameLayout implements
     public static final int TYPE_HIDE_BOTTOM_LAYOUT = 10000;
     public static final int TIME_HIDE_BOTTOM_LAYOUT = 3000; // 3s
 
-    private DroidPlayerViewMeasureDelegate mMeasureDelegate;
-    protected int state; // 播放器状态
+    private DroidPlayerMeasureDelegate mMeasureDelegate;
+    private DroidPlayerOrientationDelegate mOrientationDelegate;
     private DroidOnPlayerViewListener mOnPlayerViewListener;
+
+    protected int state; // 播放器状态
 
     protected String mTitle; // 名称
     protected String mVideoUrl; // 视频地址
@@ -97,7 +100,9 @@ public class DroidBasePlayerView extends FrameLayout implements
         playerContainer = (RelativeLayout) view.findViewById(R.id.player_container);
         coverImage = (DroidImageView) view.findViewById(R.id.cover_image);
         decorationContainer = (RelativeLayout) view.findViewById(R.id.decoration_container);
-        mMeasureDelegate = new DroidPlayerViewMeasureDelegate(this, 16, 9);
+
+        mMeasureDelegate = new DroidPlayerMeasureDelegate(this, 16, 9);
+        mOrientationDelegate = new DroidPlayerOrientationDelegate(this);
     }
 
     // 设置视频标题
@@ -141,7 +146,6 @@ public class DroidBasePlayerView extends FrameLayout implements
         }
         mVideoUrl = url;
         DroidMediaPlayer.getInstance().release();
-        showCoverImage(mImageUrl);
         setState(DroidPlayerState.LOADING);
         addTextureView();
         DroidMediaPlayer.getInstance().play(url);
@@ -187,6 +191,7 @@ public class DroidBasePlayerView extends FrameLayout implements
         droidTextureView = new DroidTextureView(getContext());
         droidTextureView.setSurfaceTextureListener(this);
         droidTextureView.setOnClickListener(v -> {
+            quitFullScreen();
             if (mOnPlayerViewListener != null) {
                 mOnPlayerViewListener.onTextureViewClick();
             }
@@ -242,7 +247,7 @@ public class DroidBasePlayerView extends FrameLayout implements
                 break;
             case DroidPlayerState.LOADING:
                 Log.d(TAG, "STATE LOADING");
-                coverImage.setVisibility(mCurrentPosition == 0? VISIBLE:GONE);
+                coverImage.setVisibility(mCurrentPosition == 0 ? VISIBLE : GONE);
                 break;
             case DroidPlayerState.PLAYING:
                 Log.d(TAG, "STATE PLAYING");
@@ -300,8 +305,8 @@ public class DroidBasePlayerView extends FrameLayout implements
         Log.d(TAG, "onPrepared()");
         addScreenOnFlag();
         startTimer();
-        setState(DroidPlayerState.PLAYING);
         coverImage.setVisibility(GONE);
+        setState(DroidPlayerState.PLAYING);
     }
 
     @Override
@@ -399,13 +404,13 @@ public class DroidBasePlayerView extends FrameLayout implements
     @Override
     public void onVideoRelease() {
         Log.d(TAG, "onVideoRelease()");
-        stopTimer();
-        setState(DroidPlayerState.IDLE);
-        DroidMediaPlayer.getInstance().setMediaPlayerListener(null);
-        clearScreenOnFlag();
-        coverImage.setVisibility(VISIBLE);
         mCaptureBitmap = null;
         mCapturePosition = 0L;
+        stopTimer();
+        DroidMediaPlayer.getInstance().setMediaPlayerListener(null);
+        coverImage.setVisibility(VISIBLE);
+        setState(DroidPlayerState.IDLE);
+        clearScreenOnFlag();
     }
 
     // 显示封面图片
@@ -488,5 +493,15 @@ public class DroidBasePlayerView extends FrameLayout implements
     public void setImageResource(ImageView iv, @DrawableRes int id) {
         if (iv == null) return;
         iv.setImageResource(id);
+    }
+
+    // 进入全屏
+    public void enterFullScreen() {
+        mOrientationDelegate.enterFullScreen();
+    }
+
+    // 退出全屏
+    public void quitFullScreen() {
+            mOrientationDelegate.quitFullScreen();
     }
 }

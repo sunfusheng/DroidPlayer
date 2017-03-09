@@ -1,6 +1,8 @@
 package com.sunfusheng.droidplayer.sample.DroidPlayer.util;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.widget.Toast;
@@ -52,4 +54,15 @@ public class PlayerUtil {
         Formatter formatter = new Formatter(stringBuilder, Locale.getDefault());
         return formatter.format("%02d:%02d", minutes, seconds).toString();
     }
+
+    public static Activity getActivity(Context context) {
+        if (context == null) return null;
+        if (context instanceof Activity) {
+            return (Activity) context;
+        } else if (context instanceof ContextWrapper) {
+            return getActivity(((ContextWrapper) context).getBaseContext());
+        }
+        return null;
+    }
+
 }

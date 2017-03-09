@@ -8,7 +8,7 @@ import java.lang.ref.WeakReference;
 /**
  * Created by sunfusheng on 2017/2/23.
  */
-public class DroidPlayerViewMeasureDelegate {
+public class DroidPlayerMeasureDelegate {
 
     private WeakReference<ViewGroup> mViewGroup;
 
@@ -20,7 +20,7 @@ public class DroidPlayerViewMeasureDelegate {
 
     private float mRatio; // 宽高比
 
-    public DroidPlayerViewMeasureDelegate(ViewGroup viewGroup, int widthRatio, int heightRatio) {
+    public DroidPlayerMeasureDelegate(ViewGroup viewGroup, int widthRatio, int heightRatio) {
         this.mViewGroup = new WeakReference<ViewGroup>(viewGroup);
         calculateRatio(widthRatio, heightRatio);
     }
