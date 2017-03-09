@@ -32,6 +32,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     private int mState; // 播放器状态
     private boolean isPlaying; // 是否在播放中
     private boolean isPausedWhenPlaying; // 当播放中是否被暂停
+    private String mVideoUrl; // 视频地址
 
     private Handler mHandler = new Handler(Looper.getMainLooper());
 
@@ -55,6 +56,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     private void resetData() {
         this.isPlaying = false;
         this.isPausedWhenPlaying = false;
+        mVideoUrl = null;
     }
 
     private void initPlayer(String url) throws Exception {
@@ -77,13 +79,12 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     }
 
     @Override
-    public boolean play(String video_url) {
+    public void play(String url) {
         try {
-            initPlayer(video_url);
-            return true;
+            this.mVideoUrl = url;
+            initPlayer(url);
         } catch (Exception e) {
             e.printStackTrace();
-            return false;
         }
     }
 
@@ -259,6 +260,14 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     public boolean isPausedWhenPlaying() {
         return isPausedWhenPlaying;
+    }
+
+    public String getVideoUrl() {
+        return mVideoUrl;
+    }
+
+    public void setVideoUrl(String videoUrl) {
+        this.mVideoUrl = videoUrl;
     }
 
     public Handler getHandler() {

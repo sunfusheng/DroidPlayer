@@ -19,7 +19,7 @@
             android:text="BasePlayerView (16:9)"
             android:textColor="@color/colorPrimary"/>
 
-        <com.sunfusheng.droidplayer.sample.DroidPlayer.second.DroidBasePlayerView
+        <com.sunfusheng.droidplayer.sample.DroidPlayer.DroidBasePlayerView
             android:id="@+id/basePlayerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
@@ -55,7 +55,7 @@
             android:text="PlayerView (16:9)"
             android:textColor="@color/colorPrimary"/>
 
-        <com.sunfusheng.droidplayer.sample.DroidPlayer.second.DroidPlayerView2
+        <com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView
             android:id="@+id/playerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

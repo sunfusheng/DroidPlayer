@@ -10,8 +10,13 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
 public interface DroidOnPlayerViewListener {
 
     void onInfoCallback(IMediaPlayer mp, int what, int extra);
+
     void onTextureViewClick();
+
     void onStateChange(@DroidPlayerState int state);
+
     void onCacheChange(int progress);
+
     void onPositionChange(long position);
+
 }

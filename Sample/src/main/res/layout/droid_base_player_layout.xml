@@ -11,13 +11,12 @@
         android:layout_height="match_parent"
         android:gravity="center"/>
 
-    <ImageView
+    <com.sunfusheng.droidplayer.sample.DroidPlayer.DroidImageView
         android:id="@+id/cover_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"
-        android:scaleType="centerCrop"
-        android:visibility="gone"/>
+        android:scaleType="centerCrop"/>
 
     <RelativeLayout
         android:id="@+id/decoration_container"

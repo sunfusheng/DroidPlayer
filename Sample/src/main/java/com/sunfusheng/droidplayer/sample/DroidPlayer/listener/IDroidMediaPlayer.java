@@ -7,7 +7,7 @@ public interface IDroidMediaPlayer {
 
     void start();
 
-    boolean play(String url);
+    void play(String url);
 
     void resume();
 

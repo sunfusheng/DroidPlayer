@@ -18,7 +18,24 @@ public class MainActivity extends BaseActivity {
     @BindView(R.id.toolbar)
     Toolbar toolbar;
 
-    private MenuItem lastItem;
+    private Fragment[] fragments = {
+            new MainFragment(),
+            new SampleFragment(),
+            new ListFragment(),
+            new RecyclerViewFragment(),
+            new AboutFragment()
+    };
+
+    private static final String[] TAGS = {
+            "main",
+            "sample",
+            "list",
+            "recycler_view",
+            "about"
+    };
+
+    private static int lastPosition = 1;
+    private MenuItem lastMenuItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,13 +44,13 @@ public class MainActivity extends BaseActivity {
         ButterKnife.bind(this);
 
         initToolbar(toolbar, R.string.app_name, false);
-        showFragment(new SampleFragment());
+        showFragment(lastPosition, fragments[lastPosition]);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_more, menu);
-        lastItem = menu.getItem(0);
+        lastMenuItem = menu.getItem(0);
         return true;
     }
 
@@ -47,36 +64,46 @@ public class MainActivity extends BaseActivity {
         DroidMediaPlayer.getInstance().release();
         item.setCheckable(true);
         item.setChecked(true);
-        if (lastItem != null && lastItem != item) {
-            lastItem.setCheckable(false);
-            lastItem.setChecked(false);
+        if (lastMenuItem != null && lastMenuItem != item) {
+            lastMenuItem.setCheckable(false);
+            lastMenuItem.setChecked(false);
         }
-        lastItem = item;
+        lastMenuItem = item;
         switch (item.getItemId()) {
             case R.id.item_main:
-                showFragment(new MainFragment());
+                showFragment(0, fragments[0]);
                 break;
             case R.id.item_sample:
-                showFragment(new SampleFragment());
+                showFragment(1, fragments[1]);
                 break;
             case R.id.item_list:
-                showFragment(new ListFragment());
+                showFragment(2, fragments[2]);
                 break;
             case R.id.item_recycler_view:
-                showFragment(new RecyclerViewFragment());
+                showFragment(3, fragments[3]);
                 break;
             case R.id.item_about:
-                showFragment(new AboutFragment());
+                showFragment(4, fragments[4]);
                 break;
         }
         return true;
     }
 
-    private void showFragment(Fragment fragment) {
-        FragmentManager manager = getSupportFragmentManager();
-        FragmentTransaction transaction = manager.beginTransaction();
-        transaction.replace(R.id.fl_container, fragment);
-        transaction.commitAllowingStateLoss();
+    private void showFragment(int position, Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        Fragment oldFragment = fragmentManager.findFragmentByTag(TAGS[lastPosition]);
+        if (oldFragment != null) {
+            fragmentTransaction.hide(oldFragment);
+        }
+        lastPosition = position;
+        Fragment curFragment = fragmentManager.findFragmentByTag(TAGS[position]);
+        if (curFragment != null) {
+            fragmentTransaction.show(curFragment);
+        } else {
+            fragmentTransaction.add(R.id.fl_container, fragment, TAGS[position]);
+        }
+        fragmentTransaction.commit();
     }
 
 }

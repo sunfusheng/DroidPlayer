@@ -6,8 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.second.DroidBasePlayerView;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.second.DroidPlayerView2;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidBasePlayerView;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
 
 import java.util.Random;
 
@@ -24,7 +25,7 @@ public class SampleFragment extends BaseFragment {
     @BindView(R.id.tv_base_play)
     TextView tvBasePlay;
     @BindView(R.id.playerView)
-    DroidPlayerView2 playerView;
+    DroidPlayerView playerView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -57,22 +58,19 @@ public class SampleFragment extends BaseFragment {
 
     @Override
     public void onResume() {
-        basePlayerView.resume();
-        playerView.resume();
+        DroidMediaPlayer.getInstance().resume();
         super.onResume();
     }
 
     @Override
     public void onPause() {
-        basePlayerView.pause();
-        playerView.pause();
+        DroidMediaPlayer.getInstance().pause();
         super.onPause();
     }
 
     @Override
     public void onDestroy() {
-        basePlayerView.release();
-        playerView.release();
+        DroidMediaPlayer.getInstance().release();
         super.onDestroy();
     }
 }
