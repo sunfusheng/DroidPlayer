@@ -135,8 +135,6 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
         } else if (id == R.id.iv_back_arrow || id == R.id.iv_back || id == R.id.tv_title) {
             if (isFullScreen()) {
                 quitFullScreen();
-                addBottomLayoutMessage();
-                showTopLayout();
             }
         } else if (id == R.id.iv_fullscreen) {
             if (isFullScreen()) {
@@ -144,9 +142,6 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
             } else {
                 enterFullScreen();
             }
-            setImageResource(ivFullScreen, isFullScreen() ? R.mipmap.droid_player_quit_fullscreen : R.mipmap.droid_player_enter_fullscreen);
-            addBottomLayoutMessage();
-            showTopLayout();
         }
     }
 
@@ -325,5 +320,21 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
             showBottomLayout();
             seekTo(time);
         }
+    }
+
+    @Override
+    public void enterFullScreen() {
+        super.enterFullScreen();
+        setImageResource(ivFullScreen, R.mipmap.droid_player_quit_fullscreen);
+        addBottomLayoutMessage();
+        showTopLayout();
+    }
+
+    @Override
+    public void quitFullScreen() {
+        super.quitFullScreen();
+        setImageResource(ivFullScreen, R.mipmap.droid_player_enter_fullscreen);
+        addBottomLayoutMessage();
+        showTopLayout();
     }
 }

@@ -13,6 +13,7 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.Surface;
 import android.view.TextureView;
 import android.view.View;
@@ -103,6 +104,13 @@ public class DroidBasePlayerView extends FrameLayout implements
 
         mMeasureDelegate = new DroidPlayerMeasureDelegate(this, 16, 9);
         mOrientationDelegate = new DroidPlayerOrientationDelegate(this);
+
+        playerContainer.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
     }
 
     // 设置视频标题
