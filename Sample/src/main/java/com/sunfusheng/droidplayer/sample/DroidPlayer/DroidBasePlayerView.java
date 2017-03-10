@@ -111,6 +111,13 @@ public class DroidBasePlayerView extends FrameLayout implements
                 return true;
             }
         });
+
+        decorationContainer.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onDecorationViewClick();
+            }
+        });
     }
 
     // 设置视频标题
@@ -190,6 +197,10 @@ public class DroidBasePlayerView extends FrameLayout implements
         DroidMediaPlayer.getInstance().seekTo(time);
     }
 
+    void onDecorationViewClick() {
+
+    }
+
     // 添加视频显示层
     public void addTextureView() {
         if (playerContainer.getChildCount() > 0) {
@@ -198,11 +209,6 @@ public class DroidBasePlayerView extends FrameLayout implements
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         droidTextureView = new DroidTextureView(getContext());
         droidTextureView.setSurfaceTextureListener(this);
-        droidTextureView.setOnClickListener(v -> {
-            if (mOnPlayerViewListener != null) {
-                mOnPlayerViewListener.onTextureViewClick();
-            }
-        });
         playerContainer.addView(droidTextureView, layoutParams);
     }
 
@@ -385,13 +391,7 @@ public class DroidBasePlayerView extends FrameLayout implements
             coverImage.setVisibility(GONE);
             setState(DroidPlayerState.PLAYING);
         } else if (isPause()) {
-            if (mCaptureBitmap != null) {
-                coverImage.setVisibility(VISIBLE);
-                coverImage.setVideoSize(mVideoWidth, mVideoHeight);
-                coverImage.setImageBitmap(mCaptureBitmap);
-            } else {
-                showCoverImage(mImageUrl);
-            }
+            showCaptureImage();
         }
     }
 
@@ -418,6 +418,16 @@ public class DroidBasePlayerView extends FrameLayout implements
         coverImage.setVisibility(VISIBLE);
         setState(DroidPlayerState.IDLE);
         clearScreenOnFlag();
+    }
+
+    protected void showCaptureImage() {
+        if (mCaptureBitmap != null) {
+            coverImage.setVisibility(VISIBLE);
+            coverImage.setVideoSize(mVideoWidth, mVideoHeight);
+            coverImage.setImageBitmap(mCaptureBitmap);
+        } else {
+            showCoverImage(mImageUrl);
+        }
     }
 
     // 显示封面图片
@@ -509,10 +519,16 @@ public class DroidBasePlayerView extends FrameLayout implements
     // 进入全屏
     public void enterFullScreen() {
         mOrientationDelegate.enterFullScreen();
+        if (!isPlaying()) {
+            showCaptureImage();
+        }
     }
 
     // 退出全屏
     public void quitFullScreen() {
             mOrientationDelegate.quitFullScreen();
+        if (!isPlaying()) {
+            showCaptureImage();
+        }
     }
 }

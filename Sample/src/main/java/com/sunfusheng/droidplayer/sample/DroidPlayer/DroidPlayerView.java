@@ -157,7 +157,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
     }
 
     @Override
-    public void onTextureViewClick() {
+    public void onDecorationViewClick() {
         showBottomLayout();
     }
 
