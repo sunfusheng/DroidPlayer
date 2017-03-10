@@ -38,7 +38,7 @@ public class MainFragment extends BaseFragment {
 
     private void initData() {
         int randomNum = new Random().nextInt(mList.size());
-        initPlayerView(mList.get(randomNum));
+        initPlayerView(randomNum);
     }
 
     private void initView() {
@@ -48,15 +48,16 @@ public class MainFragment extends BaseFragment {
 
     private void initListener() {
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            playerView.release();
-            initPlayerView(mList.get(position));
+            initPlayerView(position);
             playerView.play();
         });
 
         listView.setOnItemLongClickListener((parent, view, position, id) -> true);
     }
 
-    private void initPlayerView(VideoModel model) {
+    private void initPlayerView(int position) {
+        playerView.release();
+        VideoModel model = mList.get(position);
         playerView.setVideoTitle(model.title);
         playerView.setVideoUrl(model.video_url);
         playerView.setImageUrl(model.image_url);
@@ -78,5 +79,14 @@ public class MainFragment extends BaseFragment {
     public void onDestroy() {
         playerView.release();
         super.onDestroy();
+    }
+
+    @Override
+    protected boolean onBackPressed() {
+        if (playerView.isFullScreen()) {
+            playerView.quitFullScreen();
+            return true;
+        }
+        return false;
     }
 }

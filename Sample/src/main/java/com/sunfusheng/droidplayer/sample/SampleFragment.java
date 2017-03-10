@@ -45,7 +45,7 @@ public class SampleFragment extends BaseFragment {
         basePlayerView.setImageUrl(mList.get(randomNum).image_url);
 
         randomNum = new Random().nextInt(mList.size());
-        playerView.setVideoTitle(mList.get(randomNum).title);
+        playerView.setVideoTitle(randomNum % 2 == 0 ? null : mList.get(randomNum).title);
         playerView.setVideoUrl(mList.get(randomNum).video_url);
         playerView.setImageUrl(mList.get(randomNum).image_url);
     }
@@ -56,7 +56,7 @@ public class SampleFragment extends BaseFragment {
 
     private void initListener() {
         tvBasePlay.setOnClickListener(v -> basePlayerView.play());
-        tvBaseFullScreen.setOnClickListener(v -> playerView.enterFullScreen());
+        tvBaseFullScreen.setOnClickListener(v -> basePlayerView.enterFullScreen());
     }
 
     @Override
@@ -77,4 +77,16 @@ public class SampleFragment extends BaseFragment {
         super.onDestroy();
     }
 
+    @Override
+    protected boolean onBackPressed() {
+        if (basePlayerView.isFullScreen()) {
+            basePlayerView.quitFullScreen();
+            return true;
+        }
+        if (playerView.isFullScreen()) {
+            playerView.quitFullScreen();
+            return true;
+        }
+        return false;
+    }
 }

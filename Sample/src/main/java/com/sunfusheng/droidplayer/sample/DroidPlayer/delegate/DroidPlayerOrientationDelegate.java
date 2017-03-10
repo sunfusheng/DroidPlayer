@@ -5,14 +5,13 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.view.OrientationEventListener;
+import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidBasePlayerView;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.util.PlayerUtil;
-
-import static com.sunfusheng.droidplayer.sample.DroidPlayer.util.PlayerUtil.getActivity;
 
 /**
  * Created by sunfusheng on 2017/3/9.
@@ -22,14 +21,14 @@ public class DroidPlayerOrientationDelegate {
     private Context mContext;
     private Activity mActivity;
     private DroidBasePlayerView mPlayerView;
+    private ViewGroup mPlayerViewParent;
+    private ViewGroup.LayoutParams mPlayerViewLayoutParams;
     private ViewGroup mFullScreenContainer;
-    private ViewGroup mParent; // 播放器父容器
-    private int mIndexInParent = 0;
-    private ViewGroup.LayoutParams mLayoutParams; // 播放器布局参数
+    private int mFullScreenContainerId = View.NO_ID;
 
     private boolean isFullScreen; // 是否是全屏
-    private boolean isAutoRotate; // 是否自动旋转屏幕
-    private int mCurrentScreenType; // 当前屏幕状态
+    private boolean isAutoRotationEnable; // 是否允许自动旋转屏幕
+    private int mScreenOrientation; // 当前屏幕方向
     private OrientationEventListener mOrientationEventListener;
 
     public DroidPlayerOrientationDelegate(DroidBasePlayerView playerView) {
@@ -41,62 +40,40 @@ public class DroidPlayerOrientationDelegate {
 
     private void initListener() {
         if (mActivity == null) return;
-        mCurrentScreenType = mActivity.getRequestedOrientation();
+        mScreenOrientation = mActivity.getRequestedOrientation();
         mOrientationEventListener = new OrientationEventListener(mActivity) {
             @Override
             public void onOrientationChanged(int orientation) {
-                if ((orientation > 0 && orientation < 30) || orientation > 330) {   //竖屏
-                    //如果当前已经是竖屏状态，直接返回
-                    if (mCurrentScreenType == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-                        return;
-                    }
-
-                    //只有在自动旋转状态处理逻辑
-                    if (isAutoRotate) {
-                        setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
-                    }
-
-                } else if (orientation > 240 && orientation < 310) {                //横屏
-                    //如果当前已经是横屏状态，直接返回
-                    if (mCurrentScreenType == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) {
-                        return;
-                    }
-
-                    //当前是自动模式 或者 手动模式但是屏幕是反向横屏模式
-                    if (isAutoRotate ||
-                            (!isAutoRotate && mCurrentScreenType == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE)) {
+                if (orientation > 225 && orientation < 315) { // 横屏
+                    if (mScreenOrientation == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE) return;
+                    if (isAutoRotationEnable) {
                         setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
                     }
-
-                } else if (orientation > 50 && orientation < 130) {                 //反向横屏
-                    //如果当前已经是反向横屏状态，直接返回
-                    if (mCurrentScreenType == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE) {
+                } else if (orientation > 45 && orientation < 135) { // 反向横屏
+                    if (mScreenOrientation == ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE)
                         return;
-                    }
-
-                    //当前是自动模式 或者 手动模式但是屏幕是横屏模式
-                    if (isAutoRotate ||
-                            (!isAutoRotate && mCurrentScreenType == ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)) {
-
+                    if (isAutoRotationEnable) {
                         setOrientation(ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE);
                     }
                 }
             }
         };
-        setAutoRotateEnable(isAutoRotate);
+        setAutoRotationEnable(isAutoRotationEnable);
     }
 
     // 进入全屏
     public void enterFullScreen() {
         if (isFullScreen || mActivity == null) return;
         isFullScreen = true;
-        hideActionBar(mContext);
-        mParent = ((ViewGroup) mPlayerView.getParent());
-        mIndexInParent = mParent.indexOfChild(mPlayerView);
-        mLayoutParams = mPlayerView.getLayoutParams();
-        mParent.removeView(mPlayerView);
+        hideActionBar(mActivity);
+
+        mPlayerViewParent = (ViewGroup) mPlayerView.getParent();
+        mPlayerViewLayoutParams = mPlayerView.getLayoutParams();
+        mPlayerViewParent.removeView(mPlayerView);
         mFullScreenContainer = getContentView(mActivity);
         mFullScreenContainer.addView(mPlayerView);
+
+        setAutoRotationEnable(true);
         setOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
     }
 
@@ -104,18 +81,29 @@ public class DroidPlayerOrientationDelegate {
     public void quitFullScreen() {
         if (!isFullScreen || mActivity == null) return;
         isFullScreen = false;
-        showActionBar(mContext);
+        showActionBar(mActivity);
+
         mFullScreenContainer.removeView(mPlayerView);
-        mParent.addView(mPlayerView, mLayoutParams);
+        mPlayerViewParent.addView(mPlayerView, mPlayerViewLayoutParams);
+
+        setAutoRotationEnable(false);
         setOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
-    private ViewGroup getContentView(Activity activity) {
-        return (ViewGroup) (activity).findViewById(Window.ID_ANDROID_CONTENT);
+    public boolean isFullScreen() {
+        return isFullScreen;
     }
 
-    public void setAutoRotateEnable(boolean isEnable) {
-        isAutoRotate = isEnable;
+    public boolean isAutoRotationEnable() {
+        return isAutoRotationEnable;
+    }
+
+    public int getScreenOrientation() {
+        return mScreenOrientation;
+    }
+
+    public void setAutoRotationEnable(boolean isEnable) {
+        isAutoRotationEnable = isEnable;
         if (isEnable) {
             mOrientationEventListener.enable();
         } else {
@@ -125,41 +113,35 @@ public class DroidPlayerOrientationDelegate {
 
     public void setOrientation(int orientation) {
         if (mActivity == null) return;
-        mCurrentScreenType = orientation;
+        mScreenOrientation = orientation;
         mActivity.setRequestedOrientation(orientation);
     }
 
-    private void showActionBar(Context context) {
-        if (context == null) return;
-        if (getActivity(context) == null) return;
-        if (context instanceof AppCompatActivity) {
-            android.support.v7.app.ActionBar actionBar = ((AppCompatActivity) context).getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.show();
-            }
-        } else if (context instanceof Activity) {
-            android.app.ActionBar actionBar = ((Activity) context).getActionBar();
-            if (actionBar != null) {
-                actionBar.show();
-            }
-        }
-        getActivity(context).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    private ViewGroup getContentView(Activity activity) {
+        return (ViewGroup) activity.findViewById(Window.ID_ANDROID_CONTENT);
     }
 
-    private void hideActionBar(Context context) {
-        if (context == null) return;
-        if (getActivity(context) == null) return;
-        if (context instanceof AppCompatActivity) {
-            android.support.v7.app.ActionBar actionBar = ((AppCompatActivity) context).getSupportActionBar();
-            if (actionBar != null) {
-                actionBar.hide();
-            }
-        } else if (context instanceof Activity) {
-            android.app.ActionBar actionBar = ((Activity) context).getActionBar();
-            if (actionBar != null) {
-                actionBar.hide();
-            }
+    private void showActionBar(Activity activity) {
+        if (activity == null) return;
+        if (activity instanceof AppCompatActivity) {
+            android.support.v7.app.ActionBar actionBar = ((AppCompatActivity) activity).getSupportActionBar();
+            if (actionBar != null) actionBar.show();
+        } else {
+            android.app.ActionBar actionBar = activity.getActionBar();
+            if (actionBar != null) actionBar.show();
         }
-        getActivity(context).getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+    }
+
+    private void hideActionBar(Activity activity) {
+        if (activity == null) return;
+        if (activity instanceof AppCompatActivity) {
+            android.support.v7.app.ActionBar actionBar = ((AppCompatActivity) activity).getSupportActionBar();
+            if (actionBar != null) actionBar.hide();
+        } else {
+            android.app.ActionBar actionBar = activity.getActionBar();
+            if (actionBar != null) actionBar.hide();
+        }
+        activity.getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
     }
 }

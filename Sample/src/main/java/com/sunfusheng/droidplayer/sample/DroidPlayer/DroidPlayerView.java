@@ -35,13 +35,17 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
     public ProgressBar bottomProgressBar;
     public ImageView ivCenterPlay;
     public ImageView ivReplay;
-    public TextView tvTitle;
     public TextView tvTip;
+    public LinearLayout llTopLayout;
+    public ImageView ivBack;
+    public ImageView ivBackArrow;
+    public TextView tvTitle;
     public LinearLayout llBottomLayout;
     public ImageView ivPlay;
     public TextView tvCurrentPosition;
     public SeekBar sbCurrentProgress;
     public TextView tvDuration;
+    public ImageView ivFullScreen;
 
     public boolean isShowBottomLayout;
     private boolean fromUser; // 是否是用户滑动SeekBar
@@ -57,7 +61,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
                     isShowBottomLayout = false;
                     setVisible(true, bottomProgressBar);
                     setVisible(false, llBottomLayout);
-                    setVisible(state == DroidPlayerState.LOADING, tvTitle);
+                    setVisible(state == DroidPlayerState.LOADING, llTopLayout);
                     break;
             }
         }
@@ -73,38 +77,50 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
 
     public DroidPlayerView(@NonNull Context context, @Nullable AttributeSet attrs, @AttrRes int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        init();
+        initView();
     }
 
-    public void init() {
+    public void initView() {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.droid_player_layout, this, false);
-
         ivCenterPlay = (ImageView) view.findViewById(R.id.iv_center_play);
         loadingView = (ProgressBar) view.findViewById(R.id.loading_view);
         bottomProgressBar = (ProgressBar) view.findViewById(R.id.bottom_progress_bar);
         ivReplay = (ImageView) view.findViewById(R.id.iv_replay);
-        tvTitle = (TextView) view.findViewById(R.id.tv_title);
         tvTip = (TextView) view.findViewById(R.id.tv_tip);
+        llTopLayout = (LinearLayout) view.findViewById(R.id.ll_top_layout);
+        ivBackArrow = (ImageView) view.findViewById(R.id.iv_back_arrow);
+        ivBack = (ImageView) view.findViewById(R.id.iv_back);
+        tvTitle = (TextView) view.findViewById(R.id.tv_title);
         llBottomLayout = (LinearLayout) view.findViewById(R.id.ll_bottom_layout);
         ivPlay = (ImageView) view.findViewById(R.id.iv_play);
         tvCurrentPosition = (TextView) view.findViewById(R.id.tv_current_position);
         sbCurrentProgress = (SeekBar) view.findViewById(R.id.sb_current_progress);
         tvDuration = (TextView) view.findViewById(R.id.tv_duration);
+        ivFullScreen = (ImageView) view.findViewById(R.id.iv_fullscreen);
 
-        ivCenterPlay.setOnClickListener(this);
-        ivReplay.setOnClickListener(this);
-        ivPlay.setOnClickListener(this);
-        sbCurrentProgress.setOnSeekBarChangeListener(this);
-        setOnPlayerViewListener(this);
-
+        showTopLayout();
+        llBottomLayout.setVisibility(GONE);
         setText(tvCurrentPosition, PlayerUtil.getTimeString(0));
         sbCurrentProgress.setSecondaryProgress(0);
         sbCurrentProgress.setProgress(0);
         bottomProgressBar.setSecondaryProgress(0);
         bottomProgressBar.setProgress(0);
 
+        initListener();
         addDecorationView(view);
+    }
+
+    private void initListener() {
+        ivCenterPlay.setOnClickListener(this);
+        ivReplay.setOnClickListener(this);
+        ivBackArrow.setOnClickListener(this);
+        ivBack.setOnClickListener(this);
+        tvTitle.setOnClickListener(this);
+        ivPlay.setOnClickListener(this);
+        sbCurrentProgress.setOnSeekBarChangeListener(this);
+        ivFullScreen.setOnClickListener(this);
+        setOnPlayerViewListener(this);
     }
 
     @Override
@@ -116,7 +132,27 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
             play();
         } else if (id == R.id.iv_play) {
             play();
+        } else if (id == R.id.iv_back_arrow || id == R.id.iv_back || id == R.id.tv_title) {
+            if (isFullScreen()) {
+                quitFullScreen();
+                addBottomLayoutMessage();
+                showTopLayout();
+            }
+        } else if (id == R.id.iv_fullscreen) {
+            if (isFullScreen()) {
+                quitFullScreen();
+            } else {
+                enterFullScreen();
+            }
+            setImageResource(ivFullScreen, isFullScreen() ? R.mipmap.droid_player_quit_fullscreen : R.mipmap.droid_player_enter_fullscreen);
+            addBottomLayoutMessage();
+            showTopLayout();
         }
+    }
+
+    @Override
+    public void play(String url) {
+        super.play(url);
     }
 
     @Override
@@ -159,13 +195,13 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
 
     // 隐藏所有的Views
     public void hideAllViews() {
-        setVisible(false, ivCenterPlay, llBottomLayout, loadingView, bottomProgressBar, tvTitle, tvTip, ivReplay);
+        setVisible(false, ivCenterPlay, llBottomLayout, loadingView, bottomProgressBar, llTopLayout, tvTip, ivReplay);
     }
 
     // 空闲状态
     public void setIdleState() {
         setVisible(true, ivCenterPlay);
-        showTitle();
+        showTopLayout();
     }
 
     // 加载状态
@@ -174,7 +210,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
             setVisible(true);
         }
         setVisible(true, loadingView, bottomProgressBar);
-        showTitle();
+        showTopLayout();
     }
 
     // 播放状态
@@ -191,32 +227,40 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
         }
         isShowBottomLayout = true;
         setVisible(true, ivCenterPlay, llBottomLayout);
-        showTitle();
+        showTopLayout();
     }
 
     // 完成状态
     public void setCompleteState() {
         setVisible(true, tvTip, ivReplay);
         setText(tvTip, R.string.player_replay_tip);
-        showTitle();
+        showTopLayout();
     }
 
     // 错误状态
     public void setErrorState() {
         setVisible(true, tvTip, ivReplay);
         setText(tvTip, R.string.player_error_tip);
-        showTitle();
+        showTopLayout();
     }
 
     @Override
     public void setVideoTitle(String title) {
         super.setVideoTitle(title);
-        showTitle();
+        showTopLayout();
     }
 
-    public void showTitle() {
-        setText(tvTitle, mTitle);
-        setVisible(!TextUtils.isEmpty(mTitle), tvTitle);
+    public void showTopLayout() {
+        setVisible(!TextUtils.isEmpty(mTitle) || isFullScreen(), llTopLayout);
+        if (!TextUtils.isEmpty(mTitle)) {
+            setGone(true, ivBackArrow);
+            setGone(!isFullScreen(), ivBack);
+            setText(tvTitle, mTitle);
+            setGone(false, tvTitle);
+        } else {
+            setGone(!isFullScreen(), ivBackArrow);
+            setGone(true, ivBack, tvTitle);
+        }
     }
 
     public boolean showBottomLayout() {
@@ -226,7 +270,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
         addBottomLayoutMessage();
         setVisible(true, llBottomLayout);
         setVisible(false, bottomProgressBar);
-        showTitle();
+        showTopLayout();
         return true;
     }
 

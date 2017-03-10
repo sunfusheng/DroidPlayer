@@ -34,7 +34,7 @@ public class MainActivity extends BaseActivity {
             "about"
     };
 
-    private static int lastPosition = 1;
+    private static int lastPosition = 0;
     private MenuItem lastMenuItem;
 
     @Override
@@ -90,6 +90,7 @@ public class MainActivity extends BaseActivity {
     }
 
     private void showFragment(int position, Fragment fragment) {
+        setBackPressedFragment(fragment);
         FragmentManager fragmentManager = getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         Fragment oldFragment = fragmentManager.findFragmentByTag(TAGS[lastPosition]);

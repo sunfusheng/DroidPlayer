@@ -30,23 +30,22 @@
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
             android:layout_margin="3dp"
+            android:gravity="center_vertical"
             android:background="@drawable/drawable_video_grey_bg"
             android:orientation="horizontal"
-            android:paddingLeft="3dp"
+            android:paddingLeft="4dp"
             android:paddingRight="4dp">
 
             <ImageView
-                android:layout_width="8dp"
-                android:layout_height="8dp"
-                android:layout_gravity="center_vertical"
+                android:layout_width="6dp"
+                android:layout_height="6dp"
                 android:src="@mipmap/droid_player_play"/>
 
             <TextView
                 android:id="@+id/tv_duration"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:layout_marginLeft="1dp"
+                android:layout_marginLeft="2dp"
                 android:text="00:45"
                 android:textColor="@color/player_text_color"
                 android:textSize="8sp"/>

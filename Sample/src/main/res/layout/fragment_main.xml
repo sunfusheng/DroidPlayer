@@ -5,10 +5,15 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView
-        android:id="@+id/playerView"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content">
+
+        <com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView
+            android:id="@+id/playerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+    </FrameLayout>
 
     <ListView
         android:id="@+id/listView"

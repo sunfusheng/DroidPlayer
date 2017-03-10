@@ -191,7 +191,6 @@ public class DroidBasePlayerView extends FrameLayout implements
         droidTextureView = new DroidTextureView(getContext());
         droidTextureView.setSurfaceTextureListener(this);
         droidTextureView.setOnClickListener(v -> {
-            quitFullScreen();
             if (mOnPlayerViewListener != null) {
                 mOnPlayerViewListener.onTextureViewClick();
             }
@@ -493,6 +492,10 @@ public class DroidBasePlayerView extends FrameLayout implements
     public void setImageResource(ImageView iv, @DrawableRes int id) {
         if (iv == null) return;
         iv.setImageResource(id);
+    }
+
+    public boolean isFullScreen() {
+        return mOrientationDelegate.isFullScreen();
     }
 
     // 进入全屏

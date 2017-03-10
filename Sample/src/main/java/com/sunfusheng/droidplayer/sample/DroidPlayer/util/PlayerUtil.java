@@ -25,21 +25,18 @@ public class PlayerUtil {
     public static void show(Context context, String msg) {
         if (context == null) return;
         if (TextUtils.isEmpty(msg)) return;
-
         int duration;
         if (msg.length() > 10) {
             duration = Toast.LENGTH_LONG;
         } else {
             duration = Toast.LENGTH_SHORT;
         }
-
         if (mToast == null) {
             mToast = Toast.makeText(context, msg, duration);
         } else {
             mToast.setText(msg);
             mToast.setDuration(duration);
         }
-
         mToast.show();
     }
 

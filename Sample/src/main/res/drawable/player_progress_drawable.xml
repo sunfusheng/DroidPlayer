@@ -12,7 +12,7 @@
     <item android:id="@android:id/secondaryProgress">
         <clip>
             <shape>
-                <solid android:color="@color/player_progress_bg_color"/>
+                <solid android:color="@color/player_progress_color"/>
             </shape>
         </clip>
     </item>

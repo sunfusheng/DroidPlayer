@@ -14,11 +14,12 @@ import java.util.List;
 /**
  * Created by sunfusheng on 2017/3/3.
  */
-public class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment {
 
     protected Activity mActivity;
     protected Context mContext;
     protected List<VideoModel> mList = ModelUtil.getVideoList();
+
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -26,4 +27,14 @@ public class BaseFragment extends Fragment {
         mActivity = getActivity();
         mContext = getContext();
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    protected boolean onBackPressed() {
+        return false;
+    }
+
 }
