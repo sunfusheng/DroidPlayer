@@ -34,7 +34,7 @@ public class MainActivity extends BaseActivity {
             "about"
     };
 
-    private static int lastPosition = 0;
+    private static int lastPosition = 2;
     private MenuItem lastMenuItem;
 
     @Override

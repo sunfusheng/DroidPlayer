@@ -29,10 +29,12 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     private DroidMediaPlayerListener mMediaPlayerListener;
     private Surface mSurface;
 
+    private DroidBasePlayerView mBasePlayerView;
     private int mState; // 播放器状态
     private boolean isPlaying; // 是否在播放中
     private boolean isPausedWhenPlaying; // 当播放中是否被暂停
     private String mVideoUrl; // 视频地址
+    private int mPositionInList = -1; // 视频在List或RecyclerView中的位置
 
     private Handler mHandler = new Handler(Looper.getMainLooper());
 
@@ -54,9 +56,11 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     }
 
     private void resetData() {
+        this.mBasePlayerView = null;
         this.isPlaying = false;
         this.isPausedWhenPlaying = false;
-        mVideoUrl = null;
+        this.mVideoUrl = null;
+        mPositionInList = -1;
     }
 
     private void initPlayer(String url) throws Exception {
@@ -209,6 +213,15 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         }
     }
 
+    public boolean onBackPressed() {
+        if (isFullScreen()) {
+            quitFullScreen();
+            return true;
+        }
+        release();
+        return false;
+    }
+
     public IjkMediaPlayer getMediaPlayer() {
         return mMediaPlayer;
     }
@@ -234,6 +247,27 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         if (mMediaPlayer != null) {
             mMediaPlayer.setSurface(surface);
         }
+    }
+
+    public DroidBasePlayerView getPlayerView() {
+        return mBasePlayerView;
+    }
+
+    public void setPlayerView(DroidBasePlayerView mBasePlayerView) {
+        this.mBasePlayerView = mBasePlayerView;
+    }
+
+    public boolean isFullScreen() {
+        if (mBasePlayerView == null) return false;
+        return mBasePlayerView.isFullScreen();
+    }
+
+    public boolean quitFullScreen() {
+        if (isFullScreen()) {
+            mBasePlayerView.quitFullScreen();
+            return true;
+        }
+        return false;
     }
 
     public int getState() {
@@ -274,4 +308,11 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         return mHandler;
     }
 
+    public int getPositionInList() {
+        return mPositionInList;
+    }
+
+    public void setPositionInList(int mPositionInList) {
+        this.mPositionInList = mPositionInList;
+    }
 }

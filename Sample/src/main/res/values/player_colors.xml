@@ -6,7 +6,7 @@
     <color name="player_text_color">#ffffff</color>
     <color name="player_red_color">#DD3A38</color>
 
-    <color name="player_progress_bg_color">#4dffffff</color>
+    <color name="player_progress_bg_color">#66ffffff</color>
     <color name="player_progress_color">#ffffff</color>
     <color name="player_progress_red_color">#DD3A38</color>
 

@@ -31,7 +31,7 @@
             android:layout_alignParentRight="true"
             android:layout_margin="3dp"
             android:gravity="center_vertical"
-            android:background="@drawable/drawable_video_grey_bg"
+            android:background="@drawable/drawable_video_grey_6dp_bg"
             android:orientation="horizontal"
             android:paddingLeft="4dp"
             android:paddingRight="4dp">

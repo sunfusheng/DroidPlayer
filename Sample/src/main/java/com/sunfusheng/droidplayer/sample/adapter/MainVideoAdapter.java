@@ -19,9 +19,9 @@ import butterknife.ButterKnife;
 /**
  * Created by sunfusheng on 2017/3/2.
  */
-public class VideoAdapter extends BaseListAdapter<VideoModel> {
+public class MainVideoAdapter extends BaseListAdapter<VideoModel> {
 
-    public VideoAdapter(Context context, List<VideoModel> list) {
+    public MainVideoAdapter(Context context, List<VideoModel> list) {
         super(context, list);
     }
 
@@ -29,7 +29,7 @@ public class VideoAdapter extends BaseListAdapter<VideoModel> {
     public View getView(int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.item_video, null);
+            convertView = mInflater.inflate(R.layout.item_main_layout, null);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         } else {
@@ -44,7 +44,7 @@ public class VideoAdapter extends BaseListAdapter<VideoModel> {
         Glide.with(mContext)
                 .load(model.image_url)
                 .crossFade()
-                .fallback(R.color.player_transparent)
+                .fallback(R.color.player_white_color)
                 .error(R.color.player_transparent)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
                 .into(holder.ivImage);

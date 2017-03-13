@@ -76,6 +76,7 @@ public class DroidBasePlayerView extends FrameLayout implements
 
     private Bitmap mCaptureBitmap; // 暂停时抓拍的Bitmap
     private long mCapturePosition; // 暂停抓拍时的播放位置
+    private int mPositionInList = -1; // 视频在List或RecyclerView中的位置
 
     private Timer mTimer;
     private ProgressTimerTask mTimerTask;
@@ -94,7 +95,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     }
 
     private void init() {
-        setBackgroundColor(getResources().getColor(R.color.black));
+        setBackgroundColor(getResources().getColor(R.color.player_white_color));
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.droid_base_player_layout, this);
 
@@ -159,12 +160,14 @@ public class DroidBasePlayerView extends FrameLayout implements
                 return;
             }
         }
-        mVideoUrl = url;
         DroidMediaPlayer.getInstance().release();
+        mVideoUrl = url;
         setState(DroidPlayerState.LOADING);
         addTextureView();
         DroidMediaPlayer.getInstance().play(url);
         DroidMediaPlayer.getInstance().setMediaPlayerListener(this);
+        DroidMediaPlayer.getInstance().setPlayerView(this);
+        DroidMediaPlayer.getInstance().setPositionInList(mPositionInList);
     }
 
     @Override
@@ -206,6 +209,7 @@ public class DroidBasePlayerView extends FrameLayout implements
         if (playerContainer.getChildCount() > 0) {
             playerContainer.removeAllViews();
         }
+        setBackgroundColor(getResources().getColor(R.color.player_black_color));
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
         droidTextureView = new DroidTextureView(getContext());
         droidTextureView.setSurfaceTextureListener(this);
@@ -408,21 +412,33 @@ public class DroidBasePlayerView extends FrameLayout implements
         }
     }
 
+    private void resetData() {
+        mVideoWidth = 0;
+        mVideoHeight = 0;
+        mDuration = 0;
+        mCurrentPosition = 0;
+        mCaptureBitmap = null;
+        mCapturePosition = 0L;
+        mPositionInList = -1;
+    }
+
     @Override
     public void onVideoRelease() {
         Log.d(TAG, "onVideoRelease()");
-        mCaptureBitmap = null;
-        mCapturePosition = 0L;
+        resetData();
         stopTimer();
+        setBackgroundColor(getResources().getColor(R.color.player_white_color));
         DroidMediaPlayer.getInstance().setMediaPlayerListener(null);
+        DroidMediaPlayer.getInstance().setPlayerView(null);
+        DroidMediaPlayer.getInstance().setPositionInList(-1);
         coverImage.setVisibility(VISIBLE);
         setState(DroidPlayerState.IDLE);
         clearScreenOnFlag();
     }
 
     protected void showCaptureImage() {
+        coverImage.setVisibility(VISIBLE);
         if (mCaptureBitmap != null) {
-            coverImage.setVisibility(VISIBLE);
             coverImage.setVideoSize(mVideoWidth, mVideoHeight);
             coverImage.setImageBitmap(mCaptureBitmap);
         } else {
@@ -432,11 +448,6 @@ public class DroidBasePlayerView extends FrameLayout implements
 
     // 显示封面图片
     public void showCoverImage(String image_url) {
-        if (TextUtils.isEmpty(image_url)) {
-            coverImage.setVisibility(View.GONE);
-            return;
-        }
-        coverImage.setVisibility(View.VISIBLE);
         Glide.with(getContext())
                 .load(image_url)
                 .crossFade()
@@ -526,9 +537,17 @@ public class DroidBasePlayerView extends FrameLayout implements
 
     // 退出全屏
     public void quitFullScreen() {
-            mOrientationDelegate.quitFullScreen();
+        mOrientationDelegate.quitFullScreen();
         if (!isPlaying()) {
             showCaptureImage();
         }
+    }
+
+    public int getPositionInList() {
+        return mPositionInList;
+    }
+
+    public void setPositionInList(int mPositionInList) {
+        this.mPositionInList = mPositionInList;
     }
 }

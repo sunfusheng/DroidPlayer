@@ -6,8 +6,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
+import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
-import com.sunfusheng.droidplayer.sample.adapter.VideoAdapter;
+import com.sunfusheng.droidplayer.sample.adapter.MainVideoAdapter;
 import com.sunfusheng.droidplayer.sample.model.VideoModel;
 
 import java.util.Random;
@@ -42,7 +43,7 @@ public class MainFragment extends BaseFragment {
     }
 
     private void initView() {
-        VideoAdapter adapter = new VideoAdapter(mContext, mList);
+        MainVideoAdapter adapter = new MainVideoAdapter(mContext, mList);
         listView.setAdapter(adapter);
     }
 
@@ -83,8 +84,7 @@ public class MainFragment extends BaseFragment {
 
     @Override
     protected boolean onBackPressed() {
-        if (playerView.isFullScreen()) {
-            playerView.quitFullScreen();
+        if (DroidMediaPlayer.getInstance().onBackPressed()) {
             return true;
         }
         return false;

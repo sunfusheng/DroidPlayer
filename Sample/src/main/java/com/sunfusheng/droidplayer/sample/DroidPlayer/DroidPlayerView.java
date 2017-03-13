@@ -50,7 +50,6 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
     public boolean isShowBottomLayout;
     private boolean fromUser; // 是否是用户滑动SeekBar
     private int preState; // 滑动SeekBar前，播放器状态
-    private int mLastBufferingProgress; // 上一次缓冲进度
 
     private Handler mHandler = new Handler() {
         @Override
@@ -284,8 +283,6 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
     public void onCacheChange(int progress) {
         if (progress < 0) progress = 0;
         if (progress > 100) progress = 100;
-        if (mLastBufferingProgress >= progress) return;
-        this.mLastBufferingProgress = progress;
         sbCurrentProgress.setSecondaryProgress(progress);
         bottomProgressBar.setSecondaryProgress(progress);
     }
