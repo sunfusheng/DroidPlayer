@@ -51,9 +51,10 @@ public class DroidBasePlayerView extends FrameLayout implements
     private static final String TAG = "----> BasePlayerView";
 
     private RelativeLayout playerContainer;
+    private RelativeLayout rlCoverImage;
     protected RelativeLayout decorationContainer;
     private DroidTextureView droidTextureView;
-    private DroidImageView coverImage;
+    private DroidImageView droidImageView;
 
     public static final int TIME_DELAY = 1000; // 进度更新的时间延时
     public static final int TIME_INTERVAL = 1000; // 进度更新的时间间隔
@@ -100,7 +101,7 @@ public class DroidBasePlayerView extends FrameLayout implements
         View view = inflater.inflate(R.layout.droid_base_player_layout, this);
 
         playerContainer = (RelativeLayout) view.findViewById(R.id.player_container);
-        coverImage = (DroidImageView) view.findViewById(R.id.cover_image);
+        rlCoverImage = (RelativeLayout) view.findViewById(R.id.rl_cover_image);
         decorationContainer = (RelativeLayout) view.findViewById(R.id.decoration_container);
 
         mMeasureDelegate = new DroidPlayerMeasureDelegate(this, 16, 9);
@@ -127,16 +128,24 @@ public class DroidBasePlayerView extends FrameLayout implements
     }
 
     // 设置视频地址
-    public void setVideoUrl(String video_url) {
-        if (checkVideoUrl(video_url)) {
-            mVideoUrl = video_url;
+    public void setVideoUrl(String videoUrl) {
+        if (checkVideoUrl(videoUrl)) {
+            mVideoUrl = videoUrl;
         }
     }
 
     // 设置封面图片
-    public void setImageUrl(String image_url) {
-        mImageUrl = image_url;
-        showCoverImage(image_url);
+    public void setImageUrl(String imageUrl) {
+        mImageUrl = imageUrl;
+        ImageView imageView = new ImageView(getContext());
+        addCoverImage(imageView);
+        loadingCoverImage(imageView, imageUrl);
+    }
+
+    // 设置封面图片
+    public void setCoverImage(ImageView imageView, String imageUrl) {
+        addCoverImage(imageView);
+        loadingCoverImage(imageView, imageUrl);
     }
 
     // 设置宽高比
@@ -151,6 +160,9 @@ public class DroidBasePlayerView extends FrameLayout implements
     @Override
     public void play(String url) {
         if (!checkVideoUrl(url)) return;
+        if (droidImageView != null && droidImageView.isShown()) {
+            droidImageView.setVisibility(GONE);
+        }
         if (url.equals(DroidMediaPlayer.getInstance().getVideoUrl())) {
             if (isPlaying()) {
                 pause();
@@ -211,9 +223,14 @@ public class DroidBasePlayerView extends FrameLayout implements
         }
         setBackgroundColor(getResources().getColor(R.color.player_black_color));
         FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+
         droidTextureView = new DroidTextureView(getContext());
         droidTextureView.setSurfaceTextureListener(this);
         playerContainer.addView(droidTextureView, layoutParams);
+
+        droidImageView = new DroidImageView(getContext());
+        droidImageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        playerContainer.addView(droidImageView, layoutParams);
     }
 
     @Override
@@ -260,27 +277,27 @@ public class DroidBasePlayerView extends FrameLayout implements
         switch (state) {
             case DroidPlayerState.IDLE:
                 Log.d(TAG, "STATE IDLE");
-                coverImage.setVisibility(VISIBLE);
+                rlCoverImage.setVisibility(VISIBLE);
                 break;
             case DroidPlayerState.LOADING:
                 Log.d(TAG, "STATE LOADING");
-                coverImage.setVisibility(mCurrentPosition == 0 ? VISIBLE : GONE);
+                rlCoverImage.setVisibility(mCurrentPosition == 0 ? VISIBLE : GONE);
                 break;
             case DroidPlayerState.PLAYING:
                 Log.d(TAG, "STATE PLAYING");
-                coverImage.setVisibility(GONE);
+                rlCoverImage.setVisibility(GONE);
                 break;
             case DroidPlayerState.PAUSE:
                 Log.d(TAG, "STATE PAUSE");
-                coverImage.setVisibility(GONE);
+                rlCoverImage.setVisibility(GONE);
                 break;
             case DroidPlayerState.COMPLETE:
                 Log.d(TAG, "STATE COMPLETE");
-                coverImage.setVisibility(GONE);
+                rlCoverImage.setVisibility(GONE);
                 break;
             case DroidPlayerState.ERROR:
                 Log.d(TAG, "STATE ERROR");
-                coverImage.setVisibility(VISIBLE);
+                rlCoverImage.setVisibility(VISIBLE);
                 break;
         }
         if (mOnPlayerViewListener != null) {
@@ -322,7 +339,7 @@ public class DroidBasePlayerView extends FrameLayout implements
         Log.d(TAG, "onPrepared()");
         addScreenOnFlag();
         startTimer();
-        coverImage.setVisibility(GONE);
+        rlCoverImage.setVisibility(GONE);
         setState(DroidPlayerState.PLAYING);
     }
 
@@ -350,7 +367,9 @@ public class DroidBasePlayerView extends FrameLayout implements
         if (droidTextureView != null) {
             droidTextureView.setVideoSize(width, height);
         }
-        coverImage.setVideoSize(width, height);
+        if (droidImageView != null) {
+            droidImageView.setVideoSize(width, height);
+        }
     }
 
     @Override
@@ -392,7 +411,6 @@ public class DroidBasePlayerView extends FrameLayout implements
     public void onVideoResume() {
         Log.d(TAG, "onVideoResume()");
         if (DroidMediaPlayer.getInstance().isPausedWhenPlaying()) {
-            coverImage.setVisibility(GONE);
             setState(DroidPlayerState.PLAYING);
         } else if (isPause()) {
             showCaptureImage();
@@ -431,30 +449,38 @@ public class DroidBasePlayerView extends FrameLayout implements
         DroidMediaPlayer.getInstance().setMediaPlayerListener(null);
         DroidMediaPlayer.getInstance().setPlayerView(null);
         DroidMediaPlayer.getInstance().setPositionInList(-1);
-        coverImage.setVisibility(VISIBLE);
+        rlCoverImage.setVisibility(VISIBLE);
         setState(DroidPlayerState.IDLE);
         clearScreenOnFlag();
     }
 
     protected void showCaptureImage() {
-        coverImage.setVisibility(VISIBLE);
-        if (mCaptureBitmap != null) {
-            coverImage.setVideoSize(mVideoWidth, mVideoHeight);
-            coverImage.setImageBitmap(mCaptureBitmap);
-        } else {
-            showCoverImage(mImageUrl);
+        if (droidImageView != null && mCaptureBitmap != null) {
+            droidImageView.setVisibility(VISIBLE);
+            droidImageView.setVideoSize(mVideoWidth, mVideoHeight);
+            droidImageView.setImageBitmap(mCaptureBitmap);
         }
     }
 
+    private void addCoverImage(ImageView coverImage) {
+        rlCoverImage.removeAllViews();
+        rlCoverImage.addView(coverImage);
+        coverImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        ViewGroup.LayoutParams layoutParams = coverImage.getLayoutParams();
+        layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        coverImage.setLayoutParams(layoutParams);
+    }
+
     // 显示封面图片
-    public void showCoverImage(String image_url) {
+    public void loadingCoverImage(ImageView imageView, String imageUrl) {
         Glide.with(getContext())
-                .load(image_url)
+                .load(imageUrl)
                 .crossFade()
                 .fallback(R.color.player_transparent)
                 .error(R.color.player_transparent)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .into(coverImage);
+                .into(imageView);
     }
 
     // 启动定时器

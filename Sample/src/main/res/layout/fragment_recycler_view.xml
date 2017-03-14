@@ -6,9 +6,9 @@
     android:background="@android:color/white"
     android:orientation="vertical">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="RecyclerView"/>
+    <com.sunfusheng.droidplayer.sample.widget.RecyclerViewWrapper.RecyclerViewWrapper
+        android:id="@+id/recyclerViewWrapper"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
 </LinearLayout>

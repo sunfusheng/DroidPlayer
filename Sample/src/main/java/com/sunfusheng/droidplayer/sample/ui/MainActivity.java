@@ -1,4 +1,4 @@
-package com.sunfusheng.droidplayer.sample;
+package com.sunfusheng.droidplayer.sample.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -9,6 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
+import com.sunfusheng.droidplayer.sample.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,7 +35,7 @@ public class MainActivity extends BaseActivity {
             "about"
     };
 
-    private static int lastPosition = 2;
+    private static int lastPosition = 3;
     private MenuItem lastMenuItem;
 
     @Override

@@ -10,8 +10,8 @@
         android:layout_height="match_parent"
         android:gravity="center"/>
 
-    <com.sunfusheng.droidplayer.sample.DroidPlayer.DroidImageView
-        android:id="@+id/cover_image"
+    <RelativeLayout
+        android:id="@+id/rl_cover_image"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="center"

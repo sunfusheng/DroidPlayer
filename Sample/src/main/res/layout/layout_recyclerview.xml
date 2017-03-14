@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<merge xmlns:android="http://schemas.android.com/apk/res/android"
+       android:layout_width="match_parent"
+       android:layout_height="match_parent">
+
+    <com.sunfusheng.droidplayer.sample.widget.SwipeRefreshLayout.SwipeRefreshLayout
+        android:id="@+id/swipeRefreshLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </com.sunfusheng.droidplayer.sample.widget.SwipeRefreshLayout.SwipeRefreshLayout>
+
+    <ViewStub
+        android:id="@+id/error_stub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/layout_error"/>
+
+    <ViewStub
+        android:id="@+id/empty_stub"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout="@layout/layout_empty"/>
+
+    <include
+        android:id="@+id/loading_view"
+        layout="@layout/layout_loading"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"/>
+
+    <com.sunfusheng.droidplayer.sample.widget.SwipeRefreshLayout.RefreshView
+        android:id="@+id/rv_loading"
+        android:layout_width="30dp"
+        android:layout_height="30dp"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="10dp"
+        android:visibility="gone"/>
+</merge>

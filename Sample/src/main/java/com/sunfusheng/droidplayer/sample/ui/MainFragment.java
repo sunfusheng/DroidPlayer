@@ -1,4 +1,4 @@
-package com.sunfusheng.droidplayer.sample;
+package com.sunfusheng.droidplayer.sample.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -8,10 +8,7 @@ import android.widget.ListView;
 
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
-import com.sunfusheng.droidplayer.sample.adapter.MainVideoAdapter;
-import com.sunfusheng.droidplayer.sample.model.VideoModel;
-
-import java.util.Random;
+import com.sunfusheng.droidplayer.sample.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -38,13 +35,13 @@ public class MainFragment extends BaseFragment {
     }
 
     private void initData() {
-        int randomNum = new Random().nextInt(mList.size());
-        initPlayerView(randomNum);
+//        int randomNum = new Random().nextInt(mList.size());
+//        initPlayerView(randomNum);
     }
 
     private void initView() {
-        MainVideoAdapter adapter = new MainVideoAdapter(mContext, mList);
-        listView.setAdapter(adapter);
+//        MainVideoAdapter adapter = new MainVideoAdapter(mContext, mList);
+//        listView.setAdapter(adapter);
     }
 
     private void initListener() {
@@ -58,10 +55,9 @@ public class MainFragment extends BaseFragment {
 
     private void initPlayerView(int position) {
         playerView.release();
-        VideoModel model = mList.get(position);
-        playerView.setVideoTitle(model.title);
-        playerView.setVideoUrl(model.video_url);
-        playerView.setImageUrl(model.image_url);
+//        playerView.setVideoTitle(model.title);
+//        playerView.setVideoUrl(model.video_url);
+//        playerView.setImageUrl(model.image_url);
     }
 
     @Override

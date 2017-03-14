@@ -1,4 +1,4 @@
-package com.sunfusheng.droidplayer.sample;
+package com.sunfusheng.droidplayer.sample.ui;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,8 +9,7 @@ import android.widget.TextView;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidBasePlayerView;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
-
-import java.util.Random;
+import com.sunfusheng.droidplayer.sample.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -40,14 +39,14 @@ public class SampleFragment extends BaseFragment {
     }
 
     private void initData() {
-        int randomNum = new Random().nextInt(mList.size());
-        basePlayerView.setVideoUrl(mList.get(randomNum).video_url);
-        basePlayerView.setImageUrl(mList.get(randomNum).image_url);
-
-        randomNum = new Random().nextInt(mList.size());
-        playerView.setVideoTitle(randomNum % 2 == 0 ? null : mList.get(randomNum).title);
-        playerView.setVideoUrl(mList.get(randomNum).video_url);
-        playerView.setImageUrl(mList.get(randomNum).image_url);
+//        int randomNum = new Random().nextInt(mList.size());
+//        basePlayerView.setVideoUrl(mList.get(randomNum).video_url);
+//        basePlayerView.setImageUrl(mList.get(randomNum).image_url);
+//
+//        randomNum = new Random().nextInt(mList.size());
+//        playerView.setVideoTitle(randomNum % 2 == 0 ? null : mList.get(randomNum).title);
+//        playerView.setVideoUrl(mList.get(randomNum).video_url);
+//        playerView.setImageUrl(mList.get(randomNum).image_url);
     }
 
     private void initView() {

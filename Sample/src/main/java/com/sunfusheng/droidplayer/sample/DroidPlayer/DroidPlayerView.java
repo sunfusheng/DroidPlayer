@@ -103,6 +103,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
         setText(tvCurrentPosition, PlayerUtil.getTimeString(0));
         sbCurrentProgress.setSecondaryProgress(0);
         sbCurrentProgress.setProgress(0);
+        bottomProgressBar.setVisibility(GONE);
         bottomProgressBar.setSecondaryProgress(0);
         bottomProgressBar.setProgress(0);
 

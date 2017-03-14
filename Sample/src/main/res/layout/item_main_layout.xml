@@ -6,13 +6,14 @@
     android:padding="10dp">
 
     <RelativeLayout
+        android:id="@+id/rl_player"
         android:layout_width="100dp"
         android:layout_height="60dp"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true">
 
         <ImageView
-            android:id="@+id/iv_image"
+            android:id="@+id/iv_image2"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
@@ -42,7 +43,7 @@
                 android:src="@mipmap/droid_player_play"/>
 
             <TextView
-                android:id="@+id/tv_duration"
+                android:id="@+id/tv_duration2"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="2dp"
@@ -54,22 +55,14 @@
     </RelativeLayout>
 
     <TextView
-        android:id="@+id/tv_title"
+        android:id="@+id/tv_title2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_toLeftOf="@+id/rl_player"
         android:ellipsize="end"
         android:maxLines="2"
-        android:paddingBottom="3dp"
         android:text="标题"
         android:textColor="@color/color2"
         android:textSize="15sp"/>
 
-    <TextView
-        android:id="@+id/tv_size"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_title"
-        android:text="45.32MB"
-        android:textColor="@color/color5"
-        android:textSize="12sp"/>
 </RelativeLayout>

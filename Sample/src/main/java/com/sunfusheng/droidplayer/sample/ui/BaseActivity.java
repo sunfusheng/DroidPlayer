@@ -1,16 +1,17 @@
-package com.sunfusheng.droidplayer.sample;
+package com.sunfusheng.droidplayer.sample.ui;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.annotation.StringRes;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+
+import com.trello.rxlifecycle.components.support.RxAppCompatActivity;
 
 /**
  * Created by sunfusheng on 2017/3/2.
  */
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends RxAppCompatActivity {
 
     private BaseFragment mBackPressedFragment;
 
