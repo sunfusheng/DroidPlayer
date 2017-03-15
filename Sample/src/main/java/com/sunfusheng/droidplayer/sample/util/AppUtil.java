@@ -1,18 +1,33 @@
 package com.sunfusheng.droidplayer.sample.util;
 
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.text.TextUtils;
 
 import com.sunfusheng.droidplayer.sample.DroidPlayerApp;
 
 import java.util.Formatter;
+import java.util.List;
 import java.util.Locale;
 
 /**
  * Created by sunfusheng on 2017/3/14.
  */
 public class AppUtil {
+
+    public static <T> boolean notEmpty(List<T> list) {
+        return !isEmpty(list);
+    }
+
+    public static <T> boolean isEmpty(List<T> list) {
+        if (list == null || list.size() == 0) {
+            return true;
+        }
+        return false;
+    }
 
     // 判断网络是否可用
     public static boolean isNetworkAvailable() {
@@ -42,5 +57,32 @@ public class AppUtil {
         StringBuilder stringBuilder = new StringBuilder();
         Formatter formatter = new Formatter(stringBuilder, Locale.getDefault());
         return formatter.format("%02d:%02d", minutes, seconds).toString();
+    }
+
+    // 获取当前应用的版本号
+    public static String getVersionName() {
+        try {
+            PackageManager packageManager = DroidPlayerApp.getContext().getPackageManager();
+            PackageInfo packInfo = packageManager.getPackageInfo(DroidPlayerApp.getContext().getPackageName(), 0);
+            String version = packInfo.versionName;
+            if (!TextUtils.isEmpty(version)) {
+                return "V" + version;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "V1.0";
+    }
+
+    // 获取当前应用的版本号
+    public static int getVersionCode() {
+        try {
+            PackageManager packageManager = DroidPlayerApp.getContext().getPackageManager();
+            PackageInfo packInfo = packageManager.getPackageInfo(DroidPlayerApp.getContext().getPackageName(), 0);
+            return packInfo.versionCode;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 1;
     }
 }

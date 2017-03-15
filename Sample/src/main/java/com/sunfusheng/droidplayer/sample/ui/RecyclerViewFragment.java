@@ -5,11 +5,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.R;
 import com.sunfusheng.droidplayer.sample.http.Api;
 import com.sunfusheng.droidplayer.sample.http.ApiService;
 import com.sunfusheng.droidplayer.sample.model.VideoEntity;
+import com.sunfusheng.droidplayer.sample.util.AppUtil;
 import com.sunfusheng.droidplayer.sample.widget.RecyclerViewWrapper.LoadingStateDelegate;
 import com.sunfusheng.droidplayer.sample.widget.RecyclerViewWrapper.RecyclerViewWrapper;
 
@@ -28,7 +28,7 @@ public class RecyclerViewFragment extends BaseFragment implements RecyclerViewWr
     @BindView(R.id.recyclerViewWrapper)
     RecyclerViewWrapper recyclerViewWrapper;
 
-    List<Object> mList = new ArrayList<>();
+    private List<VideoEntity> mList = new ArrayList<>();
     private int startPage = 0;
 
     @Override
@@ -42,6 +42,7 @@ public class RecyclerViewFragment extends BaseFragment implements RecyclerViewWr
     }
 
     private void initData() {
+        recyclerViewWrapper.setLoadingState(LoadingStateDelegate.STATE.LOADING);
         getVideoList(false);
     }
 
@@ -63,7 +64,8 @@ public class RecyclerViewFragment extends BaseFragment implements RecyclerViewWr
         getVideoList(true);
     }
 
-    private void getVideoList(final boolean isLoadMore) {
+    // 获取视频数据
+    protected void getVideoList(final boolean isLoadMore) {
         if (!isLoadMore) {
             mList = new ArrayList<>();
             startPage = 0;
@@ -74,87 +76,45 @@ public class RecyclerViewFragment extends BaseFragment implements RecyclerViewWr
                 .subscribeOn(Schedulers.io())
                 .observeOn(rx.android.schedulers.AndroidSchedulers.mainThread())
                 .filter(it -> it != null && it.containsKey(ApiService.ID))
-                .map(it -> flatVideoEntity2Obj(it.get(ApiService.ID)))
+                .map(it -> removeDuplicateData(it.get(ApiService.ID)))
+                .compose(bindToLifecycle())
                 .subscribe(list -> {
-                    if (list != null && list.size() > 0) {
+                    if (AppUtil.notEmpty(list)) {
                         mList.addAll(list);
-                        onSuccess(mList, isLoadMore);
+                        recyclerViewWrapper.setData(mList);
+                        recyclerViewWrapper.setLoadingState(LoadingStateDelegate.STATE.SUCCEED);
                     } else {
-                        if (isLoadMore) {
-                            onSuccess(mList, isLoadMore);
+                        if (AppUtil.notEmpty(mList)) {
+                            recyclerViewWrapper.setData(mList);
+                            recyclerViewWrapper.setLoadingState(LoadingStateDelegate.STATE.SUCCEED);
                         } else {
-                            onEmpty();
+                            recyclerViewWrapper.setLoadingState(LoadingStateDelegate.STATE.EMPTY);
                         }
                     }
                 }, e -> {
-                    startPage--;
+                    recyclerViewWrapper.setLoadingState(LoadingStateDelegate.STATE.ERROR);
                     e.printStackTrace();
-                    onError();
+                    startPage--;
                 });
     }
 
-    private List<Object> flatVideoEntity2Obj(List<VideoEntity> videos) {
-        if (videos == null || videos.size() == 0) return null;
-        List<Object> list = new ArrayList<>();
-        for (VideoEntity entity : videos) {
+    // 去重
+    private List<VideoEntity> removeDuplicateData(List<VideoEntity> list) {
+        if (AppUtil.isEmpty(list)) return mList;
+        for (VideoEntity entity : list) {
             boolean isRepeat = false;
-            if (mList != null && mList.size() > 0) {
-                for (Object obj : mList) {
-                    if (obj instanceof VideoEntity) {
-                        VideoEntity item = (VideoEntity) obj;
-                        if (item.getVid().equals(entity.getVid())) {
-                            isRepeat = true;
-                        }
+            if (AppUtil.notEmpty(mList)) {
+                for (VideoEntity item : mList) {
+                    if (item.getVid().equals(entity.getVid())) {
+                        isRepeat = true;
                     }
                 }
             }
             if (!isRepeat) {
-                list.add(entity);
+                mList.add(entity);
             }
         }
         return list;
     }
 
-    public void onLoading() {
-        recyclerViewWrapper.setLoadingState(LoadingStateDelegate.STATE.LOADING);
-    }
-
-    public void onSuccess(List<Object> list, boolean isLoadMore) {
-        recyclerViewWrapper.setData(list);
-        recyclerViewWrapper.setLoadingState(LoadingStateDelegate.STATE.SUCCEED);
-    }
-
-    public void onError() {
-        recyclerViewWrapper.setLoadingState(LoadingStateDelegate.STATE.ERROR);
-    }
-
-    public void onEmpty() {
-        recyclerViewWrapper.setLoadingState(LoadingStateDelegate.STATE.EMPTY);
-    }
-
-    @Override
-    public void onResume() {
-        DroidMediaPlayer.getInstance().resume();
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        DroidMediaPlayer.getInstance().pause();
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        DroidMediaPlayer.getInstance().release();
-        super.onDestroy();
-    }
-
-    @Override
-    protected boolean onBackPressed() {
-        if (DroidMediaPlayer.getInstance().onBackPressed()) {
-            return true;
-        }
-        return false;
-    }
 }
