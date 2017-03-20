@@ -129,6 +129,10 @@ public class RecyclerViewWrapper extends FrameLayout {
         });
     }
 
+    public void addItemDecoration(RecyclerView.ItemDecoration decor) {
+        recyclerView.addItemDecoration(decor);
+    }
+
     public void setLoadingState(@LoadingStateDelegate.STATE int state) {
         if (rvLoading.getVisibility() == VISIBLE) {
             rvLoading.stopLoading();

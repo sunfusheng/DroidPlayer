@@ -1,16 +1,21 @@
 package com.sunfusheng.droidplayer.sample.ui;
 
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.R;
 import com.sunfusheng.droidplayer.sample.http.Api;
 import com.sunfusheng.droidplayer.sample.http.ApiService;
 import com.sunfusheng.droidplayer.sample.model.VideoEntity;
 import com.sunfusheng.droidplayer.sample.util.AppUtil;
+import com.sunfusheng.droidplayer.sample.util.DensityUtil;
 import com.sunfusheng.droidplayer.sample.widget.RecyclerViewWrapper.LoadingStateDelegate;
+import com.sunfusheng.droidplayer.sample.widget.RecyclerViewWrapper.RecyclerViewDivider;
 import com.sunfusheng.droidplayer.sample.widget.RecyclerViewWrapper.RecyclerViewWrapper;
 
 import java.util.ArrayList;
@@ -47,11 +52,25 @@ public class RecyclerViewFragment extends BaseFragment implements RecyclerViewWr
     }
 
     private void initView() {
-
+        recyclerViewWrapper.addItemDecoration(new RecyclerViewDivider(getContext(), LinearLayoutManager.VERTICAL,
+                DensityUtil.dip2px(getContext(), 10), getResources().getColor(R.color.color6)));
     }
 
     private void initListener() {
         recyclerViewWrapper.setOnRequestListener(this);
+        recyclerViewWrapper.setOnScrollListener(new RecyclerViewWrapper.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+
+            }
+
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                DroidMediaPlayer.getInstance().scrollPositionInList(
+                        recyclerViewWrapper.getFirstVisibleItemPosition(),
+                        recyclerViewWrapper.getLastVisibleItemPosition());
+            }
+        });
     }
 
     @Override

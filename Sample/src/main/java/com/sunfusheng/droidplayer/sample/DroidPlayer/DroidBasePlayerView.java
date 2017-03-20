@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.AttrRes;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
@@ -51,6 +52,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     private static final String TAG = "----> BasePlayerView";
 
     private RelativeLayout playerContainer;
+    private ImageView coverImage;
     private RelativeLayout rlCoverImage;
     protected RelativeLayout decorationContainer;
     private DroidTextureView droidTextureView;
@@ -120,6 +122,14 @@ public class DroidBasePlayerView extends FrameLayout implements
                 onDecorationViewClick();
             }
         });
+
+        coverImage = new ImageView(getContext());
+        rlCoverImage.addView(coverImage);
+        coverImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        ViewGroup.LayoutParams layoutParams = coverImage.getLayoutParams();
+        layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+        coverImage.setLayoutParams(layoutParams);
     }
 
     // 设置视频标题
@@ -129,23 +139,21 @@ public class DroidBasePlayerView extends FrameLayout implements
 
     // 设置视频地址
     public void setVideoUrl(String videoUrl) {
-        if (checkVideoUrl(videoUrl)) {
-            mVideoUrl = videoUrl;
-        }
+        mVideoUrl = videoUrl;
+        setState(DroidPlayerState.IDLE);
     }
 
     // 设置封面图片
     public void setImageUrl(String imageUrl) {
         mImageUrl = imageUrl;
-        ImageView imageView = new ImageView(getContext());
-        addCoverImage(imageView);
-        loadingCoverImage(imageView, imageUrl);
+        setState(DroidPlayerState.IDLE);
+        loadingCoverImage(coverImage, imageUrl);
     }
 
     // 设置封面图片
-    public void setCoverImage(ImageView imageView, String imageUrl) {
-        addCoverImage(imageView);
-        loadingCoverImage(imageView, imageUrl);
+    public void setCoverImageDrawable(Drawable drawable) {
+        setState(DroidPlayerState.IDLE);
+        coverImage.setImageDrawable(drawable);
     }
 
     // 设置宽高比
@@ -293,7 +301,7 @@ public class DroidBasePlayerView extends FrameLayout implements
                 break;
             case DroidPlayerState.COMPLETE:
                 Log.d(TAG, "STATE COMPLETE");
-                rlCoverImage.setVisibility(GONE);
+                rlCoverImage.setVisibility(VISIBLE);
                 break;
             case DroidPlayerState.ERROR:
                 Log.d(TAG, "STATE ERROR");
@@ -460,16 +468,6 @@ public class DroidBasePlayerView extends FrameLayout implements
             droidImageView.setVideoSize(mVideoWidth, mVideoHeight);
             droidImageView.setImageBitmap(mCaptureBitmap);
         }
-    }
-
-    private void addCoverImage(ImageView coverImage) {
-        rlCoverImage.removeAllViews();
-        rlCoverImage.addView(coverImage);
-        coverImage.setScaleType(ImageView.ScaleType.CENTER_CROP);
-        ViewGroup.LayoutParams layoutParams = coverImage.getLayoutParams();
-        layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-        layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-        coverImage.setLayoutParams(layoutParams);
     }
 
     // 显示封面图片

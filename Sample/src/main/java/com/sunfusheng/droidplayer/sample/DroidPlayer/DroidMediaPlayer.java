@@ -222,6 +222,14 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         return false;
     }
 
+    public boolean scrollPositionInList(int firstVisibleItemPosition, int lastVisibleItemPosition) {
+        if (mPositionInList > 0 && (mPositionInList < firstVisibleItemPosition || mPositionInList > lastVisibleItemPosition)) {
+            release();
+            return true;
+        }
+        return false;
+    }
+
     public IjkMediaPlayer getMediaPlayer() {
         return mMediaPlayer;
     }
