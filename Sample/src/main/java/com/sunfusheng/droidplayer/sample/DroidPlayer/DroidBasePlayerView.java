@@ -40,6 +40,8 @@ import java.util.TimerTask;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 
+import static com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerState.PLAYING;
+
 
 /**
  * Created by sunfusheng on 2017/3/7.
@@ -57,6 +59,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     protected RelativeLayout decorationContainer;
     private DroidTextureView droidTextureView;
     private DroidImageView droidImageView;
+    private Surface mSurface;
 
     public static final int TIME_DELAY = 1000; // 进度更新的时间延时
     public static final int TIME_INTERVAL = 1000; // 进度更新的时间间隔
@@ -140,19 +143,16 @@ public class DroidBasePlayerView extends FrameLayout implements
     // 设置视频地址
     public void setVideoUrl(String videoUrl) {
         mVideoUrl = videoUrl;
-        setState(DroidPlayerState.IDLE);
     }
 
     // 设置封面图片
     public void setImageUrl(String imageUrl) {
         mImageUrl = imageUrl;
-        setState(DroidPlayerState.IDLE);
         loadingCoverImage(coverImage, imageUrl);
     }
 
     // 设置封面图片
     public void setCoverImageDrawable(Drawable drawable) {
-        setState(DroidPlayerState.IDLE);
         coverImage.setImageDrawable(drawable);
     }
 
@@ -168,6 +168,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     @Override
     public void play(String url) {
         if (!checkVideoUrl(url)) return;
+        DroidMediaPlayer.getInstance().setPositionInList(mPositionInList);
         if (droidImageView != null && droidImageView.isShown()) {
             droidImageView.setVisibility(GONE);
         }
@@ -187,7 +188,6 @@ public class DroidBasePlayerView extends FrameLayout implements
         DroidMediaPlayer.getInstance().play(url);
         DroidMediaPlayer.getInstance().setMediaPlayerListener(this);
         DroidMediaPlayer.getInstance().setPlayerView(this);
-        DroidMediaPlayer.getInstance().setPositionInList(mPositionInList);
     }
 
     @Override
@@ -259,7 +259,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     }
 
     public boolean isPlaying() {
-        return state == DroidPlayerState.PLAYING;
+        return state == PLAYING;
     }
 
     public boolean isPause() {
@@ -274,30 +274,33 @@ public class DroidBasePlayerView extends FrameLayout implements
         ((Activity) getContext()).getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
-    @Override
-    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        DroidMediaPlayer.getInstance().setSurface(new Surface(surface));
-    }
-
     public void setState(@DroidPlayerState int state) {
         this.state = state;
         DroidMediaPlayer.getInstance().setState(state);
+        DroidMediaPlayer.getInstance().setPositionInList(-1);
         switch (state) {
             case DroidPlayerState.IDLE:
                 Log.d(TAG, "STATE IDLE");
                 rlCoverImage.setVisibility(VISIBLE);
+
                 break;
             case DroidPlayerState.LOADING:
                 Log.d(TAG, "STATE LOADING");
                 rlCoverImage.setVisibility(mCurrentPosition == 0 ? VISIBLE : GONE);
+                DroidMediaPlayer.getInstance().setPositionInList(mPositionInList);
                 break;
-            case DroidPlayerState.PLAYING:
+            case PLAYING:
                 Log.d(TAG, "STATE PLAYING");
+                if (droidImageView != null && droidImageView.isShown()) {
+                    droidImageView.setVisibility(GONE);
+                }
                 rlCoverImage.setVisibility(GONE);
+                DroidMediaPlayer.getInstance().setPositionInList(mPositionInList);
                 break;
             case DroidPlayerState.PAUSE:
                 Log.d(TAG, "STATE PAUSE");
                 rlCoverImage.setVisibility(GONE);
+                DroidMediaPlayer.getInstance().setPositionInList(mPositionInList);
                 break;
             case DroidPlayerState.COMPLETE:
                 Log.d(TAG, "STATE COMPLETE");
@@ -326,19 +329,24 @@ public class DroidBasePlayerView extends FrameLayout implements
     }
 
     @Override
+    public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
+        Log.d("------------------> ", "onSurfaceTextureAvailable(): surface: "+surface.toString());
+        mSurface = new Surface(surface);
+        DroidMediaPlayer.getInstance().setSurface(mSurface);
+    }
+
+    @Override
     public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
 
     }
 
     @Override
     public void onSurfaceTextureUpdated(SurfaceTexture surface) {
-
     }
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        DroidMediaPlayer.getInstance().setSurface(null);
-        surface.release();
+        Log.d("------------------> ", "onSurfaceTextureDestroyed(): surface: "+surface.toString());
         return true;
     }
 
@@ -348,7 +356,7 @@ public class DroidBasePlayerView extends FrameLayout implements
         addScreenOnFlag();
         startTimer();
         rlCoverImage.setVisibility(GONE);
-        setState(DroidPlayerState.PLAYING);
+        setState(PLAYING);
     }
 
     @Override
@@ -359,7 +367,7 @@ public class DroidBasePlayerView extends FrameLayout implements
         if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_START) {
             setState(DroidPlayerState.LOADING);
         } else if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_END) {
-            setState(DroidPlayerState.PLAYING);
+            setState(PLAYING);
         }
         if (mOnPlayerViewListener != null) {
             mOnPlayerViewListener.onInfoCallback(mp, what, extra);
@@ -411,7 +419,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     public void onVideoStart() {
         Log.d(TAG, "onVideoStart()");
         if (isPause()) {
-            setState(DroidPlayerState.PLAYING);
+            setState(PLAYING);
         }
     }
 
@@ -419,7 +427,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     public void onVideoResume() {
         Log.d(TAG, "onVideoResume()");
         if (DroidMediaPlayer.getInstance().isPausedWhenPlaying()) {
-            setState(DroidPlayerState.PLAYING);
+            setState(PLAYING);
         } else if (isPause()) {
             showCaptureImage();
         }
@@ -456,8 +464,12 @@ public class DroidBasePlayerView extends FrameLayout implements
         setBackgroundColor(getResources().getColor(R.color.player_white_color));
         DroidMediaPlayer.getInstance().setMediaPlayerListener(null);
         DroidMediaPlayer.getInstance().setPlayerView(null);
+        DroidMediaPlayer.getInstance().setSurface(null);
+        if (mSurface != null) {
+            mSurface.release();
+            mSurface = null;
+        }
         DroidMediaPlayer.getInstance().setPositionInList(-1);
-        rlCoverImage.setVisibility(VISIBLE);
         setState(DroidPlayerState.IDLE);
         clearScreenOnFlag();
     }
@@ -505,7 +517,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     public class ProgressTimerTask extends TimerTask {
         @Override
         public void run() {
-            if (state == DroidPlayerState.PLAYING) {
+            if (state == PLAYING) {
                 DroidMediaPlayer.getInstance().getHandler().post(() -> {
                     mCurrentPosition += TIME_INTERVAL;
                     if (mOnPlayerViewListener != null) {

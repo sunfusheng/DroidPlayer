@@ -227,8 +227,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
 
     // 完成状态
     public void setCompleteState() {
-        setVisible(true, tvTip, ivReplay);
-        setText(tvTip, R.string.player_replay_tip);
+        setVisible(true, ivCenterPlay);
         showTopLayout();
     }
 

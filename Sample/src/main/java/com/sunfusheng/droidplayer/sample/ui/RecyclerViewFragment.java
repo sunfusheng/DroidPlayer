@@ -38,7 +38,7 @@ public class RecyclerViewFragment extends BaseFragment implements RecyclerViewWr
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_recycler_view, null);
+        View view = inflater.inflate(R.layout.fragment_recyclerview, null);
         ButterKnife.bind(this, view);
         initData();
         initView();
@@ -61,14 +61,15 @@ public class RecyclerViewFragment extends BaseFragment implements RecyclerViewWr
         recyclerViewWrapper.setOnScrollListener(new RecyclerViewWrapper.OnScrollListener() {
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    DroidMediaPlayer.getInstance().scrollPositionInList(recyclerViewWrapper.getFirstVisibleItemPosition(),
+                            recyclerViewWrapper.getLastVisibleItemPosition());
+                }
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                DroidMediaPlayer.getInstance().scrollPositionInList(
-                        recyclerViewWrapper.getFirstVisibleItemPosition(),
-                        recyclerViewWrapper.getLastVisibleItemPosition());
+
             }
         });
     }

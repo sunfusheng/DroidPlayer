@@ -10,7 +10,7 @@
         android:layout_height="wrap_content">
 
         <com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView
-            android:id="@+id/playerView"
+            android:id="@+id/itemRecyclerViewPlayerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </RelativeLayout>
@@ -22,7 +22,7 @@
         android:padding="10dp">
 
         <TextView
-            android:id="@+id/tv_title3"
+            android:id="@+id/itemRecyclerViewTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ellipsize="end"
@@ -32,7 +32,7 @@
             android:textSize="15sp"/>
 
         <TextView
-            android:id="@+id/tv_time3"
+            android:id="@+id/itemRecyclerViewTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="3dp"

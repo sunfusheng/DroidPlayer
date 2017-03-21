@@ -25,27 +25,27 @@ public class ItemVideoProvider extends ItemViewProvider<VideoEntity, ItemVideoPr
     @NonNull
     @Override
     protected ViewHolder onCreateViewHolder(@NonNull LayoutInflater inflater, @NonNull ViewGroup parent) {
-        View view = inflater.inflate(R.layout.item_video_layout, parent, false);
+        View view = inflater.inflate(R.layout.item_recyclerview_layout, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     protected void onBindViewHolder(@NonNull ViewHolder holder, @NonNull VideoEntity entity) {
-        holder.tvTitle3.setText(entity.getTitle());
-        holder.tvTime3.setText(AppUtil.getTimeString(entity.getLength()));
+        holder.itemRecyclerViewTitle.setText(entity.getTitle());
+        holder.itemRecyclerViewTime.setText(AppUtil.getTimeString(entity.getLength()));
 
-        holder.playerView.setImageUrl(entity.getCover());
-        holder.playerView.setVideoUrl(TextUtils.isEmpty(entity.getMp4Hd_url())? entity.getMp4_url():entity.getMp4Hd_url());
-        holder.playerView.setPositionInList(holder.getAdapterPosition());
+        holder.itemRecyclerViewPlayerView.setImageUrl(entity.getCover());
+        holder.itemRecyclerViewPlayerView.setVideoUrl(TextUtils.isEmpty(entity.getMp4Hd_url()) ? entity.getMp4_url() : entity.getMp4Hd_url());
+        holder.itemRecyclerViewPlayerView.setPositionInList(holder.getAdapterPosition());
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.playerView)
-        DroidPlayerView playerView;
-        @BindView(R.id.tv_title3)
-        TextView tvTitle3;
-        @BindView(R.id.tv_time3)
-        TextView tvTime3;
+        @BindView(R.id.itemRecyclerViewPlayerView)
+        DroidPlayerView itemRecyclerViewPlayerView;
+        @BindView(R.id.itemRecyclerViewTitle)
+        TextView itemRecyclerViewTitle;
+        @BindView(R.id.itemRecyclerViewTime)
+        TextView itemRecyclerViewTime;
 
         ViewHolder(View view) {
             super(view);

@@ -184,6 +184,10 @@ public class RecyclerViewWrapper extends FrameLayout {
         multiTypeAdapter.notifyDataSetChanged();
     }
 
+    public void notifyDataSetChanged() {
+        multiTypeAdapter.notifyDataSetChanged();
+    }
+
     public void register(@NonNull Class<?> clazz, @NonNull ItemViewProvider provider) {
         multiTypeAdapter.register(clazz, provider);
     }

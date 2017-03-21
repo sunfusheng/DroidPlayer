@@ -4,13 +4,19 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.ListView;
 
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.R;
+import com.sunfusheng.droidplayer.sample.adapter.ListVideoAdapter;
+import com.sunfusheng.droidplayer.sample.http.Api;
+import com.sunfusheng.droidplayer.sample.http.ApiService;
+import com.sunfusheng.droidplayer.sample.util.AppUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by sunfusheng on 2017/3/3.
@@ -19,6 +25,8 @@ public class ListFragment extends BaseFragment {
 
     @BindView(R.id.listView)
     ListView listView;
+
+    ListVideoAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -31,7 +39,7 @@ public class ListFragment extends BaseFragment {
     }
 
     private void initData() {
-
+        getVideoList();
     }
 
     private void initView() {
@@ -39,32 +47,44 @@ public class ListFragment extends BaseFragment {
     }
 
     private void initListener() {
+        listView.setOnScrollListener(new AbsListView.OnScrollListener() {
 
-    }
-    @Override
-    public void onResume() {
-        DroidMediaPlayer.getInstance().resume();
-        super.onResume();
+            int firstVisibleItem;
+            int lastVisibleItem;
+
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+                if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
+                    DroidMediaPlayer.getInstance().scrollPositionInList(firstVisibleItem, lastVisibleItem);
+                }
+            }
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                this.firstVisibleItem = firstVisibleItem;
+                this.lastVisibleItem = firstVisibleItem + visibleItemCount;
+            }
+        });
     }
 
-    @Override
-    public void onPause() {
-        DroidMediaPlayer.getInstance().pause();
-        super.onPause();
-    }
+    // 获取视频数据
+    protected void getVideoList() {
+        Api.getInstance().getApiService().getVideoList(0)
+                .subscribeOn(Schedulers.io())
+                .observeOn(rx.android.schedulers.AndroidSchedulers.mainThread())
+                .filter(it -> it != null && it.containsKey(ApiService.ID))
+                .map(it -> it.get(ApiService.ID))
+                .compose(bindToLifecycle())
+                .subscribe(list -> {
+                    if (AppUtil.notEmpty(list)) {
+                        mAdapter = new ListVideoAdapter(getContext(), list);
+                        listView.setAdapter(mAdapter);
+                    } else {
 
-    @Override
-    public void onDestroy() {
-        DroidMediaPlayer.getInstance().release();
-        super.onDestroy();
-    }
-
-    @Override
-    protected boolean onBackPressed() {
-        if (DroidMediaPlayer.getInstance().onBackPressed()) {
-            return true;
-        }
-        return false;
+                    }
+                }, e -> {
+                    e.printStackTrace();
+                });
     }
 
 }
