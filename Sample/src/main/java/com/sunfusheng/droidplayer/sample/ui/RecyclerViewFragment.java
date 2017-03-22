@@ -62,14 +62,14 @@ public class RecyclerViewFragment extends BaseFragment implements RecyclerViewWr
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    DroidMediaPlayer.getInstance().scrollPositionInList(recyclerViewWrapper.getFirstVisibleItemPosition(),
-                            recyclerViewWrapper.getLastVisibleItemPosition());
+
                 }
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-
+                DroidMediaPlayer.getInstance().releaseOnScroll(recyclerViewWrapper.getFirstVisibleItemPosition(),
+                        recyclerViewWrapper.getLastVisibleItemPosition());
             }
         });
     }
@@ -120,21 +120,22 @@ public class RecyclerViewFragment extends BaseFragment implements RecyclerViewWr
 
     // 去重
     private List<VideoEntity> removeDuplicateData(List<VideoEntity> list) {
-        if (AppUtil.isEmpty(list)) return mList;
+        if (AppUtil.isEmpty(list)) return null;
+        List<VideoEntity> result = new ArrayList<>();
         for (VideoEntity entity : list) {
             boolean isRepeat = false;
             if (AppUtil.notEmpty(mList)) {
                 for (VideoEntity item : mList) {
-                    if (item.getVid().equals(entity.getVid())) {
+                    if (item.getVid().equals(entity.getVid()) || item.getTitle().equals(entity.getTitle())) {
                         isRepeat = true;
                     }
                 }
             }
             if (!isRepeat) {
-                mList.add(entity);
+                result.add(entity);
             }
         }
-        return list;
+        return result;
     }
 
 }

@@ -55,7 +55,7 @@ public class ListFragment extends BaseFragment {
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
                 if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_IDLE) {
-                    DroidMediaPlayer.getInstance().scrollPositionInList(firstVisibleItem, lastVisibleItem);
+
                 }
             }
 
@@ -63,6 +63,7 @@ public class ListFragment extends BaseFragment {
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 this.firstVisibleItem = firstVisibleItem;
                 this.lastVisibleItem = firstVisibleItem + visibleItemCount;
+                DroidMediaPlayer.getInstance().releaseOnScroll(firstVisibleItem, lastVisibleItem);
             }
         });
     }

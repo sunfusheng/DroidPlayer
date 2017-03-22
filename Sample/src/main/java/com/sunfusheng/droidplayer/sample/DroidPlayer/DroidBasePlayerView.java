@@ -277,7 +277,6 @@ public class DroidBasePlayerView extends FrameLayout implements
     public void setState(@DroidPlayerState int state) {
         this.state = state;
         DroidMediaPlayer.getInstance().setState(state);
-        DroidMediaPlayer.getInstance().setPositionInList(-1);
         switch (state) {
             case DroidPlayerState.IDLE:
                 Log.d(TAG, "STATE IDLE");
@@ -287,7 +286,6 @@ public class DroidBasePlayerView extends FrameLayout implements
             case DroidPlayerState.LOADING:
                 Log.d(TAG, "STATE LOADING");
                 rlCoverImage.setVisibility(mCurrentPosition == 0 ? VISIBLE : GONE);
-                DroidMediaPlayer.getInstance().setPositionInList(mPositionInList);
                 break;
             case PLAYING:
                 Log.d(TAG, "STATE PLAYING");
@@ -295,12 +293,10 @@ public class DroidBasePlayerView extends FrameLayout implements
                     droidImageView.setVisibility(GONE);
                 }
                 rlCoverImage.setVisibility(GONE);
-                DroidMediaPlayer.getInstance().setPositionInList(mPositionInList);
                 break;
             case DroidPlayerState.PAUSE:
                 Log.d(TAG, "STATE PAUSE");
                 rlCoverImage.setVisibility(GONE);
-                DroidMediaPlayer.getInstance().setPositionInList(mPositionInList);
                 break;
             case DroidPlayerState.COMPLETE:
                 Log.d(TAG, "STATE COMPLETE");
@@ -330,14 +326,12 @@ public class DroidBasePlayerView extends FrameLayout implements
 
     @Override
     public void onSurfaceTextureAvailable(SurfaceTexture surface, int width, int height) {
-        Log.d("------------------> ", "onSurfaceTextureAvailable(): surface: "+surface.toString());
         mSurface = new Surface(surface);
         DroidMediaPlayer.getInstance().setSurface(mSurface);
     }
 
     @Override
     public void onSurfaceTextureSizeChanged(SurfaceTexture surface, int width, int height) {
-
     }
 
     @Override
@@ -346,7 +340,8 @@ public class DroidBasePlayerView extends FrameLayout implements
 
     @Override
     public boolean onSurfaceTextureDestroyed(SurfaceTexture surface) {
-        Log.d("------------------> ", "onSurfaceTextureDestroyed(): surface: "+surface.toString());
+        DroidMediaPlayer.getInstance().setSurface(null);
+        surface.release();
         return true;
     }
 
@@ -453,7 +448,6 @@ public class DroidBasePlayerView extends FrameLayout implements
         mCurrentPosition = 0;
         mCaptureBitmap = null;
         mCapturePosition = 0L;
-        mPositionInList = -1;
     }
 
     @Override
@@ -461,15 +455,12 @@ public class DroidBasePlayerView extends FrameLayout implements
         Log.d(TAG, "onVideoRelease()");
         resetData();
         stopTimer();
+        if (playerContainer.getChildCount() > 0) {
+            playerContainer.removeAllViews();
+        }
         setBackgroundColor(getResources().getColor(R.color.player_white_color));
         DroidMediaPlayer.getInstance().setMediaPlayerListener(null);
         DroidMediaPlayer.getInstance().setPlayerView(null);
-        DroidMediaPlayer.getInstance().setSurface(null);
-        if (mSurface != null) {
-            mSurface.release();
-            mSurface = null;
-        }
-        DroidMediaPlayer.getInstance().setPositionInList(-1);
         setState(DroidPlayerState.IDLE);
         clearScreenOnFlag();
     }

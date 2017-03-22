@@ -3,7 +3,6 @@ package com.sunfusheng.droidplayer.sample.DroidPlayer;
 import android.media.AudioManager;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.Surface;
 
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidMediaPlayerListener;
@@ -60,7 +59,6 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         this.isPlaying = false;
         this.isPausedWhenPlaying = false;
         this.mVideoUrl = null;
-        mPositionInList = -1;
     }
 
     private void initPlayer(String url) throws Exception {
@@ -207,8 +205,6 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     private void releaseMediaPlayer() {
         resetData();
         if (mMediaPlayer != null) {
-            mMediaPlayer.stop();
-            mMediaPlayer.reset();
             mMediaPlayer.release();
             mMediaPlayer = null;
         }
@@ -223,9 +219,10 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         return false;
     }
 
-    public boolean scrollPositionInList(int firstVisibleItemPosition, int lastVisibleItemPosition) {
-        Log.d("----> ", "mPositionInList: " + mPositionInList + " firstPosition: " + firstVisibleItemPosition + " lastPosition: " + lastVisibleItemPosition);
+    public boolean releaseOnScroll(int firstVisibleItemPosition, int lastVisibleItemPosition) {
+//        Log.d("----> ", "mPositionInList: " + mPositionInList + " firstPosition: " + firstVisibleItemPosition + " lastPosition: " + lastVisibleItemPosition);
         if (mPositionInList >= 0 && (mPositionInList < firstVisibleItemPosition || mPositionInList > lastVisibleItemPosition)) {
+            this.mPositionInList = -1;
             release();
             return true;
         }
@@ -250,7 +247,6 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     public void setSurface(Surface surface) {
         if (mMediaPlayer == null) return;
-        Log.d("------------------> ", "" + (surface != null ? ("isValid: " + surface.isValid()+" surface: "+surface.toString()) : "null"));
         if (surface != null && surface.isValid()) {
             mMediaPlayer.setSurface(surface);
         } else if (surface == null) {
