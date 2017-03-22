@@ -2,7 +2,9 @@ package com.sunfusheng.droidplayer.sample.DroidPlayer;
 
 import android.media.AudioManager;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.Looper;
+import android.os.Message;
 import android.view.Surface;
 
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidMediaPlayerListener;
@@ -35,7 +37,45 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     private String mVideoUrl; // 视频地址
     private int mPositionInList = -1; // 视频在List或RecyclerView中的位置
 
-    private Handler mHandler = new Handler(Looper.getMainLooper());
+    public static final int WHAT_INIT = 0;
+    public static final int WHAT_SURFACE = 1;
+    public static final int WHAT_RELEASE = 2;
+    private DroidMediaPlayerHandler mMediaPlayerHandler;
+    private Handler mMainThreadHandler;
+
+    public class DroidMediaPlayerHandler extends Handler {
+
+        public DroidMediaPlayerHandler(Looper looper) {
+            super(looper);
+        }
+
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            switch (msg.what) {
+                case WHAT_INIT:
+                    initPlayer((String) msg.obj);
+                    break;
+                case WHAT_SURFACE:
+                    Surface surface = (Surface) msg.obj;
+                    if (mMediaPlayer != null) {
+                        if (surface == null) {
+                            mMediaPlayer.setSurface(null);
+                        } else if (surface.isValid()) {
+                            mMediaPlayer.setSurface(surface);
+                        }
+                    }
+                    break;
+                case WHAT_RELEASE:
+                    initData();
+                    if (mMediaPlayer != null) {
+                        mMediaPlayer.release();
+                        mMediaPlayer = null;
+                    }
+                    break;
+            }
+        }
+    }
 
     private static final class Holder {
         static DroidMediaPlayer instance = new DroidMediaPlayer();
@@ -51,23 +91,32 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     private void init() {
         this.mState = DroidPlayerState.IDLE;
-        resetData();
+        initData();
+        HandlerThread handlerThread = new HandlerThread(getClass().getSimpleName());
+        handlerThread.start();
+        mMediaPlayerHandler = new DroidMediaPlayerHandler(handlerThread.getLooper());
+        mMainThreadHandler = new Handler(Looper.getMainLooper());
     }
 
-    private void resetData() {
+    private void initData() {
         this.mBasePlayerView = null;
         this.isPlaying = false;
         this.isPausedWhenPlaying = false;
         this.mVideoUrl = null;
     }
 
-    private void initPlayer(String url) throws Exception {
-        mMediaPlayer = new IjkMediaPlayer();
-        mMediaPlayer.setDataSource(url);
-        mMediaPlayer.setScreenOnWhilePlaying(true);
-        mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        initListener();
-        mMediaPlayer.prepareAsync();
+    private void initPlayer(String url) {
+        try {
+            this.mVideoUrl = url;
+            mMediaPlayer = new IjkMediaPlayer();
+            mMediaPlayer.setDataSource(url);
+            mMediaPlayer.setScreenOnWhilePlaying(true);
+            mMediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+            initListener();
+            mMediaPlayer.prepareAsync();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void initListener() {
@@ -82,12 +131,10 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public void play(String url) {
-        try {
-            this.mVideoUrl = url;
-            initPlayer(url);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        Message msg = new Message();
+        msg.what = WHAT_INIT;
+        msg.obj = url;
+        mMediaPlayerHandler.sendMessage(msg);
     }
 
     @Override
@@ -128,8 +175,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public void release() {
-        this.mState = DroidPlayerState.IDLE;
-        releaseMediaPlayer();
+        mMediaPlayerHandler.sendEmptyMessage(WHAT_RELEASE);
         if (mMediaPlayerListener != null) {
             mMediaPlayerListener.onVideoRelease();
         }
@@ -144,70 +190,102 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public void seekTo(long time) {
-        if (mMediaPlayer != null) {
-            mMediaPlayer.seekTo(time);
-        }
+        mMainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mMediaPlayer != null) {
+                    mMediaPlayer.seekTo(time);
+                }
+            }
+        });
     }
 
     @Override
     public void onPrepared(IMediaPlayer iMediaPlayer) {
-        if (mMediaPlayerListener != null) {
-            mMediaPlayerListener.onPrepared();
-        }
+        mMainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mMediaPlayerListener != null) {
+                    mMediaPlayerListener.onPrepared();
+                }
+            }
+        });
     }
 
     @Override
     public boolean onInfo(IMediaPlayer iMediaPlayer, int what, int extra) {
-        if (mMediaPlayerListener != null) {
-            mMediaPlayerListener.onInfo(iMediaPlayer, what, extra);
-        }
+        mMainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mMediaPlayerListener != null) {
+                    mMediaPlayerListener.onInfo(iMediaPlayer, what, extra);
+                }
+            }
+        });
         return false;
     }
 
     @Override
     public void onVideoSizeChanged(IMediaPlayer iMediaPlayer, int width, int height, int sar_num, int sar_den) {
-        if (mMediaPlayerListener != null) {
-            mMediaPlayerListener.onVideoSizeChanged(width, height, sar_num, sar_den);
-        }
+        mMainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mMediaPlayerListener != null) {
+                    mMediaPlayerListener.onVideoSizeChanged(width, height, sar_num, sar_den);
+                }
+            }
+        });
     }
 
     @Override
     public void onBufferingUpdate(IMediaPlayer iMediaPlayer, int percent) {
-        if (mMediaPlayerListener != null) {
-            mMediaPlayerListener.onBufferingUpdate(percent);
-        }
+        mMainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mMediaPlayerListener != null) {
+                    mMediaPlayerListener.onBufferingUpdate(percent);
+                }
+            }
+        });
     }
 
     @Override
     public void onSeekComplete(IMediaPlayer iMediaPlayer) {
-        if (mMediaPlayerListener != null) {
-            mMediaPlayerListener.onSeekComplete();
-        }
+        mMainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                if (mMediaPlayerListener != null) {
+                    mMediaPlayerListener.onSeekComplete();
+                }
+            }
+        });
     }
 
     @Override
     public void onCompletion(IMediaPlayer iMediaPlayer) {
-        releaseMediaPlayer();
-        if (mMediaPlayerListener != null) {
-            mMediaPlayerListener.onCompletion();
-        }
+        mMainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mMediaPlayerHandler.sendEmptyMessage(WHAT_RELEASE);
+                if (mMediaPlayerListener != null) {
+                    mMediaPlayerListener.onCompletion();
+                }
+            }
+        });
     }
 
     @Override
     public boolean onError(IMediaPlayer iMediaPlayer, int what, int extra) {
-        releaseMediaPlayer();
-        if (mMediaPlayerListener != null) {
-            mMediaPlayerListener.onError(what, extra);
-        }
+        mMainThreadHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                mMediaPlayerHandler.sendEmptyMessage(WHAT_RELEASE);
+                if (mMediaPlayerListener != null) {
+                    mMediaPlayerListener.onError(what, extra);
+                }
+            }
+        });
         return true;
-    }
-
-    private void releaseMediaPlayer() {
-        resetData();
-        if (mMediaPlayer != null) {
-            mMediaPlayer.release();
-            mMediaPlayer = null;
-        }
     }
 
     public boolean onBackPressed() {
@@ -220,7 +298,6 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     }
 
     public boolean releaseOnScroll(int firstVisibleItemPosition, int lastVisibleItemPosition) {
-//        Log.d("----> ", "mPositionInList: " + mPositionInList + " firstPosition: " + firstVisibleItemPosition + " lastPosition: " + lastVisibleItemPosition);
         if (mPositionInList >= 0 && (mPositionInList < firstVisibleItemPosition || mPositionInList > lastVisibleItemPosition)) {
             this.mPositionInList = -1;
             release();
@@ -246,12 +323,10 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     }
 
     public void setSurface(Surface surface) {
-        if (mMediaPlayer == null) return;
-        if (surface != null && surface.isValid()) {
-            mMediaPlayer.setSurface(surface);
-        } else if (surface == null) {
-            mMediaPlayer.setSurface(null);
-        }
+        Message msg = new Message();
+        msg.what = WHAT_SURFACE;
+        msg.obj = surface;
+        mMediaPlayerHandler.sendMessage(msg);
     }
 
     public DroidBasePlayerView getPlayerView() {
@@ -290,7 +365,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     public boolean isPlaying() {
         isPlaying = (mState == DroidPlayerState.PLAYING);
-        return isPlaying;
+        return mMediaPlayer != null && isPlaying;
     }
 
     public void setPlaying(boolean playing) {
@@ -309,8 +384,8 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         this.mVideoUrl = videoUrl;
     }
 
-    public Handler getHandler() {
-        return mHandler;
+    public Handler getMainThreadHandler() {
+        return mMainThreadHandler;
     }
 
     public int getPositionInList() {

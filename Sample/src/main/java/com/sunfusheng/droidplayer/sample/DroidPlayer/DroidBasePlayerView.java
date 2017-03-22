@@ -509,7 +509,7 @@ public class DroidBasePlayerView extends FrameLayout implements
         @Override
         public void run() {
             if (state == PLAYING) {
-                DroidMediaPlayer.getInstance().getHandler().post(() -> {
+                DroidMediaPlayer.getInstance().getMainThreadHandler().post(() -> {
                     mCurrentPosition += TIME_INTERVAL;
                     if (mOnPlayerViewListener != null) {
                         mOnPlayerViewListener.onPositionChange(mCurrentPosition);
