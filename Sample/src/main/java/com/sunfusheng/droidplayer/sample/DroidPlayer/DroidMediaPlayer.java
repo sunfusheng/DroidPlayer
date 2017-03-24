@@ -27,21 +27,23 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     private static final String TAG = "----> MediaPlayer";
 
+    public static final int WHAT_INIT = 0;
+    public static final int WHAT_SURFACE = 1;
+    public static final int WHAT_RELEASE = 2;
+
     private IjkMediaPlayer mMediaPlayer;
     private DroidMediaPlayerListener mMediaPlayerListener;
-
+    private DroidMediaPlayerHandler mMediaPlayerHandler;
+    private Handler mMainThreadHandler;
     private DroidBasePlayerView mBasePlayerView;
+
     private int mState; // 播放器状态
     private boolean isPlaying; // 是否在播放中
     private boolean isPausedWhenPlaying; // 当播放中是否被暂停
     private String mVideoUrl; // 视频地址
     private int mPositionInList = -1; // 视频在List或RecyclerView中的位置
 
-    public static final int WHAT_INIT = 0;
-    public static final int WHAT_SURFACE = 1;
-    public static final int WHAT_RELEASE = 2;
-    private DroidMediaPlayerHandler mMediaPlayerHandler;
-    private Handler mMainThreadHandler;
+
 
     public class DroidMediaPlayerHandler extends Handler {
 
@@ -90,7 +92,6 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     }
 
     private void init() {
-        this.mState = DroidPlayerState.IDLE;
         initData();
         HandlerThread handlerThread = new HandlerThread(getClass().getSimpleName());
         handlerThread.start();
@@ -99,7 +100,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     }
 
     private void initData() {
-        this.mBasePlayerView = null;
+        this.mState = DroidPlayerState.IDLE;
         this.isPlaying = false;
         this.isPausedWhenPlaying = false;
         this.mVideoUrl = null;
@@ -364,7 +365,6 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     }
 
     public boolean isPlaying() {
-        isPlaying = (mState == DroidPlayerState.PLAYING);
         return mMediaPlayer != null && isPlaying;
     }
 

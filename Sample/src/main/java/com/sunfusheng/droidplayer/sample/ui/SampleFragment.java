@@ -4,15 +4,21 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidBasePlayerView;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
 import com.sunfusheng.droidplayer.sample.R;
+import com.sunfusheng.droidplayer.sample.http.Api;
+import com.sunfusheng.droidplayer.sample.http.ApiService;
+import com.sunfusheng.droidplayer.sample.util.AppUtil;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by sunfusheng on 2017/3/3.
@@ -23,10 +29,18 @@ public class SampleFragment extends BaseFragment {
     DroidBasePlayerView basePlayerView;
     @BindView(R.id.tv_base_play)
     TextView tvBasePlay;
-    @BindView(R.id.playerView)
-    DroidPlayerView playerView;
     @BindView(R.id.tv_base_full_screen)
     TextView tvBaseFullScreen;
+    @BindView(R.id.tv_base_tiny_screen)
+    TextView tvBaseTinyScreen;
+    @BindView(R.id.playerView1)
+    DroidPlayerView playerView1;
+    @BindView(R.id.playerView2)
+    DroidPlayerView playerView2;
+    @BindView(R.id.ll_players_container)
+    LinearLayout llPlayersContainer;
+    @BindView(R.id.fl_tiny_screen_container)
+    FrameLayout flTinyScreenContainer;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -39,14 +53,8 @@ public class SampleFragment extends BaseFragment {
     }
 
     private void initData() {
-//        int randomNum = new Random().nextInt(mList.size());
-//        basePlayerView.setVideoUrl(mList.get(randomNum).video_url);
-//        basePlayerView.setImageUrl(mList.get(randomNum).image_url);
-//
-//        randomNum = new Random().nextInt(mList.size());
-//        playerView.setVideoTitle(randomNum % 2 == 0 ? null : mList.get(randomNum).title);
-//        playerView.setVideoUrl(mList.get(randomNum).video_url);
-//        playerView.setImageUrl(mList.get(randomNum).image_url);
+        llPlayersContainer.setVisibility(View.GONE);
+        getVideoList();
     }
 
     private void initView() {
@@ -58,34 +66,31 @@ public class SampleFragment extends BaseFragment {
         tvBaseFullScreen.setOnClickListener(v -> basePlayerView.enterFullScreen());
     }
 
-    @Override
-    public void onResume() {
-        DroidMediaPlayer.getInstance().resume();
-        super.onResume();
+    // 获取视频数据
+    protected void getVideoList() {
+        Api.getInstance().getApiService().getVideoList(0)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .filter(it -> it != null && it.containsKey(ApiService.ID))
+                .map(it -> it.get(ApiService.ID))
+                .compose(bindToLifecycle())
+                .subscribe(list -> {
+                    if (AppUtil.notEmpty(list)) {
+                        llPlayersContainer.setVisibility(View.VISIBLE);
+
+                        basePlayerView.setVideoUrl(list.get(0).getMp4_url());
+                        basePlayerView.setImageUrl(list.get(0).getCover());
+
+                        playerView1.setVideoTitle(list.get(1).getTitle());
+                        playerView1.setVideoUrl(list.get(1).getMp4_url());
+                        playerView1.setImageUrl(list.get(1).getCover());
+
+                        playerView2.setRatio(1, 1);
+                        playerView2.setVideoTitle(list.get(2).getTitle());
+                        playerView2.setVideoUrl(list.get(2).getMp4_url());
+                        playerView2.setImageUrl(list.get(2).getCover());
+                    }
+                }, Throwable::printStackTrace);
     }
 
-    @Override
-    public void onPause() {
-        DroidMediaPlayer.getInstance().pause();
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        DroidMediaPlayer.getInstance().release();
-        super.onDestroy();
-    }
-
-    @Override
-    protected boolean onBackPressed() {
-        if (basePlayerView.isFullScreen()) {
-            basePlayerView.quitFullScreen();
-            return true;
-        }
-        if (playerView.isFullScreen()) {
-            playerView.quitFullScreen();
-            return true;
-        }
-        return false;
-    }
 }

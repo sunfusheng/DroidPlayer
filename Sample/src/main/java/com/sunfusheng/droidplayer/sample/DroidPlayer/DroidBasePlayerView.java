@@ -148,7 +148,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     // 设置封面图片
     public void setImageUrl(String imageUrl) {
         mImageUrl = imageUrl;
-        loadingCoverImage(coverImage, imageUrl);
+        loadingCoverImage(imageUrl);
     }
 
     // 设置封面图片
@@ -259,7 +259,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     }
 
     public boolean isPlaying() {
-        return state == PLAYING;
+        return state == DroidPlayerState.PLAYING;
     }
 
     public boolean isPause() {
@@ -445,8 +445,8 @@ public class DroidBasePlayerView extends FrameLayout implements
         mVideoWidth = 0;
         mVideoHeight = 0;
         mDuration = 0;
-        mCurrentPosition = 0;
         mCaptureBitmap = null;
+        mCurrentPosition = 0;
         mCapturePosition = 0L;
     }
 
@@ -474,14 +474,14 @@ public class DroidBasePlayerView extends FrameLayout implements
     }
 
     // 显示封面图片
-    public void loadingCoverImage(ImageView imageView, String imageUrl) {
+    public void loadingCoverImage(String imageUrl) {
         Glide.with(getContext())
                 .load(imageUrl)
                 .crossFade()
                 .fallback(R.color.player_transparent)
                 .error(R.color.player_transparent)
                 .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-                .into(imageView);
+                .into(coverImage);
     }
 
     // 启动定时器
@@ -558,7 +558,12 @@ public class DroidBasePlayerView extends FrameLayout implements
     public void enterFullScreen() {
         mOrientationDelegate.enterFullScreen();
         if (!isPlaying()) {
-            showCaptureImage();
+            if (isPause()) {
+                showCaptureImage();
+            } else if (!TextUtils.isEmpty(mImageUrl)) {
+                rlCoverImage.setVisibility(VISIBLE);
+                loadingCoverImage(mImageUrl);
+            }
         }
     }
 
@@ -566,7 +571,12 @@ public class DroidBasePlayerView extends FrameLayout implements
     public void quitFullScreen() {
         mOrientationDelegate.quitFullScreen();
         if (!isPlaying()) {
-            showCaptureImage();
+            if (isPause()) {
+                showCaptureImage();
+            } else if (!TextUtils.isEmpty(mImageUrl)) {
+                rlCoverImage.setVisibility(VISIBLE);
+                loadingCoverImage(mImageUrl);
+            }
         }
     }
 

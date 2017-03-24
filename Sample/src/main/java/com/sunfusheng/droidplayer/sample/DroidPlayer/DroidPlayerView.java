@@ -99,6 +99,12 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
         ivFullScreen = (ImageView) view.findViewById(R.id.iv_fullscreen);
 
         showTopLayout();
+        initBottomLayout();
+        initListener();
+        addDecorationView(view);
+    }
+
+    private void initBottomLayout() {
         llBottomLayout.setVisibility(GONE);
         setText(tvCurrentPosition, PlayerUtil.getTimeString(0));
         sbCurrentProgress.setSecondaryProgress(0);
@@ -106,9 +112,6 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
         bottomProgressBar.setVisibility(GONE);
         bottomProgressBar.setSecondaryProgress(0);
         bottomProgressBar.setProgress(0);
-
-        initListener();
-        addDecorationView(view);
     }
 
     private void initListener() {
@@ -229,6 +232,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
     public void setCompleteState() {
         setVisible(true, ivCenterPlay);
         showTopLayout();
+        initBottomLayout();
     }
 
     // 错误状态
@@ -236,6 +240,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
         setVisible(true, tvTip, ivReplay);
         setText(tvTip, R.string.player_error_tip);
         showTopLayout();
+        initBottomLayout();
     }
 
     @Override

@@ -10,6 +10,7 @@
         android:layout_height="wrap_content">
 
         <LinearLayout
+            android:id="@+id/ll_players_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
@@ -91,7 +92,30 @@
                 android:layout_height="wrap_content">
 
                 <com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView
-                    android:id="@+id/playerView"
+                    android:id="@+id/playerView1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            </FrameLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1px"
+                android:background="@color/color5"/>
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:padding="10dp"
+                android:text="PlayerView (1:1)"
+                android:textColor="@color/colorPrimary"/>
+
+            <FrameLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView
+                    android:id="@+id/playerView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </FrameLayout>

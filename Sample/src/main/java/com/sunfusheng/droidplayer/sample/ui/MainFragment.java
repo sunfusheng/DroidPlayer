@@ -6,12 +6,19 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
 import com.sunfusheng.droidplayer.sample.R;
+import com.sunfusheng.droidplayer.sample.adapter.MainVideoAdapter;
+import com.sunfusheng.droidplayer.sample.http.Api;
+import com.sunfusheng.droidplayer.sample.http.ApiService;
+import com.sunfusheng.droidplayer.sample.model.VideoEntity;
+import com.sunfusheng.droidplayer.sample.util.AppUtil;
+
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.schedulers.Schedulers;
 
 /**
  * Created by sunfusheng on 2017/3/3.
@@ -22,6 +29,8 @@ public class MainFragment extends BaseFragment {
     DroidPlayerView playerView;
     @BindView(R.id.listView)
     ListView listView;
+
+    private MainVideoAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -35,13 +44,11 @@ public class MainFragment extends BaseFragment {
     }
 
     private void initData() {
-//        int randomNum = new Random().nextInt(mList.size());
-//        initPlayerView(randomNum);
+        getVideoList();
     }
 
     private void initView() {
-//        MainVideoAdapter adapter = new MainVideoAdapter(mContext, mList);
-//        listView.setAdapter(adapter);
+
     }
 
     private void initListener() {
@@ -53,36 +60,30 @@ public class MainFragment extends BaseFragment {
         listView.setOnItemLongClickListener((parent, view, position, id) -> true);
     }
 
+    // 获取视频数据
+    protected void getVideoList() {
+        Api.getInstance().getApiService().getVideoList(0)
+                .subscribeOn(Schedulers.io())
+                .observeOn(rx.android.schedulers.AndroidSchedulers.mainThread())
+                .filter(it -> it != null && it.containsKey(ApiService.ID))
+                .map(it -> it.get(ApiService.ID))
+                .compose(bindToLifecycle())
+                .subscribe(list -> {
+                    if (AppUtil.notEmpty(list)) {
+                        mAdapter = new MainVideoAdapter(getContext(), list);
+                        listView.setAdapter(mAdapter);
+
+                        int randomNum = new Random().nextInt(list.size());
+                        initPlayerView(randomNum);
+                    }
+                }, Throwable::printStackTrace);
+    }
+
     private void initPlayerView(int position) {
-        playerView.release();
-//        playerView.setVideoTitle(model.title);
-//        playerView.setVideoUrl(model.video_url);
-//        playerView.setImageUrl(model.image_url);
+        VideoEntity entity = mAdapter.getItem(position);
+        playerView.setVideoTitle(entity.getTitle());
+        playerView.setVideoUrl(entity.getMp4_url());
+        playerView.setImageUrl(entity.getCover());
     }
 
-    @Override
-    public void onResume() {
-        playerView.resume();
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        playerView.pause();
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        playerView.release();
-        super.onDestroy();
-    }
-
-    @Override
-    protected boolean onBackPressed() {
-        if (DroidMediaPlayer.getInstance().onBackPressed()) {
-            return true;
-        }
-        return false;
-    }
 }

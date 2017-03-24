@@ -44,7 +44,6 @@ public class RecyclerViewWrapper extends FrameLayout {
     View errorView;
     View emptyView;
 
-
     private OnClickListener errorViewClickListener;
     private OnClickListener emptyViewClickListener;
     private OnRequestListener onRequestListener;

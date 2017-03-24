@@ -80,12 +80,8 @@ public class ListFragment extends BaseFragment {
                     if (AppUtil.notEmpty(list)) {
                         mAdapter = new ListVideoAdapter(getContext(), list);
                         listView.setAdapter(mAdapter);
-                    } else {
-
                     }
-                }, e -> {
-                    e.printStackTrace();
-                });
+                }, Throwable::printStackTrace);
     }
 
 }
