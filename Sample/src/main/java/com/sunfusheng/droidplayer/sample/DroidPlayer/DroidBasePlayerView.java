@@ -13,6 +13,7 @@ import android.support.annotation.StringRes;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.Surface;
@@ -27,6 +28,7 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerGestureDelegate;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerMeasureDelegate;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerOrientationDelegate;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidMediaPlayerListener;
@@ -53,6 +55,7 @@ public class DroidBasePlayerView extends FrameLayout implements
 
     private static final String TAG = "----> BasePlayerView";
 
+    private FrameLayout flRootView;
     private RelativeLayout playerContainer;
     private ImageView coverImage;
     private RelativeLayout rlCoverImage;
@@ -68,6 +71,7 @@ public class DroidBasePlayerView extends FrameLayout implements
 
     private DroidPlayerMeasureDelegate mMeasureDelegate;
     private DroidPlayerOrientationDelegate mOrientationDelegate;
+    private DroidPlayerGestureDelegate mGestureDelegate;
     private DroidOnPlayerViewListener mOnPlayerViewListener;
 
     protected int state; // 播放器状态
@@ -87,6 +91,8 @@ public class DroidBasePlayerView extends FrameLayout implements
     private Timer mTimer;
     private ProgressTimerTask mTimerTask;
 
+    public boolean isLocked; // 是否是锁屏
+
     public DroidBasePlayerView(@NonNull Context context) {
         this(context, null);
     }
@@ -105,24 +111,21 @@ public class DroidBasePlayerView extends FrameLayout implements
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View view = inflater.inflate(R.layout.droid_base_player_layout, this);
 
+        flRootView = (FrameLayout) view.findViewById(R.id.fl_root_view);
         playerContainer = (RelativeLayout) view.findViewById(R.id.player_container);
         rlCoverImage = (RelativeLayout) view.findViewById(R.id.rl_cover_image);
         decorationContainer = (RelativeLayout) view.findViewById(R.id.decoration_container);
 
         mMeasureDelegate = new DroidPlayerMeasureDelegate(this, 16, 9);
         mOrientationDelegate = new DroidPlayerOrientationDelegate(this);
+        mGestureDelegate = new DroidPlayerGestureDelegate(getContext(), this);
 
-        playerContainer.setOnTouchListener(new OnTouchListener() {
+        GestureDetector gestureDetector = new GestureDetector(getContext(), mGestureDelegate);
+        flRootView.setOnTouchListener(new OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
+                gestureDetector.onTouchEvent(event);
                 return true;
-            }
-        });
-
-        decorationContainer.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onDecorationViewClick();
             }
         });
 
@@ -220,9 +223,11 @@ public class DroidBasePlayerView extends FrameLayout implements
         DroidMediaPlayer.getInstance().seekTo(time);
     }
 
-    void onDecorationViewClick() {
+    // 单击播放器
+    public void onSingleTouch() {}
 
-    }
+    // 双击播放器
+    public void onDoubleTouch() {}
 
     // 添加视频显示层
     public void addTextureView() {
@@ -281,7 +286,6 @@ public class DroidBasePlayerView extends FrameLayout implements
             case DroidPlayerState.IDLE:
                 Log.d(TAG, "STATE IDLE");
                 rlCoverImage.setVisibility(VISIBLE);
-
                 break;
             case DroidPlayerState.LOADING:
                 Log.d(TAG, "STATE LOADING");
@@ -587,4 +591,5 @@ public class DroidBasePlayerView extends FrameLayout implements
     public void setPositionInList(int mPositionInList) {
         this.mPositionInList = mPositionInList;
     }
+
 }

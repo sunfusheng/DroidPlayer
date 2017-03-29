@@ -20,7 +20,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:padding="10dp"
-                android:text="BasePlayerView (16:9)"
+                android:text="DroidBasePlayerView (16:9)"
                 android:textColor="@color/colorPrimary"/>
 
             <FrameLayout
@@ -84,7 +84,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:padding="10dp"
-                android:text="PlayerView (16:9)"
+                android:text="DroidPlayerView (16:9)"
                 android:textColor="@color/colorPrimary"/>
 
             <FrameLayout
@@ -107,7 +107,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
                 android:padding="10dp"
-                android:text="PlayerView (1:1)"
+                android:text="DroidPlayerView (1:1)"
                 android:textColor="@color/colorPrimary"/>
 
             <FrameLayout
