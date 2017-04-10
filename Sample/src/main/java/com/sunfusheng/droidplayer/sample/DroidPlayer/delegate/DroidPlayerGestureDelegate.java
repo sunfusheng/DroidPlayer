@@ -36,8 +36,8 @@ public class DroidPlayerGestureDelegate extends GestureDetector.SimpleOnGestureL
         if (!basePlayerView.isLocked) {
             float oldX = e1.getX();
             float oldY = e1.getY();
-            float deltaX = oldX - e2.getX();
-            float deltaY = oldY - e2.getY();
+            float offsetX = oldX - e2.getX();
+            float offsetY = oldY - e2.getY();
 
             if (isDownMotion) {
                 isDownMotion = false;
@@ -47,10 +47,10 @@ public class DroidPlayerGestureDelegate extends GestureDetector.SimpleOnGestureL
 
             if (isHorizontal) {
                 // 进度设置
-                float percent = -deltaX / basePlayerView.getWidth();
+                float percent = -offsetX / basePlayerView.getWidth();
                 Log.d("------> ", "进度设置: " + percent);
             } else {
-                float percent = deltaY / basePlayerView.getHeight();
+                float percent = offsetY / basePlayerView.getHeight();
                 if (isVolume) {
                     // 声音设置
                     Log.d("------> ", "声音设置: " + percent);
