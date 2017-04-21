@@ -66,8 +66,8 @@ public class DroidBasePlayerView extends FrameLayout implements
 
     public static final int TIME_DELAY = 1000; // 进度更新的时间延时
     public static final int TIME_INTERVAL = 1000; // 进度更新的时间间隔
-    public static final int TYPE_HIDE_BOTTOM_LAYOUT = 10000;
-    public static final int TIME_HIDE_BOTTOM_LAYOUT = 3000; // 3s
+    public static final int TYPE_HIDE_TOP_BOTTOM_LAYOUT = 10000;
+    public static final int TIME_HIDE_TOP_BOTTOM_LAYOUT = 3000; // 3s
 
     private DroidPlayerMeasureDelegate mMeasureDelegate;
     private DroidPlayerOrientationDelegate mOrientationDelegate;

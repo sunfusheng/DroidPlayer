@@ -47,7 +47,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
     public TextView tvDuration;
     public ImageView ivFullScreen;
 
-    public boolean isShowBottomLayout;
+    public boolean isTopBottomLayoutShown;
     private boolean fromUser; // 是否是用户滑动SeekBar
     private int preState; // 滑动SeekBar前，播放器状态
 
@@ -56,11 +56,8 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
             switch (msg.what) {
-                case TYPE_HIDE_BOTTOM_LAYOUT:
-                    isShowBottomLayout = false;
-                    setVisible(true, bottomProgressBar);
-                    setVisible(false, llBottomLayout);
-                    setVisible(state == DroidPlayerState.LOADING, llTopLayout);
+                case TYPE_HIDE_TOP_BOTTOM_LAYOUT:
+                    hideTopBottomLayout();
                     break;
             }
         }
@@ -161,14 +158,18 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
 
     @Override
     public void onSingleTouch() {
-        showBottomLayout();
+        if (isTopBottomLayoutShown) {
+            hideTopBottomLayout();
+        } else {
+            showTopBottomLayout();
+        }
     }
 
     @Override
     public void onStateChange(@DroidPlayerState int state) {
         hideAllViews();
         setImageResource(ivPlay, R.mipmap.droid_player_play);
-        isShowBottomLayout = false;
+        isTopBottomLayoutShown = false;
         switch (state) {
             case DroidPlayerState.IDLE:
                 setIdleState();
@@ -214,16 +215,16 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
     // 播放状态
     public void setPlayingState() {
         setVisible(false, ivCenterPlay);
-        showBottomLayout();
+        showTopBottomLayout();
         setImageResource(ivPlay, R.mipmap.droid_player_pause);
     }
 
     // 暂停状态
     public void setPauseState() {
-        if (mHandler.hasMessages(TYPE_HIDE_BOTTOM_LAYOUT)) {
-            mHandler.removeMessages(TYPE_HIDE_BOTTOM_LAYOUT);
+        if (mHandler.hasMessages(TYPE_HIDE_TOP_BOTTOM_LAYOUT)) {
+            mHandler.removeMessages(TYPE_HIDE_TOP_BOTTOM_LAYOUT);
         }
-        isShowBottomLayout = true;
+        isTopBottomLayoutShown = true;
         setVisible(true, ivCenterPlay, llBottomLayout);
         showTopLayout();
     }
@@ -249,38 +250,55 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
         showTopLayout();
     }
 
+    public void showTopBottomLayout() {
+        showTopLayout();
+        showBottomLayout();
+        addBottomLayoutMessage();
+        isTopBottomLayoutShown = true;
+    }
+
+    public void hideTopBottomLayout() {
+        hideTopLayout();
+        hideBottomLayout();
+        removeBottomLayoutMessage();
+        isTopBottomLayoutShown = false;
+    }
+
     public void showTopLayout() {
         setVisible(!TextUtils.isEmpty(mTitle) || isFullScreen(), llTopLayout);
         if (!TextUtils.isEmpty(mTitle)) {
             setGone(true, ivBackArrow);
             setGone(!isFullScreen(), ivBack);
-            setText(tvTitle, mTitle);
             setGone(false, tvTitle);
+            setText(tvTitle, mTitle);
         } else {
             setGone(!isFullScreen(), ivBackArrow);
             setGone(true, ivBack, tvTitle);
         }
     }
 
-    public boolean showBottomLayout() {
-        if (isShowBottomLayout) return false;
-        if (state != DroidPlayerState.PLAYING) return false;
-        isShowBottomLayout = true;
-        addBottomLayoutMessage();
+    public void hideTopLayout() {
+        setVisible((!isPlaying() && !TextUtils.isEmpty(mTitle)), llTopLayout);
+    }
+
+    public void showBottomLayout() {
         setVisible(true, llBottomLayout);
         setVisible(false, bottomProgressBar);
-        showTopLayout();
-        return true;
+    }
+
+    public void hideBottomLayout() {
+        setVisible(false, llBottomLayout);
+        setVisible(isPlaying(), bottomProgressBar);
     }
 
     public void addBottomLayoutMessage() {
         removeBottomLayoutMessage();
-        mHandler.sendEmptyMessageDelayed(TYPE_HIDE_BOTTOM_LAYOUT, TIME_HIDE_BOTTOM_LAYOUT);
+        mHandler.sendEmptyMessageDelayed(TYPE_HIDE_TOP_BOTTOM_LAYOUT, TIME_HIDE_TOP_BOTTOM_LAYOUT);
     }
 
     public void removeBottomLayoutMessage() {
-        if (mHandler.hasMessages(TYPE_HIDE_BOTTOM_LAYOUT)) {
-            mHandler.removeMessages(TYPE_HIDE_BOTTOM_LAYOUT);
+        if (mHandler.hasMessages(TYPE_HIDE_TOP_BOTTOM_LAYOUT)) {
+            mHandler.removeMessages(TYPE_HIDE_TOP_BOTTOM_LAYOUT);
         }
     }
 
