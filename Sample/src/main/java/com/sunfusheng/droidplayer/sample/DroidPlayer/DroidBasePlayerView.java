@@ -512,7 +512,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     public class ProgressTimerTask extends TimerTask {
         @Override
         public void run() {
-            if (state == PLAYING) {
+            if (isPlaying()) {
                 DroidMediaPlayer.getInstance().getMainThreadHandler().post(() -> {
                     mCurrentPosition += TIME_INTERVAL;
                     if (mOnPlayerViewListener != null) {

@@ -44,7 +44,6 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     private int mPositionInList = -1; // 视频在List或RecyclerView中的位置
 
 
-
     public class DroidMediaPlayerHandler extends Handler {
 
         public DroidMediaPlayerHandler(Looper looper) {

@@ -158,10 +158,10 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
 
     @Override
     public void onSingleTouch() {
-        if (isTopBottomLayoutShown) {
-            hideTopBottomLayout();
-        } else {
+        if (!isTopBottomLayoutShown && isPlaying()) {
             showTopBottomLayout();
+        } else {
+            hideTopBottomLayout();
         }
     }
 
@@ -224,9 +224,8 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
         if (mHandler.hasMessages(TYPE_HIDE_TOP_BOTTOM_LAYOUT)) {
             mHandler.removeMessages(TYPE_HIDE_TOP_BOTTOM_LAYOUT);
         }
-        isTopBottomLayoutShown = true;
         setVisible(true, ivCenterPlay, llBottomLayout);
-        showTopLayout();
+        hideTopBottomLayout();
     }
 
     // 完成状态
@@ -339,6 +338,9 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
             onPositionChange(time);
             showBottomLayout();
             seekTo(time);
+            if (DroidMediaPlayer.getInstance().getMediaPlayer() != null && !DroidMediaPlayer.getInstance().getMediaPlayer().isPlaying()) {
+                DroidMediaPlayer.getInstance().start();
+            }
         }
     }
 
