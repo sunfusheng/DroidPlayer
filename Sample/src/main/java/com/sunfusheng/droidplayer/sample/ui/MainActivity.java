@@ -112,4 +112,29 @@ public class MainActivity extends BaseActivity {
         fragmentTransaction.commit();
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        DroidMediaPlayer.getInstance().resume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        DroidMediaPlayer.getInstance().pause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        DroidMediaPlayer.getInstance().release();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (!DroidMediaPlayer.getInstance().onBackPressed()) {
+            super.onBackPressed();
+        }
+    }
+
 }

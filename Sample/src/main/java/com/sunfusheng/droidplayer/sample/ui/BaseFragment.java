@@ -5,7 +5,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
 import com.trello.rxlifecycle.components.support.RxFragment;
 
 /**
@@ -23,28 +22,7 @@ public abstract class BaseFragment extends RxFragment {
         mContext = getContext();
     }
 
-    @Override
-    public void onResume() {
-        DroidMediaPlayer.getInstance().resume();
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        DroidMediaPlayer.getInstance().pause();
-        super.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        DroidMediaPlayer.getInstance().release();
-        super.onDestroy();
-    }
-
     protected boolean onBackPressed() {
-        if (DroidMediaPlayer.getInstance().onBackPressed()) {
-            return true;
-        }
         return false;
     }
 

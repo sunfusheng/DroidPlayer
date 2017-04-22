@@ -342,7 +342,8 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
             onPositionChange(time);
             showBottomLayout();
             seekTo(time);
-            if (DroidMediaPlayer.getInstance().getMediaPlayer() != null && !DroidMediaPlayer.getInstance().getMediaPlayer().isPlaying()) {
+            if (DroidMediaPlayer.getInstance().getMediaPlayer() != null &&
+                    !DroidMediaPlayer.getInstance().getMediaPlayer().isPlaying()) {
                 DroidMediaPlayer.getInstance().start();
             }
         }
