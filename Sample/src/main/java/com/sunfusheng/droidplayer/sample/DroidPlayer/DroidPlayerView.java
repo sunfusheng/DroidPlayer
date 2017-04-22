@@ -158,10 +158,14 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
 
     @Override
     public void onSingleTouch() {
-        if (!isTopBottomLayoutShown && isPlaying()) {
-            showTopBottomLayout();
-        } else {
+        if (isTopBottomLayoutShown) {
             hideTopBottomLayout();
+        } else {
+            if (isPlaying()) {
+                showTopBottomLayout();
+            } else {
+                play();
+            }
         }
     }
 

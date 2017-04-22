@@ -20,9 +20,9 @@ import butterknife.ButterKnife;
 /**
  * Created by sunfusheng on 2017/3/2.
  */
-public class MainVideoAdapter extends BaseListAdapter<VideoEntity> {
+public class HomeVideoAdapter extends BaseListAdapter<VideoEntity> {
 
-    public MainVideoAdapter(Context context, List<VideoEntity> list) {
+    public HomeVideoAdapter(Context context, List<VideoEntity> list) {
         super(context, list);
     }
 
@@ -30,7 +30,7 @@ public class MainVideoAdapter extends BaseListAdapter<VideoEntity> {
     public View getView(int position, View convertView, ViewGroup parent) {
         final ViewHolder holder;
         if (convertView == null) {
-            convertView = mInflater.inflate(R.layout.item_main_layout, null);
+            convertView = mInflater.inflate(R.layout.item_home_layout, null);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         } else {

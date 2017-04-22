@@ -8,7 +8,7 @@ import android.widget.ListView;
 
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
 import com.sunfusheng.droidplayer.sample.R;
-import com.sunfusheng.droidplayer.sample.adapter.MainVideoAdapter;
+import com.sunfusheng.droidplayer.sample.adapter.HomeVideoAdapter;
 import com.sunfusheng.droidplayer.sample.http.Api;
 import com.sunfusheng.droidplayer.sample.http.ApiService;
 import com.sunfusheng.droidplayer.sample.model.VideoEntity;
@@ -23,18 +23,18 @@ import rx.schedulers.Schedulers;
 /**
  * Created by sunfusheng on 2017/3/3.
  */
-public class MainFragment extends BaseFragment {
+public class HomeFragment extends BaseFragment {
 
     @BindView(R.id.playerView)
     DroidPlayerView playerView;
     @BindView(R.id.listView)
     ListView listView;
 
-    private MainVideoAdapter mAdapter;
+    private HomeVideoAdapter mAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_main, null);
+        View view = inflater.inflate(R.layout.fragment_home, null);
         ButterKnife.bind(this, view);
 
         initData();
@@ -70,7 +70,7 @@ public class MainFragment extends BaseFragment {
                 .compose(bindToLifecycle())
                 .subscribe(list -> {
                     if (AppUtil.notEmpty(list)) {
-                        mAdapter = new MainVideoAdapter(getContext(), list);
+                        mAdapter = new HomeVideoAdapter(getContext(), list);
                         listView.setAdapter(mAdapter);
 
                         int randomNum = new Random().nextInt(list.size());

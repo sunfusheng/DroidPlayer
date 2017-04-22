@@ -20,7 +20,7 @@ public class MainActivity extends BaseActivity {
     Toolbar toolbar;
 
     private Fragment[] fragments = {
-            new MainFragment(),
+            new HomeFragment(),
             new SampleFragment(),
             new ListFragment(),
             new RecyclerViewFragment(),
@@ -28,14 +28,14 @@ public class MainActivity extends BaseActivity {
     };
 
     private static final String[] TAGS = {
-            "main",
+            "home",
             "sample",
             "list",
             "recycler_view",
             "about"
     };
 
-    private static int lastPosition = 3;
+    private static int lastPosition = 0;
     private MenuItem lastMenuItem;
 
     @Override
@@ -51,7 +51,11 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main_more, menu);
-        lastMenuItem = menu.getItem(0);
+        lastMenuItem = menu.getItem(lastPosition);
+        if (lastMenuItem != null) {
+            lastMenuItem.setCheckable(true);
+            lastMenuItem.setChecked(true);
+        }
         return true;
     }
 
@@ -63,13 +67,13 @@ public class MainActivity extends BaseActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         DroidMediaPlayer.getInstance().release();
-        item.setCheckable(true);
-        item.setChecked(true);
         if (lastMenuItem != null && lastMenuItem != item) {
             lastMenuItem.setCheckable(false);
             lastMenuItem.setChecked(false);
         }
         lastMenuItem = item;
+        item.setCheckable(true);
+        item.setChecked(true);
         switch (item.getItemId()) {
             case R.id.item_main:
                 showFragment(0, fragments[0]);
