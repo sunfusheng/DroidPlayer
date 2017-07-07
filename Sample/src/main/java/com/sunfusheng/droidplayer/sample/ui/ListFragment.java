@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.R;
@@ -48,15 +49,18 @@ public class ListFragment extends BaseFragment {
 
     private void initListener() {
         listView.setOnScrollListener(new AbsListView.OnScrollListener() {
+            int state;
 
             @Override
             public void onScrollStateChanged(AbsListView view, int scrollState) {
+                this.state = scrollState;
             }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                int lastVisibleItem = firstVisibleItem + visibleItemCount;
-                DroidMediaPlayer.getInstance().releaseOnScroll(firstVisibleItem, lastVisibleItem);
+                if (state != NumberPicker.OnScrollListener.SCROLL_STATE_IDLE) {
+                    DroidMediaPlayer.getInstance().releaseOnScroll(firstVisibleItem, firstVisibleItem + visibleItemCount);
+                }
             }
         });
     }

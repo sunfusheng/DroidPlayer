@@ -59,17 +59,25 @@ public class RecyclerViewFragment extends BaseFragment implements RecyclerViewWr
     private void initListener() {
         recyclerViewWrapper.setOnRequestListener(this);
         recyclerViewWrapper.setOnScrollListener(new RecyclerViewWrapper.OnScrollListener() {
+            int state;
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                this.state = newState;
             }
 
             @Override
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
-                int firstVisibleItem = recyclerViewWrapper.getFirstVisibleItemPosition();
-                int lastVisibleItem = recyclerViewWrapper.getLastVisibleItemPosition();
-                DroidMediaPlayer.getInstance().releaseOnScroll(firstVisibleItem, lastVisibleItem);
+                if (state != RecyclerView.SCROLL_STATE_IDLE) {
+                    DroidMediaPlayer.getInstance().releaseOnScroll(recyclerViewWrapper.getFirstVisibleItemPosition(),
+                            recyclerViewWrapper.getLastVisibleItemPosition());
+                }
             }
         });
+    }
+
+    private void releaseOnScroll() {
+
     }
 
     @Override

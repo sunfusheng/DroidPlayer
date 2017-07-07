@@ -190,36 +190,27 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public void seekTo(long time) {
-        mMainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mMediaPlayer != null) {
-                    mMediaPlayer.seekTo(time);
-                }
+        mMainThreadHandler.post(() -> {
+            if (mMediaPlayer != null) {
+                mMediaPlayer.seekTo(time);
             }
         });
     }
 
     @Override
     public void onPrepared(IMediaPlayer iMediaPlayer) {
-        mMainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mMediaPlayerListener != null) {
-                    mMediaPlayerListener.onPrepared();
-                }
+        mMainThreadHandler.post(() -> {
+            if (mMediaPlayerListener != null) {
+                mMediaPlayerListener.onPrepared();
             }
         });
     }
 
     @Override
     public boolean onInfo(IMediaPlayer iMediaPlayer, int what, int extra) {
-        mMainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mMediaPlayerListener != null) {
-                    mMediaPlayerListener.onInfo(iMediaPlayer, what, extra);
-                }
+        mMainThreadHandler.post(() -> {
+            if (mMediaPlayerListener != null) {
+                mMediaPlayerListener.onInfo(iMediaPlayer, what, extra);
             }
         });
         return false;
@@ -227,62 +218,47 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
 
     @Override
     public void onVideoSizeChanged(IMediaPlayer iMediaPlayer, int width, int height, int sar_num, int sar_den) {
-        mMainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mMediaPlayerListener != null) {
-                    mMediaPlayerListener.onVideoSizeChanged(width, height, sar_num, sar_den);
-                }
+        mMainThreadHandler.post(() -> {
+            if (mMediaPlayerListener != null) {
+                mMediaPlayerListener.onVideoSizeChanged(width, height, sar_num, sar_den);
             }
         });
     }
 
     @Override
     public void onBufferingUpdate(IMediaPlayer iMediaPlayer, int percent) {
-        mMainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mMediaPlayerListener != null) {
-                    mMediaPlayerListener.onBufferingUpdate(percent);
-                }
+        mMainThreadHandler.post(() -> {
+            if (mMediaPlayerListener != null) {
+                mMediaPlayerListener.onBufferingUpdate(percent);
             }
         });
     }
 
     @Override
     public void onSeekComplete(IMediaPlayer iMediaPlayer) {
-        mMainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                if (mMediaPlayerListener != null) {
-                    mMediaPlayerListener.onSeekComplete();
-                }
+        mMainThreadHandler.post(() -> {
+            if (mMediaPlayerListener != null) {
+                mMediaPlayerListener.onSeekComplete();
             }
         });
     }
 
     @Override
     public void onCompletion(IMediaPlayer iMediaPlayer) {
-        mMainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                mMediaPlayerHandler.sendEmptyMessage(WHAT_RELEASE);
-                if (mMediaPlayerListener != null) {
-                    mMediaPlayerListener.onCompletion();
-                }
+        mMainThreadHandler.post(() -> {
+            mMediaPlayerHandler.sendEmptyMessage(WHAT_RELEASE);
+            if (mMediaPlayerListener != null) {
+                mMediaPlayerListener.onCompletion();
             }
         });
     }
 
     @Override
     public boolean onError(IMediaPlayer iMediaPlayer, int what, int extra) {
-        mMainThreadHandler.post(new Runnable() {
-            @Override
-            public void run() {
-                mMediaPlayerHandler.sendEmptyMessage(WHAT_RELEASE);
-                if (mMediaPlayerListener != null) {
-                    mMediaPlayerListener.onError(what, extra);
-                }
+        mMainThreadHandler.post(() -> {
+            mMediaPlayerHandler.sendEmptyMessage(WHAT_RELEASE);
+            if (mMediaPlayerListener != null) {
+                mMediaPlayerListener.onError(what, extra);
             }
         });
         return true;
