@@ -12,28 +12,38 @@ import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidBasePlayerView;
  */
 public class DroidPlayerGestureDelegate extends GestureDetector.SimpleOnGestureListener {
 
-    private DroidBasePlayerView basePlayerView;
+    private DroidBasePlayerView playerView;
     private int widthPixels;
     private int heightPixels;
+    private boolean isUpMotion; // 是否抬起动作
     private boolean isDownMotion; // 是否按下动作
     private boolean isHorizontal; // 是否水平滑动
     private boolean isVolume; // 是否声音控制
+    private boolean hasScrolled;
+    private float percent;
 
-    public DroidPlayerGestureDelegate(Context context, DroidBasePlayerView basePlayerView) {
+    public DroidPlayerGestureDelegate(Context context, DroidBasePlayerView playerView) {
         widthPixels = context.getResources().getDisplayMetrics().widthPixels;
         heightPixels = context.getResources().getDisplayMetrics().heightPixels;
-        this.basePlayerView = basePlayerView;
+        this.playerView = playerView;
+    }
+
+    public void onUp(MotionEvent e) {
+        isUpMotion = true;
+        isDownMotion = false;
     }
 
     @Override
     public boolean onDown(MotionEvent e) {
+        isUpMotion = false;
         isDownMotion = true;
         return super.onDown(e);
     }
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        if (!basePlayerView.isLocked) {
+        if (isGestureValid()) {
+            hasScrolled = true;
             float oldX = e1.getX();
             float oldY = e1.getY();
             float offsetX = oldX - e2.getX();
@@ -42,36 +52,64 @@ public class DroidPlayerGestureDelegate extends GestureDetector.SimpleOnGestureL
             if (isDownMotion) {
                 isDownMotion = false;
                 isHorizontal = Math.abs(distanceX) >= Math.abs(distanceY);
-                isVolume = oldX > (basePlayerView.isFullScreen() ? heightPixels : widthPixels) * 0.5f;
+                isVolume = oldX > (playerView.isFullScreen() ? heightPixels : widthPixels) * 0.5f;
             }
 
             if (isHorizontal) {
                 // 进度设置
-                float percent = -offsetX / basePlayerView.getWidth();
-                Log.d("------> ", "进度设置: " + percent);
+                percent = -offsetX / playerView.getWidth();
+                playerView.onScrollProgress(percent);
             } else {
-                float percent = offsetY / basePlayerView.getHeight();
+                percent = offsetY / playerView.getHeight();
                 if (isVolume) {
                     // 声音设置
                     Log.d("------> ", "声音设置: " + percent);
+                    playerView.onScrollVolume(percent);
                 } else {
                     // 亮度设置
                     Log.d("------> ", "亮度设置: " + percent);
+                    playerView.onScrollBrightness(percent);
                 }
             }
         }
         return super.onScroll(e1, e2, distanceX, distanceY);
     }
 
+    private boolean isGestureValid() {
+        if (playerView == null) return false;
+        if (playerView.isLocked) return false;
+        if (!playerView.isFullScreen()) return false;
+        return true;
+    }
+
+    private void handleGestureEvent(float offsetX, float offsetY) {
+        if (isHorizontal) {
+            // 进度设置
+            percent = -offsetX / playerView.getWidth();
+            playerView.onScrollProgress(percent);
+        } else {
+            percent = offsetY / playerView.getHeight();
+            if (isVolume) {
+                // 声音设置
+                Log.d("------> ", "声音设置: " + percent);
+                playerView.onScrollVolume(percent);
+            } else {
+                // 亮度设置
+                Log.d("------> ", "亮度设置: " + percent);
+                playerView.onScrollBrightness(percent);
+            }
+        }
+    }
+
     @Override
     public boolean onSingleTapUp(MotionEvent e) {
-        basePlayerView.onSingleTouch();
+        playerView.onSingleTouch();
         return true;
     }
 
     @Override
     public boolean onDoubleTap(MotionEvent e) {
-        basePlayerView.onDoubleTouch();
+        playerView.onDoubleTouch();
         return true;
     }
 }

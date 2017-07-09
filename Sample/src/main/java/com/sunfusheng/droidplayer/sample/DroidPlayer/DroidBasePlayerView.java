@@ -121,12 +121,13 @@ public class DroidBasePlayerView extends FrameLayout implements
         mGestureDelegate = new DroidPlayerGestureDelegate(getContext(), this);
 
         GestureDetector gestureDetector = new GestureDetector(getContext(), mGestureDelegate);
-        flRootView.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                gestureDetector.onTouchEvent(event);
-                return true;
+        flRootView.setOnTouchListener((v, event) -> {
+            if (event.getAction() == MotionEvent.ACTION_UP) {
+                Log.d("------> ", "手势抬起");
+                mGestureDelegate.onUp(event);
             }
+            gestureDetector.onTouchEvent(event);
+            return true;
         });
 
         coverImage = new ImageView(getContext());
@@ -223,11 +224,25 @@ public class DroidBasePlayerView extends FrameLayout implements
         DroidMediaPlayer.getInstance().seekTo(time);
     }
 
+    // 滑动控制进度
+    public void onScrollProgress(float percent) {
+    }
+
+    // 滑动控制声音
+    public void onScrollVolume(float percent) {
+    }
+
+    // 滑动控制亮度
+    public void onScrollBrightness(float percent) {
+    }
+
     // 单击播放器
-    public void onSingleTouch() {}
+    public void onSingleTouch() {
+    }
 
     // 双击播放器
-    public void onDoubleTouch() {}
+    public void onDoubleTouch() {
+    }
 
     // 添加视频显示层
     public void addTextureView() {

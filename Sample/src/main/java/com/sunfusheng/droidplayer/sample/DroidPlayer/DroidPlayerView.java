@@ -8,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -338,6 +339,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
     public void onStopTrackingTouch(SeekBar seekBar) {
         if (fromUser) {
             preState = state;
+            Log.d("------> ", "1、进度设置: " + (seekBar.getProgress()/100));
             int time = (int) (seekBar.getProgress() * mDuration / 100);
             onPositionChange(time);
             showBottomLayout();
@@ -347,6 +349,16 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
                 DroidMediaPlayer.getInstance().start();
             }
         }
+    }
+
+    private void handleProgress(float percent) {
+
+    }
+
+    @Override
+    public void onScrollProgress(float percent) {
+        super.onScrollProgress(percent);
+        Log.d("------> ", "2、进度设置: " + percent);
     }
 
     @Override

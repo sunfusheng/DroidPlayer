@@ -5,7 +5,6 @@ import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.view.OrientationEventListener;
-import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
@@ -24,7 +23,6 @@ public class DroidPlayerOrientationDelegate {
     private ViewGroup mPlayerViewParent;
     private ViewGroup.LayoutParams mPlayerViewLayoutParams;
     private ViewGroup mFullScreenContainer;
-    private int mFullScreenContainerId = View.NO_ID;
 
     private boolean isFullScreen; // 是否是全屏
     private boolean isAutoRotationEnable; // 是否允许自动旋转屏幕
