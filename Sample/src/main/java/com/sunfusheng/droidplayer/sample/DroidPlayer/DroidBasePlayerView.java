@@ -123,7 +123,6 @@ public class DroidBasePlayerView extends FrameLayout implements
         GestureDetector gestureDetector = new GestureDetector(getContext(), mGestureDelegate);
         flRootView.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_UP) {
-                Log.d("------> ", "手势抬起");
                 mGestureDelegate.onUp(event);
             }
             gestureDetector.onTouchEvent(event);
@@ -225,15 +224,15 @@ public class DroidBasePlayerView extends FrameLayout implements
     }
 
     // 滑动控制进度
-    public void onScrollProgress(float percent) {
+    public void onScrollProgress(float stepPercent, boolean isUp) {
     }
 
     // 滑动控制声音
-    public void onScrollVolume(float percent) {
+    public void onScrollVolume(float stepPercent, boolean isUp) {
     }
 
     // 滑动控制亮度
-    public void onScrollBrightness(float percent) {
+    public void onScrollBrightness(float stepPercent, boolean isUp) {
     }
 
     // 单击播放器

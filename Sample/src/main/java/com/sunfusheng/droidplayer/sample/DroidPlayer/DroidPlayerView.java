@@ -8,7 +8,6 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -17,11 +16,14 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.sunfusheng.droidplayer.sample.DroidPlayer.dialog.DroidProgressDialog;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidOnPlayerViewListener;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.util.PlayerUtil;
 import com.sunfusheng.droidplayer.sample.R;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
+
+import static com.sunfusheng.droidplayer.sample.DroidPlayer.util.PlayerUtil.getTimeString;
 
 /**
  * Created by sunfusheng on 2017/3/8.
@@ -50,7 +52,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
 
     public boolean isTopBottomLayoutShown;
     private boolean fromUser; // 是否是用户滑动SeekBar
-    private int preState; // 滑动SeekBar前，播放器状态
+    private float startPercent = -1;
 
     private Handler mHandler = new Handler() {
         @Override
@@ -104,7 +106,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
 
     private void initBottomLayout() {
         llBottomLayout.setVisibility(GONE);
-        setText(tvCurrentPosition, PlayerUtil.getTimeString(0));
+        setText(tvCurrentPosition, getTimeString(0));
         sbCurrentProgress.setSecondaryProgress(0);
         sbCurrentProgress.setProgress(0);
         bottomProgressBar.setVisibility(GONE);
@@ -153,8 +155,8 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
 
     @Override
     public void onInfoCallback(IMediaPlayer mp, int what, int extra) {
-        setText(tvDuration, PlayerUtil.getTimeString(mDuration));
-        setText(tvCurrentPosition, PlayerUtil.getTimeString(mCurrentPosition));
+        setText(tvDuration, getTimeString(mDuration));
+        setText(tvCurrentPosition, getTimeString(mCurrentPosition));
     }
 
     @Override
@@ -318,7 +320,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
     public void onPositionChange(long position) {
         if (position > mDuration) position = mDuration;
         mCurrentPosition = position;
-        setText(tvCurrentPosition, PlayerUtil.getTimeString(position));
+        setText(tvCurrentPosition, getTimeString(position));
         int progress = (int) (position * 100f / mDuration);
         if (progress > 100) progress = 100;
         sbCurrentProgress.setProgress(progress);
@@ -333,32 +335,52 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         removeBottomLayoutMessage();
+        startPercent = seekBar.getProgress() * 1.0f / 100;
     }
 
     @Override
     public void onStopTrackingTouch(SeekBar seekBar) {
         if (fromUser) {
-            preState = state;
-            Log.d("------> ", "1、进度设置: " + (seekBar.getProgress()/100));
-            int time = (int) (seekBar.getProgress() * mDuration / 100);
-            onPositionChange(time);
             showBottomLayout();
-            seekTo(time);
-            if (DroidMediaPlayer.getInstance().getMediaPlayer() != null &&
-                    !DroidMediaPlayer.getInstance().getMediaPlayer().isPlaying()) {
-                DroidMediaPlayer.getInstance().start();
-            }
+            seekToPosition(seekBar.getProgress() * 1.0f / 100);
         }
     }
 
-    private void handleProgress(float percent) {
-
+    private void seekToPosition(float endPercent) {
+        if (endPercent < 0f) endPercent = 0f;
+        if (endPercent > 1f) endPercent = 1f;
+        int curPosition = (int) (endPercent * mDuration);
+        onPositionChange(curPosition);
+        seekTo(curPosition);
+        if (DroidMediaPlayer.getInstance().getMediaPlayer() != null && !DroidMediaPlayer.getInstance().getMediaPlayer().isPlaying()) {
+            DroidMediaPlayer.getInstance().start();
+        }
     }
 
+    private DroidProgressDialog mProgressDialog;
+
     @Override
-    public void onScrollProgress(float percent) {
-        super.onScrollProgress(percent);
-        Log.d("------> ", "2、进度设置: " + percent);
+    public void onScrollProgress(float stepPercent, boolean isUp) {
+        super.onScrollProgress(stepPercent, isUp);
+        float seekBarPercent = sbCurrentProgress.getProgress() * 1.0f / 100;
+        if (startPercent == -1) {
+            startPercent = seekBarPercent + stepPercent;
+        }
+        float endPercent = seekBarPercent + stepPercent;
+        long endPosition = (long) (endPercent * mDuration);
+        String endTime = PlayerUtil.getTimeString(endPosition);
+        String totalTime = PlayerUtil.getTimeString(mDuration);
+
+        if (mProgressDialog == null) {
+            mProgressDialog = new DroidProgressDialog(getContext());
+        }
+        mProgressDialog.show(startPercent, endPercent, endTime, totalTime);
+
+        if (isUp) {
+            startPercent = -1;
+            mProgressDialog.dismiss();
+            seekToPosition(endPercent);
+        }
     }
 
     @Override

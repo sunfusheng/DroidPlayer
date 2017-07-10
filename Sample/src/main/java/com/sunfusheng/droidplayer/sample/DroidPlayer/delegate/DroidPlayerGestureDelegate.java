@@ -19,8 +19,10 @@ public class DroidPlayerGestureDelegate extends GestureDetector.SimpleOnGestureL
     private boolean isDownMotion; // 是否按下动作
     private boolean isHorizontal; // 是否水平滑动
     private boolean isVolume; // 是否声音控制
+
     private boolean hasScrolled;
-    private float percent;
+    private float offsetX;
+    private float offsetY;
 
     public DroidPlayerGestureDelegate(Context context, DroidBasePlayerView playerView) {
         widthPixels = context.getResources().getDisplayMetrics().widthPixels;
@@ -31,6 +33,10 @@ public class DroidPlayerGestureDelegate extends GestureDetector.SimpleOnGestureL
     public void onUp(MotionEvent e) {
         isUpMotion = true;
         isDownMotion = false;
+        if (hasScrolled) {
+            hasScrolled = false;
+            handleSlideEvent(offsetX, offsetY);
+        }
     }
 
     @Override
@@ -42,12 +48,12 @@ public class DroidPlayerGestureDelegate extends GestureDetector.SimpleOnGestureL
 
     @Override
     public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        if (isGestureValid()) {
+        if (isSlidingValid()) {
             hasScrolled = true;
             float oldX = e1.getX();
             float oldY = e1.getY();
-            float offsetX = oldX - e2.getX();
-            float offsetY = oldY - e2.getY();
+            offsetX = oldX - e2.getX();
+            offsetY = oldY - e2.getY();
 
             if (isDownMotion) {
                 isDownMotion = false;
@@ -55,48 +61,33 @@ public class DroidPlayerGestureDelegate extends GestureDetector.SimpleOnGestureL
                 isVolume = oldX > (playerView.isFullScreen() ? heightPixels : widthPixels) * 0.5f;
             }
 
-            if (isHorizontal) {
-                // 进度设置
-                percent = -offsetX / playerView.getWidth();
-                playerView.onScrollProgress(percent);
-            } else {
-                percent = offsetY / playerView.getHeight();
-                if (isVolume) {
-                    // 声音设置
-                    Log.d("------> ", "声音设置: " + percent);
-                    playerView.onScrollVolume(percent);
-                } else {
-                    // 亮度设置
-                    Log.d("------> ", "亮度设置: " + percent);
-                    playerView.onScrollBrightness(percent);
-                }
-            }
+            handleSlideEvent(offsetX, offsetY);
         }
         return super.onScroll(e1, e2, distanceX, distanceY);
     }
 
-    private boolean isGestureValid() {
+    private boolean isSlidingValid() {
         if (playerView == null) return false;
         if (playerView.isLocked) return false;
         if (!playerView.isFullScreen()) return false;
         return true;
     }
 
-    private void handleGestureEvent(float offsetX, float offsetY) {
+    private void handleSlideEvent(float offsetX, float offsetY) {
         if (isHorizontal) {
             // 进度设置
-            percent = -offsetX / playerView.getWidth();
-            playerView.onScrollProgress(percent);
+            float percent = -offsetX / playerView.getWidth();
+            playerView.onScrollProgress(percent, isUpMotion);
         } else {
-            percent = offsetY / playerView.getHeight();
+            float percent = offsetY / playerView.getHeight();
             if (isVolume) {
                 // 声音设置
                 Log.d("------> ", "声音设置: " + percent);
-                playerView.onScrollVolume(percent);
+                playerView.onScrollVolume(percent, isUpMotion);
             } else {
                 // 亮度设置
                 Log.d("------> ", "亮度设置: " + percent);
-                playerView.onScrollBrightness(percent);
+                playerView.onScrollBrightness(percent, isUpMotion);
             }
         }
     }
