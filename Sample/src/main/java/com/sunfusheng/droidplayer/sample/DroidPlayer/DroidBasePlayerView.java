@@ -41,6 +41,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
+import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 import static com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerState.PLAYING;
 
@@ -277,8 +278,12 @@ public class DroidBasePlayerView extends FrameLayout implements
         return true;
     }
 
+    public IjkMediaPlayer getMediaPlayer() {
+        return DroidMediaPlayer.getInstance().getMediaPlayer();
+    }
+
     public boolean isPlaying() {
-        return state == DroidPlayerState.PLAYING;
+        return getMediaPlayer() != null && state == DroidPlayerState.PLAYING;
     }
 
     public boolean isPause() {

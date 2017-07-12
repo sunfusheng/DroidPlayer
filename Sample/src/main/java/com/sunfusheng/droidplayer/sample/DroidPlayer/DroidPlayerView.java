@@ -2,6 +2,7 @@ package com.sunfusheng.droidplayer.sample.DroidPlayer;
 
 import android.content.Context;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.support.annotation.AttrRes;
 import android.support.annotation.NonNull;
@@ -16,7 +17,9 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
+import com.sunfusheng.droidplayer.sample.DroidPlayer.dialog.DroidBrightnessDialog;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.dialog.DroidProgressDialog;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.dialog.DroidVolumeDialog;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidOnPlayerViewListener;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.util.PlayerUtil;
 import com.sunfusheng.droidplayer.sample.R;
@@ -52,9 +55,19 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
 
     public boolean isTopBottomLayoutShown;
     private boolean fromUser; // 是否是用户滑动SeekBar
-    private float startPercent = -1;
 
-    private Handler mHandler = new Handler() {
+    private static int DIALOG_DISMISS_TIME_MS = 300;
+
+    private DroidProgressDialog mProgressDialog;
+    private float seekBarPercent = -1;
+
+    private DroidBrightnessDialog mBrightnessDialog;
+    private int curBrightness = -1;
+
+    private DroidVolumeDialog mVolumeDialog;
+    private int curVolume = -1;
+
+    private Handler mHandler = new Handler(Looper.getMainLooper()) {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
@@ -167,7 +180,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
             if (isPlaying()) {
                 showTopBottomLayout();
             } else {
-                play();
+//                play();
             }
         }
     }
@@ -217,6 +230,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
         }
         setVisible(true, loadingView, bottomProgressBar);
         showTopLayout();
+        showBottomLayout();
     }
 
     // 播放状态
@@ -335,7 +349,6 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
     @Override
     public void onStartTrackingTouch(SeekBar seekBar) {
         removeBottomLayoutMessage();
-        startPercent = seekBar.getProgress() * 1.0f / 100;
     }
 
     @Override
@@ -352,34 +365,76 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
         int curPosition = (int) (endPercent * mDuration);
         onPositionChange(curPosition);
         seekTo(curPosition);
-        if (DroidMediaPlayer.getInstance().getMediaPlayer() != null && !DroidMediaPlayer.getInstance().getMediaPlayer().isPlaying()) {
-            DroidMediaPlayer.getInstance().start();
+        if (!isPlaying()) {
+            start();
         }
     }
-
-    private DroidProgressDialog mProgressDialog;
 
     @Override
     public void onScrollProgress(float stepPercent, boolean isUp) {
         super.onScrollProgress(stepPercent, isUp);
-        float seekBarPercent = sbCurrentProgress.getProgress() * 1.0f / 100;
-        if (startPercent == -1) {
-            startPercent = seekBarPercent + stepPercent;
+        if (getMediaPlayer() == null) return;
+        if (seekBarPercent == -1) {
+            seekBarPercent = sbCurrentProgress.getProgress() * 1.0f / 100;
         }
         float endPercent = seekBarPercent + stepPercent;
         long endPosition = (long) (endPercent * mDuration);
-        String endTime = PlayerUtil.getTimeString(endPosition);
-        String totalTime = PlayerUtil.getTimeString(mDuration);
 
-        if (mProgressDialog == null) {
-            mProgressDialog = new DroidProgressDialog(getContext());
+        if (isTopBottomLayoutShown) {
+            showBottomLayout();
+            addBottomLayoutMessage();
         }
-        mProgressDialog.show(startPercent, endPercent, endTime, totalTime);
+        onPositionChange(endPosition);
+
+        if (mProgressDialog == null)
+            mProgressDialog = new DroidProgressDialog(getContext());
+        mProgressDialog.show(getMediaPlayer(), endPosition, endPercent);
 
         if (isUp) {
-            startPercent = -1;
-            mProgressDialog.dismiss();
+            seekBarPercent = -1;
             seekToPosition(endPercent);
+            mHandler.postDelayed(() -> {
+                mProgressDialog.dismiss();
+            }, DIALOG_DISMISS_TIME_MS);
+        }
+    }
+
+    @Override
+    public void onScrollBrightness(float stepPercent, boolean isUp) {
+        super.onScrollBrightness(stepPercent, isUp);
+        if (curBrightness == -1) {
+            curBrightness = PlayerUtil.getWindowBrightness(getContext());
+        }
+        int endBrightness = (int) (curBrightness + stepPercent * 255);
+        PlayerUtil.changeWindowBrightness(getContext(), endBrightness);
+
+        if (mBrightnessDialog == null)
+            mBrightnessDialog = new DroidBrightnessDialog(getContext());
+        mBrightnessDialog.show(endBrightness);
+
+        if (isUp) {
+            curBrightness = -1;
+            mHandler.postDelayed(() -> {
+                mBrightnessDialog.dismiss();
+            }, DIALOG_DISMISS_TIME_MS);
+        }
+    }
+
+    @Override
+    public void onScrollVolume(float stepPercent, boolean isUp) {
+        super.onScrollVolume(stepPercent, isUp);
+        if (mVolumeDialog == null) {
+            mVolumeDialog = new DroidVolumeDialog(getContext());
+        }
+        if (curVolume == -1) {
+            curVolume = mVolumeDialog.getCurVolume();
+        }
+        mVolumeDialog.show((int) (curVolume + stepPercent * mVolumeDialog.getMaxVolume()));
+        if (isUp) {
+            curVolume = -1;
+            mHandler.postDelayed(() -> {
+                mVolumeDialog.dismiss();
+            }, DIALOG_DISMISS_TIME_MS);
         }
     }
 

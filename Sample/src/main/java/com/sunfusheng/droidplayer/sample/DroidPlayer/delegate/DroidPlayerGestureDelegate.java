@@ -82,11 +82,9 @@ public class DroidPlayerGestureDelegate extends GestureDetector.SimpleOnGestureL
             float percent = offsetY / playerView.getHeight();
             if (isVolume) {
                 // 声音设置
-                Log.d("------> ", "声音设置: " + percent);
                 playerView.onScrollVolume(percent, isUpMotion);
             } else {
                 // 亮度设置
-                Log.d("------> ", "亮度设置: " + percent);
                 playerView.onScrollBrightness(percent, isUpMotion);
             }
         }
