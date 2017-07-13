@@ -7,7 +7,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.Surface;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidMediaPlayerListener;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidMediaPlayerListener;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidMediaPlayer;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
@@ -32,7 +32,7 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
     public static final int WHAT_RELEASE = 2;
 
     private IjkMediaPlayer mMediaPlayer;
-    private DroidMediaPlayerListener mMediaPlayerListener;
+    private IDroidMediaPlayerListener mMediaPlayerListener;
     private DroidMediaPlayerHandler mMediaPlayerHandler;
     private Handler mMainThreadHandler;
     private DroidBasePlayerView mBasePlayerView;
@@ -290,11 +290,11 @@ public class DroidMediaPlayer implements IDroidMediaPlayer,
         this.mMediaPlayer = mediaPlayer;
     }
 
-    public DroidMediaPlayerListener getMediaPlayerListener() {
+    public IDroidMediaPlayerListener getMediaPlayerListener() {
         return mMediaPlayerListener;
     }
 
-    public void setMediaPlayerListener(DroidMediaPlayerListener mediaPlayerListener) {
+    public void setMediaPlayerListener(IDroidMediaPlayerListener mediaPlayerListener) {
         this.mMediaPlayerListener = mediaPlayerListener;
     }
 

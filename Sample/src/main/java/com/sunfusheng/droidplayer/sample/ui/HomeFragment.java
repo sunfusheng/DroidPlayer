@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 
 import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
 import com.sunfusheng.droidplayer.sample.R;
@@ -18,6 +20,7 @@ import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import rx.android.schedulers.AndroidSchedulers;
 import rx.schedulers.Schedulers;
 
 /**
@@ -29,6 +32,10 @@ public class HomeFragment extends BaseFragment {
     DroidPlayerView playerView;
     @BindView(R.id.listView)
     ListView listView;
+    @BindView(R.id.fl_player_container)
+    FrameLayout flPlayerContainer;
+    @BindView(R.id.rl_empty)
+    RelativeLayout rlEmpty;
 
     private HomeVideoAdapter mAdapter;
 
@@ -64,17 +71,25 @@ public class HomeFragment extends BaseFragment {
     protected void getVideoList() {
         Api.getInstance().getApiService().getVideoList(0)
                 .subscribeOn(Schedulers.io())
-                .observeOn(rx.android.schedulers.AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .filter(it -> it != null && it.containsKey(ApiService.ID))
                 .map(it -> it.get(ApiService.ID))
                 .compose(bindToLifecycle())
                 .subscribe(list -> {
                     if (AppUtil.notEmpty(list)) {
+                        flPlayerContainer.setVisibility(View.VISIBLE);
+                        listView.setVisibility(View.VISIBLE);
+                        rlEmpty.setVisibility(View.GONE);
+
                         mAdapter = new HomeVideoAdapter(getContext(), list);
                         listView.setAdapter(mAdapter);
 
                         int randomNum = new Random().nextInt(list.size());
                         initPlayerView(randomNum);
+                    } else {
+                        flPlayerContainer.setVisibility(View.GONE);
+                        listView.setVisibility(View.GONE);
+                        rlEmpty.setVisibility(View.VISIBLE);
                     }
                 }, Throwable::printStackTrace);
     }

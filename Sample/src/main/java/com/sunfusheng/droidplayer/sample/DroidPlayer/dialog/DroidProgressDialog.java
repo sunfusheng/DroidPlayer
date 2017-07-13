@@ -14,7 +14,7 @@ import com.sunfusheng.droidplayer.sample.R;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 
 /**
- * Created by sunfusheng on 2017/7/10.
+ * Created by sunfusheng on 2017/7/12.
  */
 public class DroidProgressDialog {
 
@@ -31,12 +31,12 @@ public class DroidProgressDialog {
     }
 
     private void createDialog() {
-        mDialog = new Dialog(mContext, R.style.DialogStyle);
-
-        View view = LayoutInflater.from(mContext).inflate(R.layout.droid_progress_dialog_layout, null);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.player_dialog_progress_layout, null);
         imageView = (ImageView) view.findViewById(R.id.imageView);
         textView = (TextView) view.findViewById(R.id.textView);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+
+        mDialog = new Dialog(mContext, R.style.DialogStyle);
         mDialog.setContentView(view);
     }
 

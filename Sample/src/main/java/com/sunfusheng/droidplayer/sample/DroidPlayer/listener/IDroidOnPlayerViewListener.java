@@ -7,7 +7,7 @@ import tv.danmaku.ijk.media.player.IMediaPlayer;
 /**
  * Created by sunfusheng on 2017/3/8.
  */
-public interface DroidOnPlayerViewListener {
+public interface IDroidOnPlayerViewListener {
 
     void onInfoCallback(IMediaPlayer mp, int what, int extra);
 

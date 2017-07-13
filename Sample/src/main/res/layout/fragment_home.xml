@@ -6,8 +6,10 @@
     android:orientation="vertical">
 
     <FrameLayout
+        android:id="@+id/fl_player_container"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:visibility="gone">
 
         <com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView
             android:id="@+id/playerView"
@@ -20,6 +22,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:divider="@color/color5"
-        android:dividerHeight="1px"/>
+        android:dividerHeight="1px"
+        android:visibility="gone"/>
+
+    <include layout="@layout/layout_empty"/>
 
 </LinearLayout>

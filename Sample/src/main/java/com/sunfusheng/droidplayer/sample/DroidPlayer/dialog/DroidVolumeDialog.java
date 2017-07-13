@@ -29,26 +29,22 @@ public class DroidVolumeDialog {
     }
 
     private void createDialog() {
-        mDialog = new Dialog(mContext, R.style.DialogStyle);
-
-        View view = LayoutInflater.from(mContext).inflate(R.layout.droid_volume_dialog_layout, null);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.player_dialog_volume_layout, null);
         imageView = (ImageView) view.findViewById(R.id.imageView);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
+
+        mDialog = new Dialog(mContext, R.style.DialogStyle);
         mDialog.setContentView(view);
 
         if (audioManager == null) {
             audioManager = (AudioManager) mContext.getSystemService(Context.AUDIO_SERVICE);
             maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
-            progressBar.setMax(maxVolume);
             curVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
+
             imageView.setImageResource(curVolume == 0 ? R.mipmap.player_no_volume_icon : R.mipmap.player_volume_icon);
+            progressBar.setMax(maxVolume);
             progressBar.setProgress(curVolume);
         }
-    }
-
-    private void setValues() {
-        int curVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
-        progressBar.setProgress(curVolume);
     }
 
     public void show(int endVolume) {

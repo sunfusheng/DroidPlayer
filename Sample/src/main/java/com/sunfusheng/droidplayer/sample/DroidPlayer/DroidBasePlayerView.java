@@ -31,8 +31,8 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerGestureDelegate;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerMeasureDelegate;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerOrientationDelegate;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidMediaPlayerListener;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.DroidOnPlayerViewListener;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidMediaPlayerListener;
+import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidOnPlayerViewListener;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.DroidPlayer.util.PlayerUtil;
 import com.sunfusheng.droidplayer.sample.R;
@@ -52,7 +52,7 @@ import static com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerState.PLA
 public class DroidBasePlayerView extends FrameLayout implements
         IDroidMediaPlayer,
         TextureView.SurfaceTextureListener,
-        DroidMediaPlayerListener {
+        IDroidMediaPlayerListener {
 
     private static final String TAG = "----> BasePlayerView";
 
@@ -73,7 +73,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     private DroidPlayerMeasureDelegate mMeasureDelegate;
     private DroidPlayerOrientationDelegate mOrientationDelegate;
     private DroidPlayerGestureDelegate mGestureDelegate;
-    private DroidOnPlayerViewListener mOnPlayerViewListener;
+    private IDroidOnPlayerViewListener mOnPlayerViewListener;
 
     protected int state; // 播放器状态
 
@@ -110,7 +110,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     private void init() {
         setBackgroundColor(getResources().getColor(R.color.player_white_color));
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.droid_base_player_layout, this);
+        View view = inflater.inflate(R.layout.player_view_base_layout, this);
 
         flRootView = (FrameLayout) view.findViewById(R.id.fl_root_view);
         playerContainer = (RelativeLayout) view.findViewById(R.id.player_container);
@@ -343,7 +343,7 @@ public class DroidBasePlayerView extends FrameLayout implements
         decorationContainer.addView(view);
     }
 
-    public void setOnPlayerViewListener(DroidOnPlayerViewListener onPlayerViewListener) {
+    public void setOnPlayerViewListener(IDroidOnPlayerViewListener onPlayerViewListener) {
         this.mOnPlayerViewListener = onPlayerViewListener;
     }
 
