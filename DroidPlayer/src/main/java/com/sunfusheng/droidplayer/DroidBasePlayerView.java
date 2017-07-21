@@ -1,4 +1,4 @@
-package com.sunfusheng.droidplayer.sample.DroidPlayer;
+package com.sunfusheng.droidplayer;
 
 import android.app.Activity;
 import android.content.Context;
@@ -28,22 +28,19 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerGestureDelegate;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerMeasureDelegate;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidPlayerOrientationDelegate;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidMediaPlayerListener;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidOnPlayerViewListener;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidMediaPlayer;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.util.PlayerUtil;
-import com.sunfusheng.droidplayer.sample.R;
+import com.sunfusheng.droidplayer.delegate.DroidPlayerGestureDelegate;
+import com.sunfusheng.droidplayer.delegate.DroidPlayerMeasureDelegate;
+import com.sunfusheng.droidplayer.delegate.DroidPlayerOrientationDelegate;
+import com.sunfusheng.droidplayer.listener.IDroidMediaPlayer;
+import com.sunfusheng.droidplayer.listener.IDroidMediaPlayerListener;
+import com.sunfusheng.droidplayer.listener.IDroidOnPlayerViewListener;
+import com.sunfusheng.droidplayer.util.PlayerUtil;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
-
-import static com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerState.PLAYING;
 
 
 /**
@@ -310,7 +307,7 @@ public class DroidBasePlayerView extends FrameLayout implements
                 Log.d(TAG, "STATE LOADING");
                 rlCoverImage.setVisibility(mCurrentPosition == 0 ? VISIBLE : GONE);
                 break;
-            case PLAYING:
+            case DroidPlayerState.PLAYING:
                 Log.d(TAG, "STATE PLAYING");
                 if (droidImageView != null && droidImageView.isShown()) {
                     droidImageView.setVisibility(GONE);
@@ -374,7 +371,7 @@ public class DroidBasePlayerView extends FrameLayout implements
         addScreenOnFlag();
         startTimer();
         rlCoverImage.setVisibility(GONE);
-        setState(PLAYING);
+        setState(DroidPlayerState.PLAYING);
     }
 
     @Override
@@ -385,7 +382,7 @@ public class DroidBasePlayerView extends FrameLayout implements
         if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_START) {
             setState(DroidPlayerState.LOADING);
         } else if (what == IMediaPlayer.MEDIA_INFO_BUFFERING_END) {
-            setState(PLAYING);
+            setState(DroidPlayerState.PLAYING);
         }
         if (mOnPlayerViewListener != null) {
             mOnPlayerViewListener.onInfoCallback(mp, what, extra);
@@ -437,7 +434,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     public void onVideoStart() {
         Log.d(TAG, "onVideoStart()");
         if (isPause()) {
-            setState(PLAYING);
+            setState(DroidPlayerState.PLAYING);
         }
     }
 
@@ -445,7 +442,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     public void onVideoResume() {
         Log.d(TAG, "onVideoResume()");
         if (DroidMediaPlayer.getInstance().isPausedWhenPlaying()) {
-            setState(PLAYING);
+            setState(DroidPlayerState.PLAYING);
         } else if (isPause()) {
             showCaptureImage();
         }

@@ -1,4 +1,4 @@
-package com.sunfusheng.droidplayer.sample.DroidPlayer.listener;
+package com.sunfusheng.droidplayer.listener;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 

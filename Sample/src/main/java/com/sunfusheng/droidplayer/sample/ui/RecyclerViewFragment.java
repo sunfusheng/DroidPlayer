@@ -7,7 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
+import com.sunfusheng.droidplayer.DroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.R;
 import com.sunfusheng.droidplayer.sample.http.Api;
 import com.sunfusheng.droidplayer.sample.http.ApiService;

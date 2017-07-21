@@ -1,4 +1,4 @@
-package com.sunfusheng.droidplayer.sample.DroidPlayer.dialog;
+package com.sunfusheng.droidplayer.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -8,7 +8,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.sunfusheng.droidplayer.sample.R;
+import com.sunfusheng.droidplayer.R;
 
 /**
  * Created by sunfusheng on 2017/7/12.

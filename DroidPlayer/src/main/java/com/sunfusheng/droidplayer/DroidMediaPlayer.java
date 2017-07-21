@@ -1,4 +1,4 @@
-package com.sunfusheng.droidplayer.sample.DroidPlayer;
+package com.sunfusheng.droidplayer;
 
 import android.media.AudioManager;
 import android.os.Handler;
@@ -7,8 +7,8 @@ import android.os.Looper;
 import android.os.Message;
 import android.view.Surface;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidMediaPlayerListener;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidMediaPlayer;
+import com.sunfusheng.droidplayer.listener.IDroidMediaPlayerListener;
+import com.sunfusheng.droidplayer.listener.IDroidMediaPlayer;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;

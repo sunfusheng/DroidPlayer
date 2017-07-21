@@ -8,7 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
+import com.sunfusheng.droidplayer.DroidPlayerView;
 import com.sunfusheng.droidplayer.sample.R;
 import com.sunfusheng.droidplayer.sample.model.VideoEntity;
 import com.sunfusheng.droidplayer.sample.util.AppUtil;

@@ -1,4 +1,4 @@
-package com.sunfusheng.droidplayer.sample.DroidPlayer.delegate;
+package com.sunfusheng.droidplayer.delegate;
 
 import android.view.View;
 import android.view.ViewGroup;

@@ -27,7 +27,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.sunfusheng.droidplayer.sample.DroidPlayer.DroidBasePlayerView
+                <com.sunfusheng.droidplayer.DroidBasePlayerView
                     android:id="@+id/basePlayerView"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
@@ -91,7 +91,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView
+                <com.sunfusheng.droidplayer.DroidPlayerView
                     android:id="@+id/playerView1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
@@ -114,7 +114,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
 
-                <com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView
+                <com.sunfusheng.droidplayer.DroidPlayerView
                     android:id="@+id/playerView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>

@@ -1,4 +1,4 @@
-package com.sunfusheng.droidplayer.sample.DroidPlayer;
+package com.sunfusheng.droidplayer;
 
 import android.content.Context;
 import android.os.Handler;
@@ -17,16 +17,15 @@ import android.widget.ProgressBar;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.dialog.DroidBrightnessDialog;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.dialog.DroidProgressDialog;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.dialog.DroidVolumeDialog;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.listener.IDroidOnPlayerViewListener;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.util.PlayerUtil;
-import com.sunfusheng.droidplayer.sample.R;
+import com.sunfusheng.droidplayer.dialog.DroidBrightnessDialog;
+import com.sunfusheng.droidplayer.dialog.DroidProgressDialog;
+import com.sunfusheng.droidplayer.dialog.DroidVolumeDialog;
+import com.sunfusheng.droidplayer.listener.IDroidOnPlayerViewListener;
+import com.sunfusheng.droidplayer.util.PlayerUtil;
 
 import tv.danmaku.ijk.media.player.IMediaPlayer;
 
-import static com.sunfusheng.droidplayer.sample.DroidPlayer.util.PlayerUtil.getTimeString;
+import static com.sunfusheng.droidplayer.util.PlayerUtil.getTimeString;
 
 /**
  * Created by sunfusheng on 2017/3/8.

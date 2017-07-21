@@ -8,7 +8,7 @@ import android.widget.FrameLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
+import com.sunfusheng.droidplayer.DroidPlayerView;
 import com.sunfusheng.droidplayer.sample.R;
 import com.sunfusheng.droidplayer.sample.adapter.HomeVideoAdapter;
 import com.sunfusheng.droidplayer.sample.http.Api;

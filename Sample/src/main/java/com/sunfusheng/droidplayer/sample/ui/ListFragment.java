@@ -8,7 +8,7 @@ import android.widget.AbsListView;
 import android.widget.ListView;
 import android.widget.NumberPicker;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
+import com.sunfusheng.droidplayer.DroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.R;
 import com.sunfusheng.droidplayer.sample.adapter.ListVideoAdapter;
 import com.sunfusheng.droidplayer.sample.http.Api;

@@ -1,11 +1,10 @@
-package com.sunfusheng.droidplayer.sample.DroidPlayer.delegate;
+package com.sunfusheng.droidplayer.delegate;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidBasePlayerView;
+import com.sunfusheng.droidplayer.DroidBasePlayerView;
 
 /**
  * Created by sunfusheng on 2017/3/29.

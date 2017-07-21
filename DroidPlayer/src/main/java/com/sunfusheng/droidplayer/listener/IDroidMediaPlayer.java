@@ -1,4 +1,4 @@
-package com.sunfusheng.droidplayer.sample.DroidPlayer.listener;
+package com.sunfusheng.droidplayer.listener;
 
 /**
  * Created by sunfusheng on 2017/2/20.

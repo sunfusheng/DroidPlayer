@@ -1,26 +1,27 @@
-package com.sunfusheng.droidplayer.sample.DroidPlayer;
+package com.sunfusheng.droidplayer;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.TextureView;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.delegate.DroidViewMeasureDelegate;
+import com.sunfusheng.droidplayer.delegate.DroidViewMeasureDelegate;
 
 /**
- * Created by sunfusheng on 2017/3/3.
+ * Created by sunfusheng on 2017/2/20.
  */
-public class DroidImageView extends android.support.v7.widget.AppCompatImageView {
+public class DroidTextureView extends TextureView {
 
     private DroidViewMeasureDelegate mMeasureDelegate;
 
-    public DroidImageView(Context context) {
+    public DroidTextureView(Context context) {
         this(context, null);
     }
 
-    public DroidImageView(Context context, AttributeSet attrs) {
+    public DroidTextureView(Context context, AttributeSet attrs) {
         this(context, attrs, 0);
     }
 
-    public DroidImageView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public DroidTextureView(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
@@ -46,4 +47,5 @@ public class DroidImageView extends android.support.v7.widget.AppCompatImageView
     public int getMeasureHeight() {
         return mMeasureDelegate.getMeasureHeight();
     }
+
 }

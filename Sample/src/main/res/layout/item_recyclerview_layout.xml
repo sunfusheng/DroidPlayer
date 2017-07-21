@@ -9,7 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView
+        <com.sunfusheng.droidplayer.DroidPlayerView
             android:id="@+id/itemRecyclerViewPlayerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>

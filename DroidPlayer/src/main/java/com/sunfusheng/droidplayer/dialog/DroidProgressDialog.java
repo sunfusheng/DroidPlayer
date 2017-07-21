@@ -1,4 +1,4 @@
-package com.sunfusheng.droidplayer.sample.DroidPlayer.dialog;
+package com.sunfusheng.droidplayer.dialog;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -8,8 +8,8 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.util.PlayerUtil;
-import com.sunfusheng.droidplayer.sample.R;
+import com.sunfusheng.droidplayer.R;
+import com.sunfusheng.droidplayer.util.PlayerUtil;
 
 import tv.danmaku.ijk.media.player.IjkMediaPlayer;
 

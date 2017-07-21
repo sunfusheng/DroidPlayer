@@ -8,7 +8,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidMediaPlayer;
+import com.sunfusheng.droidplayer.DroidMediaPlayer;
 import com.sunfusheng.droidplayer.sample.R;
 
 import butterknife.BindView;

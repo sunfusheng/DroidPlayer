@@ -1,4 +1,4 @@
-package com.sunfusheng.droidplayer.sample.DroidPlayer;
+package com.sunfusheng.droidplayer;
 
 import android.support.annotation.IntDef;
 

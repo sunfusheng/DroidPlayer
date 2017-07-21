@@ -1,4 +1,4 @@
-package com.sunfusheng.droidplayer.sample.DroidPlayer.delegate;
+package com.sunfusheng.droidplayer.delegate;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidBasePlayerView;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.util.PlayerUtil;
+import com.sunfusheng.droidplayer.DroidBasePlayerView;
+import com.sunfusheng.droidplayer.util.PlayerUtil;
 
 /**
  * Created by sunfusheng on 2017/3/9.

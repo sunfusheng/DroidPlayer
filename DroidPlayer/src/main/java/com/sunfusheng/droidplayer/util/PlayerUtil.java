@@ -1,4 +1,4 @@
-package com.sunfusheng.droidplayer.sample.DroidPlayer.util;
+package com.sunfusheng.droidplayer.util;
 
 import android.app.Activity;
 import android.content.Context;

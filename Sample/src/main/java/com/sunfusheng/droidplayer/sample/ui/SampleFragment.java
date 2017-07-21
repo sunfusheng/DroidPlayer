@@ -8,8 +8,8 @@ import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidBasePlayerView;
-import com.sunfusheng.droidplayer.sample.DroidPlayer.DroidPlayerView;
+import com.sunfusheng.droidplayer.DroidBasePlayerView;
+import com.sunfusheng.droidplayer.DroidPlayerView;
 import com.sunfusheng.droidplayer.sample.R;
 import com.sunfusheng.droidplayer.sample.http.Api;
 import com.sunfusheng.droidplayer.sample.http.ApiService;
