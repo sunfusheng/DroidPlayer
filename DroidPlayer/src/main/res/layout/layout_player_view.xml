@@ -8,7 +8,7 @@
         android:id="@+id/ll_top_layout"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:background="@drawable/player_top_bg"
+        android:background="@drawable/drawable_player_top_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingLeft="10dp"
@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="22dp"
             android:layout_marginRight="5dp"
-            android:src="@mipmap/droid_player_back_arrow"/>
+            android:src="@mipmap/icon_player_back_arrow"/>
 
         <TextView
             android:id="@+id/tv_title"
@@ -39,7 +39,7 @@
         android:layout_width="@dimen/player_center_icon_size"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@mipmap/droid_player_center_play"/>
+        android:src="@mipmap/icon_player_play_center"/>
 
     <ProgressBar
         android:id="@+id/loading_view"
@@ -54,7 +54,7 @@
         android:layout_width="@dimen/player_center_icon_size"
         android:layout_height="@dimen/player_center_icon_size"
         android:layout_centerInParent="true"
-        android:src="@mipmap/droid_player_replay"
+        android:src="@mipmap/icon_player_replay"
         android:visibility="invisible"/>
 
     <TextView
@@ -76,14 +76,14 @@
         android:layout_height="1dp"
         android:layout_alignParentBottom="true"
         android:max="100"
-        android:progressDrawable="@drawable/player_progress_drawable"/>
+        android:progressDrawable="@drawable/drawable_player_seekbar_bottom_progress"/>
 
     <LinearLayout
         android:id="@+id/ll_bottom_layout"
         android:layout_width="match_parent"
         android:layout_height="40dp"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/player_bottom_bg"
+        android:background="@drawable/drawable_player_bottom_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal">
 
@@ -92,7 +92,7 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:padding="10dp"
-            android:src="@mipmap/droid_player_play"/>
+            android:src="@mipmap/icon_player_play"/>
 
         <TextView
             android:id="@+id/tv_current_position"
@@ -113,9 +113,9 @@
             android:maxHeight="1dp"
             android:minHeight="1dp"
             android:progress="30"
-            android:progressDrawable="@drawable/player_seekbar_drawable"
+            android:progressDrawable="@drawable/drawable_player_seekbar_progress"
             android:secondaryProgress="70"
-            android:thumb="@drawable/drawable_seekbar_thumb"/>
+            android:thumb="@drawable/drawable_player_seekbar_thumb"/>
 
         <TextView
             android:id="@+id/tv_duration"
@@ -130,7 +130,7 @@
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:padding="10dp"
-            android:src="@mipmap/droid_player_enter_fullscreen"/>
+            android:src="@mipmap/icon_player_enter_fullscreen"/>
 
     </LinearLayout>
 

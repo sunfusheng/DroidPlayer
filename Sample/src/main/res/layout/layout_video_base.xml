@@ -25,7 +25,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:background="@drawable/player_top_bg"
+        android:background="@drawable/drawable_player_top_bg"
         android:ellipsize="end"
         android:paddingBottom="10dp"
         android:paddingLeft="15dp"
@@ -41,7 +41,7 @@
         android:layout_width="@dimen/player_center_icon_size"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:src="@mipmap/droid_player_center_play"/>
+        android:src="@mipmap/icon_player_play_center"/>
 
     <ProgressBar
         android:id="@+id/loading_view"
@@ -56,7 +56,7 @@
         android:layout_width="@dimen/player_center_icon_size"
         android:layout_height="@dimen/player_center_icon_size"
         android:layout_centerInParent="true"
-        android:src="@mipmap/droid_player_replay"
+        android:src="@mipmap/icon_player_replay"
         android:visibility="invisible"/>
 
     <TextView
@@ -78,14 +78,14 @@
         android:layout_height="2dp"
         android:layout_alignParentBottom="true"
         android:max="100"
-        android:progressDrawable="@drawable/player_progress_drawable"/>
+        android:progressDrawable="@drawable/drawable_player_seekbar_bottom_progress"/>
 
     <LinearLayout
         android:id="@+id/ll_bottom_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/player_bottom_bg"
+        android:background="@drawable/drawable_player_bottom_bg"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:padding="10dp">
@@ -94,7 +94,7 @@
             android:id="@+id/iv_play"
             android:layout_width="25dp"
             android:layout_height="25dp"
-            android:src="@mipmap/droid_player_play"/>
+            android:src="@mipmap/icon_player_play"/>
 
         <TextView
             android:id="@+id/tv_current_position"
@@ -116,9 +116,9 @@
             android:maxHeight="1dp"
             android:minHeight="1dp"
             android:progress="30"
-            android:progressDrawable="@drawable/player_seekbar_drawable"
+            android:progressDrawable="@drawable/drawable_player_seekbar_progress"
             android:secondaryProgress="70"
-            android:thumb="@drawable/drawable_seekbar_thumb"/>
+            android:thumb="@drawable/drawable_player_seekbar_thumb"/>
 
         <TextView
             android:id="@+id/tv_duration"

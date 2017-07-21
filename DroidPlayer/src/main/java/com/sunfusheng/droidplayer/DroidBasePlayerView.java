@@ -107,7 +107,7 @@ public class DroidBasePlayerView extends FrameLayout implements
     private void init() {
         setBackgroundColor(getResources().getColor(R.color.player_white_color));
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.player_view_base_layout, this);
+        View view = inflater.inflate(R.layout.layout_player_base_view, this);
 
         flRootView = (FrameLayout) view.findViewById(R.id.fl_root_view);
         playerContainer = (RelativeLayout) view.findViewById(R.id.player_container);

@@ -90,7 +90,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
 
     public void initView() {
         LayoutInflater inflater = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View view = inflater.inflate(R.layout.player_view_layout, this, false);
+        View view = inflater.inflate(R.layout.layout_player_view, this, false);
         ivCenterPlay = (ImageView) view.findViewById(R.id.iv_center_play);
         loadingView = (ProgressBar) view.findViewById(R.id.loading_view);
         bottomProgressBar = (ProgressBar) view.findViewById(R.id.bottom_progress_bar);
@@ -182,7 +182,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
     @Override
     public void onStateChange(@DroidPlayerState int state) {
         hideAllViews();
-        setImageResource(ivPlay, R.mipmap.droid_player_play);
+        setImageResource(ivPlay, R.mipmap.icon_player_play);
         switch (state) {
             case DroidPlayerState.IDLE:
                 setIdleState();
@@ -232,7 +232,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
     public void setPlayingState() {
         setVisible(false, ivCenterPlay);
         showTopBottomLayout();
-        setImageResource(ivPlay, R.mipmap.droid_player_pause);
+        setImageResource(ivPlay, R.mipmap.icon_player_pause);
     }
 
     // 暂停状态
@@ -435,7 +435,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
     @Override
     public void enterFullScreen() {
         super.enterFullScreen();
-        setImageResource(ivFullScreen, R.mipmap.droid_player_quit_fullscreen);
+        setImageResource(ivFullScreen, R.mipmap.icon_player_quit_fullscreen);
         addHideTopBottomLayoutMessage();
         showTopLayout();
     }
@@ -443,7 +443,7 @@ public class DroidPlayerView extends DroidBasePlayerView implements View.OnClick
     @Override
     public void quitFullScreen() {
         super.quitFullScreen();
-        setImageResource(ivFullScreen, R.mipmap.droid_player_enter_fullscreen);
+        setImageResource(ivFullScreen, R.mipmap.icon_player_enter_fullscreen);
         addHideTopBottomLayoutMessage();
         showTopLayout();
     }

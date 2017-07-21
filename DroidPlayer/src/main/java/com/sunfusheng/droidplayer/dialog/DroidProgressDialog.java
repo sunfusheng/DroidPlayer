@@ -31,7 +31,7 @@ public class DroidProgressDialog {
     }
 
     private void createDialog() {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.player_dialog_progress_layout, null);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.layout_player_dialog_progress, null);
         imageView = (ImageView) view.findViewById(R.id.imageView);
         textView = (TextView) view.findViewById(R.id.textView);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
@@ -48,7 +48,7 @@ public class DroidProgressDialog {
         long curPosition = ijkMediaPlayer.getCurrentPosition();
         long duration = ijkMediaPlayer.getDuration();
 
-        imageView.setImageResource(endPosition >= curPosition ? R.mipmap.player_forward_icon : R.mipmap.player_backward_icon);
+        imageView.setImageResource(endPosition >= curPosition ? R.mipmap.icon_player_forward : R.mipmap.icon_player_backward);
         textView.setText(PlayerUtil.getTimeString(endPosition) + "/" + PlayerUtil.getTimeString(duration));
         progressBar.setProgress((int) (endPercent * 100));
 

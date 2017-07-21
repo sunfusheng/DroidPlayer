@@ -8,7 +8,7 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@drawable/player_dialog_bg"
+        android:background="@drawable/drawable_player_dialog_bg"
         android:gravity="center"
         android:orientation="horizontal"
         android:paddingBottom="20dp"
@@ -21,7 +21,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:src="@mipmap/player_brightness_icon"/>
+            android:src="@mipmap/icon_player_volume"/>
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -31,7 +31,7 @@
             android:layout_gravity="center_vertical"
             android:layout_marginLeft="10dp"
             android:max="255"
-            android:progressDrawable="@drawable/player_dialog_progress_drawable"/>
+            android:progressDrawable="@drawable/drawable_player_dialog_seekbar_progress"/>
     </LinearLayout>
 
 </RelativeLayout>

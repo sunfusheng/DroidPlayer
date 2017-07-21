@@ -24,7 +24,7 @@ public class DroidBrightnessDialog {
     }
 
     private void createDialog() {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.player_dialog_brightness_layout, null);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.layout_player_dialog_brightness, null);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
         mDialog = new Dialog(mContext, R.style.DialogStyle);

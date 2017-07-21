@@ -29,7 +29,7 @@ public class DroidVolumeDialog {
     }
 
     private void createDialog() {
-        View view = LayoutInflater.from(mContext).inflate(R.layout.player_dialog_volume_layout, null);
+        View view = LayoutInflater.from(mContext).inflate(R.layout.layout_player_dialog_volume, null);
         imageView = (ImageView) view.findViewById(R.id.imageView);
         progressBar = (ProgressBar) view.findViewById(R.id.progressBar);
 
@@ -41,7 +41,7 @@ public class DroidVolumeDialog {
             maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC);
             curVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC);
 
-            imageView.setImageResource(curVolume == 0 ? R.mipmap.player_no_volume_icon : R.mipmap.player_volume_icon);
+            imageView.setImageResource(curVolume == 0 ? R.mipmap.icon_player_no_volume : R.mipmap.icon_player_volume);
             progressBar.setMax(maxVolume);
             progressBar.setProgress(curVolume);
         }
@@ -57,7 +57,7 @@ public class DroidVolumeDialog {
         this.curVolume = endVolume;
 
         audioManager.setStreamVolume(AudioManager.STREAM_MUSIC, endVolume, 0);
-        imageView.setImageResource(endVolume == 0 ? R.mipmap.player_no_volume_icon : R.mipmap.player_volume_icon);
+        imageView.setImageResource(endVolume == 0 ? R.mipmap.icon_player_no_volume : R.mipmap.icon_player_volume);
         progressBar.setProgress(endVolume);
 
         if (!mDialog.isShowing()) {

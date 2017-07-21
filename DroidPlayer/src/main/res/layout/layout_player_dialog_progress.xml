@@ -8,7 +8,7 @@
         android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@drawable/player_dialog_bg"
+        android:background="@drawable/drawable_player_dialog_bg"
         android:gravity="center"
         android:orientation="vertical">
 
@@ -23,7 +23,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                android:src="@mipmap/player_forward_icon"/>
+                android:src="@mipmap/icon_player_forward"/>
 
             <TextView
                 android:id="@+id/textView"
@@ -47,7 +47,7 @@
             android:layout_marginRight="16dp"
             android:layout_marginTop="16dp"
             android:max="100"
-            android:progressDrawable="@drawable/player_dialog_progress_drawable"/>
+            android:progressDrawable="@drawable/drawable_player_dialog_seekbar_progress"/>
     </LinearLayout>
 
 </RelativeLayout>
