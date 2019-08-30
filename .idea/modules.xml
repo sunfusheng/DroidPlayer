@@ -2,8 +2,10 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/DroidPlayer.iml" filepath="$PROJECT_DIR$/DroidPlayer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/DroidPlayer/DroidPlayer-DroidPlayer.iml" filepath="$PROJECT_DIR$/DroidPlayer/DroidPlayer-DroidPlayer.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Sample/DroidPlayer-Sample.iml" filepath="$PROJECT_DIR$/Sample/DroidPlayer-Sample.iml" />
       <module fileurl="file://$PROJECT_DIR$/Sample/Sample.iml" filepath="$PROJECT_DIR$/Sample/Sample.iml" />
+      <module fileurl="file://$PROJECT_DIR$/github-DroidPlayer.iml" filepath="$PROJECT_DIR$/github-DroidPlayer.iml" />
     </modules>
   </component>
 </project>
